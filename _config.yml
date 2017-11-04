@@ -1,1 +1,8 @@
+title: Yuens' blog - GitHub.io
+description: Yuens' blog
+google_analytics: 
+show_downloads: true
 theme: jekyll-theme-architect
+
+gems:
+  - jekyll-mentions
