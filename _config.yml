@@ -2,7 +2,7 @@ title: Peripateticism
 description: Yuens' blog
 google_analytics: 
 show_downloads: true
-theme: jekyll-theme-modernist
+theme: jekyll-theme-leap-day
 
 gems:
   - jekyll-mentions
