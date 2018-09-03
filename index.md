@@ -28,7 +28,7 @@
 
 
 <hr />
-<center><p style="text-align: center;"><strong>—— 理想 • 人生 ——</strong></p></center>
+<p style="text-align: center;"><strong>—— 理想 • 人生 ——</strong></p>
 ”<strong><span style="color: #00ccff;">真正生命中的最关键问题是如何充分发挥一个人的潜力，既要担待生活的责任，又要对得起自己的梦想。</span></strong>”
 
 我父母非常支持我，他们到这个国家来实现他们的梦想，我也应该实现我自己的梦想。
@@ -43,7 +43,7 @@ CNN：是什么让你走到了现在？
 
 （支持我的人）用不了500那么多个人，只要有一两个就够了。
 <p style="text-align: right;">from feifei li</p>
-<center><p style="text-align: center;"><strong>—— 工作 • 健康 ——</strong></p></center>
+<p style="text-align: center;"><strong>—— 工作 • 健康 ——</strong></p>
 上次有个年轻的朋友问我，他知道工作后还要继续学习保持竞争力，但是自己996的工作回家之后只想睡觉，更别说动不动就来一波封闭开发，根本没有精力继续学习。
 
 我和他的一些交流总结一下。在信息产业里新技术就是竞争力，年轻人还是需要保持继续学习新知识。现在国内的工作环境对年轻人很不友好，脑子不清楚的领队为了完成业绩，以抽干年轻人精力的方式加班，而年轻人为了保住自己的工作，不得不每天奉献出来自己有限的精力，导致业余时间只够勉强休息。
@@ -53,7 +53,7 @@ CNN：是什么让你走到了现在？
 
 
 <hr />
-<center><p style="text-align: center;"><strong>—— 手绘 ——</strong></p></center>
+<p style="text-align: center;"><strong>—— 手绘 ——</strong></p>
 
 <div style="text-align: center;">[smartslider3 slider=3]</div>
 <p style="text-align: center;"></p>
