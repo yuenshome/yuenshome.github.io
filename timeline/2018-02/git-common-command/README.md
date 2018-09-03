@@ -90,7 +90,13 @@ CONFLICT (content): Merge conflict in c/environ.c</pre>
 
 打开冲突的文件，会看到类似如下的内容：
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2018/03/git-stash-conflict.png" alt="" width="241" height="79" />
+```shell
+<<<<<<< Updated upstream
+    int i, j;
+=======
+    int i, z;
+>>>>>>> Stashed changes	
+```
 
 其中Updated upstream 和=====之间的内容就是pull下来的内容，====和stashed changes之间的内容就是本地修改的内容。碰到这种情况，git也不知道哪行内容是需要的，所以要自行确定需要的内容。
 
