@@ -1,6 +1,6 @@
 # About
 
-<p style="text-align: center;"><img class="alignleft wp-image-169 size-full" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2014/06/13_avatar_middle.gif" alt="13_avatar_middle" width="120" height="68" /></p>
+<p style="text-align: center;"><img class="alignleft wp-image-169 size-full" src="./assets/cat.gif" alt="13_avatar_middle" width="120" height="68" /></p>
 游戏，音乐，动漫，平面设计，视频制作，网站开发，数学建模，算法，智能算法，骑车，画画。<!--more-->
 
 <a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&amp;email=M1dSQVhRX0ZWSXNCQh1QXF4" target="_blank"><img src="http://rescdn.qqmail.com/zh_CN/htmledition/images/function/qm_open/ico_mailme_02.png" alt="" /></a>
@@ -13,7 +13,7 @@
 </ul>
 
 <hr />
-<p style="text-align: left;"><img class="alignnone wp-image-187 size-full aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2014/06/u2946318118615085093fm23gp01.jpg" alt="" width="580" height="326" /></p>
+<p style="text-align: left;"><img class="alignnone wp-image-187 size-full aligncenter" src="./assets/hardwork.jpg" alt="" width="580" height="326" /></p>
 <p style="text-align: center;">请继续努力！</p>
 <p style="text-align: center;"><iframe width="298" height="52" frameborder="no" border="0" marginwidth="0" marginheight="0" src="http://music.163.com/outchain/player?type=2&amp;id=849929&amp;auto=1&amp;height=32"></iframe></p>
 雪中智代雨中杏，樱花树下古河渚。 图书馆中小琴美，资料室里有纪宁。 春原兄妹路边走，古河夫妻店里忙。 海星风子随风去，花田丛中冈崎汐。一座小镇，一个家族，一生太短，回忆太长。写作CLANNAD，译作经典，读作人生。
