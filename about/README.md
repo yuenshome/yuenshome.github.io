@@ -1,6 +1,6 @@
-![header](../assets/header01.jpg)
-
 # About
+
+![header](../assets/header01.jpg)
 
 <p style="text-align: center;"><img class="alignleft wp-image-169 size-full" src="./assets/cat.gif" alt="13_avatar_middle" width="120" height="68" /></p>
 游戏，音乐，动漫，平面设计，视频制作，网站开发，数学建模，算法，智能算法，骑车，画画。<!--more-->
@@ -52,3 +52,6 @@ CNN：是什么让你走到了现在？
 
 <div style="text-align: center;">[smartslider3 slider=3]</div>
 <p style="text-align: center;"></p>
+
+
+<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=0&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1181564472&verifier=5d9a7d02&dpc=1"></iframe>
