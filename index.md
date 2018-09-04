@@ -1,18 +1,17 @@
 ![header](./assets/header01.jpg)
 
-- [reading](./reading/)  
-- [life](./life/)
-- [photo](./photo)
-- [study](./study/)
-- [about](./about/)
+- [Reading](./reading/)  
+- [Life](./life/)
+- [Photo](./photo)
+- [Study](./study/)
+- [About](./about/)
 
 ----
 
 ## 找东西  
-- <a href="https://deepcommunity.com" target="_blank">deepcommunity]</a>    
-- <a href="http://guge.suanfazu.com/"　target="_blank">Google</a>  
-- <a href="http://www.wangpansou.cn/" target="_blank">网盘搜索</a>  
-- <a href="https://www.semanticscholar.org"　target="_blank">Semantic Scholar</a>  
+- <a href="https://deepcommunity.com" target="_blank">deepcommunity</a>    
+- <a href="http://guge.suanfazu.com/" target="_blank">Google</a>  
+- <a href="https://www.semanticscholar.org" target="_blank">Semantic Scholar</a>  
 - <a href="http://www.sci-hub.cc/" target="_blank">SCI-Hub</a>  
 - <a href="https://www.researchnews.com/" target="_blank">Research News</a>  
 - <a href="https://gitxiv.com/" target="_blank">GitXiv</a>  
@@ -37,7 +36,7 @@
 - <a href="http://ethereon.github.io/netscope/quickstart.html" target="_blank">caffe netscope quickstart</a>  
 - <a href="http://fomoro.com/tools/receptive-fields/" target="_blank">Receptive Field Calculator</a>  
 - <a href="http://ufoym.com/" target="_blank">SIFT cheat sheet</a>  
-- <a href="https://amazonaws-china.com/cn/blogs/ai/exploiting-the-unique-features-of-the-apache-mxnet-deep-learning-framework-with-a-cheat-sheet/ target="_blank">MXNet cheat sheet</a>  
+- <a href="https://amazonaws-china.com/cn/blogs/ai/exploiting-the-unique-features-of-the-apache-mxnet-deep-learning-framework-with-a-cheat-sheet/" target="_blank">MXNet cheat sheet</a>  
 
 ## 做竞赛  
 - <a href="http://dreamchallenges.org/" target="_blank">DreamChallenges.org</a>  
@@ -69,4 +68,3 @@
 - <a href="https://pjreddie.com/" target="_blank">Joseph Redmon - Survival Strategies for the Robot Rebellion</a>  
 - <a href="http://wepon.me/" target="_blank">wepon</a>  
 
-<iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=0&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1181564472&verifier=5d9a7d02&dpc=1"></iframe>
