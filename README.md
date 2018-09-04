@@ -1,4 +1,4 @@
-# [Peripateticism](yuenshome.github.io)
+# [Peripateticism](https://yuenshome.github.io)
 
 ## Yuens's Blog
 
