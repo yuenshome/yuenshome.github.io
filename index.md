@@ -1,5 +1,4 @@
-[2017-11 mxnet-optimization](./2017-11/mxnet-optimization)
-
+![header](./assets/header01.jpg)
 
 - [reading](./reading/)  
 - [life](./life/)
