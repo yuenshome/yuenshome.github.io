@@ -1,6 +1,6 @@
-# About
-
 ![header](../assets/header01.jpg)
+
+# About
 
 <p style="text-align: center;"><img class="alignleft wp-image-169 size-full" src="./assets/cat.gif" alt="13_avatar_middle" width="120" height="68" /></p>
 游戏，音乐，动漫，平面设计，视频制作，网站开发，数学建模，算法，智能算法，骑车，画画。<!--more-->
