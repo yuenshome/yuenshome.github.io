@@ -1,7 +1,5 @@
 # [Peripateticism](yuenshome.github.io)
-### Yuens's Blog
 
-### TimeLine
+## Yuens's Blog
 
-#### 2017-11
-- [2017-11-04] [MXNet高级凸优化](./2017-11/mxnet-optimization)
+
