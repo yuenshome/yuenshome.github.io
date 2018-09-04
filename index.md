@@ -1,17 +1,10 @@
 ![header](./assets/header01.jpg)
 
-<center> [Reading](./reading/) | [Life](./life/) | [Photo](./photo) | [Study](./study/) | [About](./about/) </center>
-
 <center> <a href="./reading/" target="_blank">Reading</a>  |  <a href="./life/" target="_blank">Life</a>   |  <a href="./photo/" target="_blank">Photo</a>   |   <a href="./study/" target="_blank">Study</a>   |   <a href="./about/" target="_blank">About</a>   </center>
 
-
-- [Reading](./reading/)  
-- [Life](./life/)
-- [Photo](./photo)
-- [Study](./study/)
-- [About](./about/)
-
 ----
+
+<center>--- Userful Links ---</center>
 
 ## 找东西  
 - <a href="https://deepcommunity.com" target="_blank">deepcommunity</a>    
