@@ -1,5 +1,7 @@
 ![header](./assets/header01.jpg)
 
+<center> [Reading](./reading/) | [Life](./life/) | [Photo](./photo) | [Study](./study/) | [About](./about/) </center>
+
 - [Reading](./reading/)  
 - [Life](./life/)
 - [Photo](./photo)
