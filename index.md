@@ -2,7 +2,7 @@
 
 <center> <a href="./reading/" target="_blank">Reading</a>  |  <a href="./life/" target="_blank">Life</a>   |  <a href="./photo/" target="_blank">Photo</a>   |   <a href="./study/" target="_blank">Study</a>   |   <a href="./about/" target="_blank">About</a>   </center>
 
-<center><h1>--- Userful Links ---<h1></center>
+<center><h1>--- Userful Links ---</h1></center>
 
 ## 找东西  
 - <a href="https://deepcommunity.com" target="_blank">deepcommunity</a>    
