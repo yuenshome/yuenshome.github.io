@@ -2,7 +2,20 @@
 
 <center> <a href="./reading/" target="_blank">Reading</a>  |  <a href="./life/" target="_blank">Life</a>   |  <a href="./photo/" target="_blank">Photo</a>   |   <a href="./study/" target="_blank">Study</a>   |   <a href="./about/" target="_blank">About</a>   </center>
 
-<center><h1>--- Userful Links ---</h1></center>
+------
+
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+formula1: $$n==x$$
+
+formula2: $$n!=x$$
+
+formula3: (m==y)
+
+formula4: [m!=y]
+
+formula5: \(k==z\)
+
+formula6: \[k!=z\]
 
 ## 找东西  
 - <a href="https://deepcommunity.com" target="_blank">deepcommunity</a>    
