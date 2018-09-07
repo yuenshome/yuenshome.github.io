@@ -16,7 +16,7 @@
 
 在书开头的照片中，有一张照片。
 
-<img class="aligncenter" src="./assets/child.png" alt="" width="471" height="594" />
+![header](./assets/child.png)
 
 这张照片的脚注是：李占宏（音Lee Chan-Hon）刚刚年满13岁，尽管已经在中国军队里服役两年，仍然是稚气十足，面对镜头做微笑状。1944年11月23日。
 
