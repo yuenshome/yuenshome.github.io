@@ -1,6 +1,6 @@
 [![header](../assets/header05.jpg)](https://yuenshome.github.io)
 
-<center>温故而知新，可以为师矣。</center>
+<center>温故而知新，可以为师矣</center>
 
 # Reading
 
