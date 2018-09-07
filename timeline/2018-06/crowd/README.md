@@ -4,7 +4,7 @@
 
 最近看的这本书名叫乌合之众，讲的是大众心理研究，花了三天时间看完，总体来说，很多地方看不懂，因为本身比较偏理论。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2018/06/crowd.png" alt="" width="331" height="264" />
+![header](./assets/crowd.png)
 
 但是其中还是有一些很有意思的地方，好在这些地方都是以故事为主我还能勉强看懂，我在这里记录如下。[toc]<!--more-->
 <h1>集体心里</h1>
