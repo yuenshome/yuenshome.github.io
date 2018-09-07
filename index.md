@@ -9,13 +9,13 @@ formula1: $$n==x$$
 
 formula2: $$n!=x$$
 
-formula3: (m==y)
+formula3: $(m==y)$
 
-formula4: [m!=y]
+formula4: $[m!=y]$
 
-formula5: \(k==z\)
+formula5: $\(k==z\)$
 
-formula6: \[k!=z\]
+formula6: $\[k!=z\]$
 
 ## 找东西  
 - <a href="https://deepcommunity.com" target="_blank">deepcommunity</a>    
