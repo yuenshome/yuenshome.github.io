@@ -40,15 +40,15 @@ $$
 1. 随着$t$增加，右边越来越小，会越来越逼近$x$的最优值$ f(x^*)$（最优解）。
 2. 两个收敛率是有优劣之分，sub-linear比linear收敛要更慢一些（下面是两个函数的plot的结果）。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/bound1.png)
+![bound1](./assets/bound1.png)
 
 这个看着不是很明显，可以把横轴弄长一些：
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/bound2.png)
+![bound1](./assets/bound2.png)
 
 我们也可以把底数变大，在观察一下（会发现$0.2^x$下降的更快）：
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/bound3.png)
+![bound1](./assets/bound3.png)
 
 ## 2. 梯度下降
 
@@ -72,15 +72,15 @@ $$
 
 **不decay学习率，batch size=1**（随机梯度下降）的情形下，variance变化比较大（抖动厉害），这里用的线性回归（梯度为凸函数）学习率没有衰减，最终难收敛。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/sgd-var.png)
+![bound1](./assets/sgd-var.png)
 
 **不decay学习率，batch size为整个训练集**（梯度下降）的情形下，variance变化平稳，下降过程稳定，最终参数结果接近真实值（且快速收敛）：
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/sgd-var2.png)
+![bound1](./assets/sgd-var2.png)
 
 **lr decay=0.1，batch size=1**，第二个epoch开始衰减，整个过程一开始variance较大但后面稳定，且参数的结果收敛了没再变化：
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/sgd-var3.png)
+![bound1](./assets/sgd-var3.png)
 
 虽然上面不严谨（用肉眼观察），但能体现出**学习率衰减（learning rate decay）对随机梯度或者批量随机梯度造成的高方差问题有一定弱化**。
 
@@ -111,11 +111,11 @@ $$
 
 梯度下降是在找下降速度最快的方向，假设初始位置在O下一步会走到O1这个位置，如果从角度A看的话，可以看到更窄弯的更快的角度，如果在角度B看，会看到的是更宽弯的更慢的。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/gradient-direction.png)
+![bound1](./assets/gradient-direction.png)
 
 从O出发会往下降速度最快的方向，所以梯度下降会朝着O1这个位置走。但若学习率比较大，会造成竖直方向over-shot的问题（看黑色的粗线，导致发散或者难以收敛的问题 ），那么我们是否需要将学习率设置更低一些呢？但是设低也会导致一个问题：走的很慢（观察红线）而且越来越慢，一点点的去逼近最小值（最优值）。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/gradient-overshot.png)
+![bound1](./assets/gradient-overshot.png)
 
 补充：梯度一阶收敛，二阶收敛方法有牛顿法。二阶的收敛方法在凸优化中常用，但数据量很大且每个epoch/iteration中cost会非常高，在深度学习这样非凸优化中会有很多问题（比方鞍点问题），像牛顿法这样的二阶优化算法也比较难以解决这些问题。
 
@@ -153,7 +153,7 @@ $$
 
 这个动量法可以和这个EMA的格式是吻合的，说到这个EMA格式，需要说到的是最近虚拟货币的交易例子，可以看以太币对美元的price chart。在图表的设定有一个Overlay参数，可以选择EMA12和EMA26，因为抖动曲线非常大，想要抓住市场趋势，可以用EMA这个东西来smooth这个波动的走势折线，来更好抓住虚拟货币的走势。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/ema01.png)
+![bound1](./assets/ema01.png)
 
 可以看到平滑后的走势图（上面绿色和红色线条分别是EMA12和EMA26的曲线）。再把这个EMA的公式拉出来，我们可以把这个公式展开写出来进一步观察：
 
@@ -180,7 +180,7 @@ $$
 
 这里$\gamma=0.95$，那就有$\frac{1}{1-\gamma} = 20$，相当于对过去20个数做了EMA这样一个指数加权的平均（越近weight越高），如果$\gamma=0.9$，就有$\frac{1}{1-\gamma}=10$，相当于对过去10天（10个数）做了平均的估算。但是到底对过去多少次来做估算，就看$\frac{1}{1-\gamma}$这个就好了。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/ema02.png)
+![bound1](./assets/ema02.png)
 
 EMA12和EMA26也就是对过去12天和26天做平滑平均（指数加权平均）。在后面这个EMA的格式我们会反复讲到。其实动量也可以理解为：对$\frac{\eta}{1-\gamma} \bigtriangledown f_{\beta} (\overrightarrow{x})$来做EMA，因为我们把动量$\overrightarrow{v}$写成了EMA的形式：
 
@@ -196,11 +196,11 @@ $$
 
 通过EMA我们实际上在训练的过程中可以把overshot的一部分给平滑掉，虽然不是很完美地抵消掉，但是可以在做一正一反的更新过程中用指数加权平均抵消掉一部分。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/ema04.png)
+![bound1](./assets/ema04.png)
 
 因此我们可以把学习率设置的大一些，在一开始可能有over-shooting的左右，但由于EMA一正一反的抵消作用，在即使一开始学习率比较大哪怕初始位置点不好的情况下，依然能向着最优值收敛。以上也是动量法最直观的作用。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/ema03.png)
+![bound1](./assets/ema03.png)
 
 ### 5.3 另一种理解方式
 
@@ -256,14 +256,14 @@ def sgd_momentum(param, vs, lr, mom, batch_size):
 
 1. $\gamma=0.9$时，可以看到（下图）整体走势还是比较猛的，相当于当前的梯度被放大了10倍。
 
-   ![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/mom-02.png)
+   ![bound1](./assets/mom-02.png)
 
 2. $\gamma=0.99$时，会放大100倍，会走的更猛（下图）。
 
-   ![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/mom-03.png)
+   ![bound1](./assets/mom-03.png)
 
 3. $\gamma=0.5$时，会放大2倍，此时就很缓和了（下图）。
-   ![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/mom-04.png)
+   ![bound1](./assets/mom-04.png)
 
 以上可以看到，优化参数背后有的数学道理，对应不同参数的insight，来更好理解地在观察到不同实验现象去调整参数。
 
@@ -308,7 +308,7 @@ $$
 
 在adagrad这篇文章出现时，解决的是凸优化的问题。SGD的学习率衰减是有利于收敛的，但深度学习中是否收敛就不好说了。若初始化位置不好，比方说下面这样：初始位置不好（下图红点），因为学习率decay的太快，慢慢会走到蓝色点的位置，失去了更加宽广的世界。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/adagrad-01.png)
+![bound1](./assets/adagrad-01.png)
 
 adagrad因为$\overrightarrow{s}$会不断累加$\overrightarrow{s} = \overrightarrow{s} + \overrightarrow{g} \odot \overrightarrow{g}$，会导致学习率会不断衰减$\overrightarrow{g}^{'} = \frac{\eta}{\sqrt{\overrightarrow{s} + \epsilon} } \odot \overrightarrow{g} $。说白了就是有时运气好，初始化位置好可以拿到一个不错的performance，但有时会运气不好（初始化位置不好），就糟糕了。
 
@@ -368,11 +368,11 @@ def rmsprop(params, sqrs, lr, gamma, batch_size):
 
 当$\gamma=0.9$，相当于对过去的10次数据做EMA，如果我们使用默认的$\gamma=0.9$这个值时候的参数应用到我们当前线性回归的案例中可以看到在loss收敛后，会出现loss再次抖动的情况。换句话说，10次数据，受到local当前这次数据的影响还是有些大。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/rmsprop-01.png)
+![bound1](./assets/rmsprop-01.png)
 
 需要说明的是，再次过程中没有对学习率做decay，且我们使用的学习率是0.03。但当$\gamma=0.9$的时候是对过去10次数据做EMA，可以发现振幅还在，也就是说variance还在而且比较明显。此时如果想要调整让它的loss下降更加平滑，我们可以把$\gamma$调大，比方$\gamma=0.999$，相当于对最近的1000次数据做EMA，得到的结果更加稳定和平滑（如下图）。
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/rmsprop-02.png)
+![bound1](./assets/rmsprop-02.png)
 
 这个实验现象也解释了EMA的insight，其实理解$\gamma$的方式应该从$\frac{1}{1-\gamma}$的值来理解。从最近的$\frac{1}{1-\gamma}$次数据来做EMA，得到的结果肯定也更稳定一些。
 
@@ -412,7 +412,7 @@ def adadelta(params, sqrs, delta, rho, batch_size):
 
 上面的代码中`sqr[:]`和`delta[:]`分别对应的是两个EMA项。设置$rho=0.9999$，最终的收敛情况是（下面截图没有截好，右边基本上是水平的）：
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/adadelta-01.png)
+![bound1](./assets/adadelta-01.png)
 
 最终迭代出的结果和ground-truth的权重是基本一致的。
 
@@ -438,7 +438,7 @@ $$
 
 这里有一个冷启动的问题，其实这也是EMA（Exponential Moving Average）的一个issue。如果$\overrightarrow{v}$和$\overrightarrow{s}$初始化为零张量的话，那么一开始会被这个零张量拖后腿，每次做参数更新都会和零来做EMA。导致一开始的$\overrightarrow{v}$和$\overrightarrow{s}$的值会比较小。要举的例子还是以太币对美元的走势：
 
-![bound1](https://raw.githubusercontent.com/yuenshome/yuenshome.github.io/master/2017-11/mxnet-optimization/assets/adam-01.png)
+![bound1](./assets/adam-01.png)
 
 要说的是还是上图的两个走势一个EMA12（红色平滑的走势线）和EMA26（绿色平滑的走势线），能看到两条线一开始都比较低，既然EMA在smooth它，为何不是从上面开始走，而是从下面？这就是有冷启动的问题：一开始做EMA时，被初始时0这个值给拉低了，只能等线warm up后才能更好地模拟真正的波动。
 
