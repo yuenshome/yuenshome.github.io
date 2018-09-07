@@ -4,7 +4,7 @@
 
 在喜马拉雅上听讲座，里面提到，美国的经济发展离不开战后美国强大的国运。现如今中国繁荣富强，国运昌盛，但这一切都是建立在上几代人的努力下的，用鲜血与泪水换来的，其实这些话对我而言，感触并不深，生下来就是太平盛世，安稳的生活压根想不到也不会去想那些兵荒马乱的时代，偶尔在电视上新闻里才能看到中东地方的混乱局势，哪能体会到爷爷那一辈是什么样的年代。
 
-![header](./assets/homesick_soldiers.png)
+![header](./assets/homesick_soldiers.jpg)
 
 这些还是离我们太远，讲座里提到名为《没有回家的士兵》的一本书，在讲者的强烈推荐下当天就买来这本书，然后花了不到三天看完了。书中不成章节，都是以有关联度不高的小段故事为主。<!--more-->
 
@@ -16,7 +16,7 @@
 
 在书开头的照片中，有一张照片。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2018/06/child.png" alt="" width="471" height="594" />
+<img class="aligncenter" src="./assets/child.png" alt="" width="471" height="594" />
 
 这张照片的脚注是：李占宏（音Lee Chan-Hon）刚刚年满13岁，尽管已经在中国军队里服役两年，仍然是稚气十足，面对镜头做微笑状。1944年11月23日。
 
