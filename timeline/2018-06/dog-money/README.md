@@ -4,7 +4,7 @@
 
 就在看完没有回家的士兵这本书之后，我又看了这本名叫小狗钱钱的儿童读物。花了一天就看完了，因为本身比较好理解，页数又不多，字体很大。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2018/06/dog_money.jpg" alt="" width="320" height="320" />
+![header](./assets/dog_money.jpg)
 
 总的来说，对我收获并不大，可能是因为先前看过了穷爸爸和富爸爸这本书。不过里面的一些东西还是很有意思，因为本身是针对儿童，所以我给出四颗星，毕竟我是成人了。
 
