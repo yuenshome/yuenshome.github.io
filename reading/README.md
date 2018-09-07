@@ -1,5 +1,7 @@
 [![header](../assets/header05.jpg)](https://yuenshome.github.io)
 
+<center>温故而知新，可以为师矣。</center>
+
 # Reading
 
 - [2018-06] [《公司价值分析》读后感](../timeline/2018-06/company-worth-analysis)  
