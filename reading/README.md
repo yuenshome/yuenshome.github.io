@@ -13,3 +13,4 @@
 - [2018-05] [《最好的告别》读后感](../timeline/2018-05/being-mortal)  
 - [2018-04] [《卡耐基魅力口才与演讲的艺术》读后感](../timeline/2018-04/art-of-speech)  
 - [2018-03] [《现代软件工程-构建之法》读书记录](../timeline/2018-03/software-engineering)  
+- [2018-02] [读《颠覆者：嘉信公司-重塑华尔街证券经纪业规则》几点收获](../timeline/2018-02/schwab-company)  
