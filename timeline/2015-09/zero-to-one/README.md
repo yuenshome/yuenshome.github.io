@@ -15,23 +15,8 @@
 	<li>创始人悖论——王者归来</li>
 	<li>停滞不前，还是临近奇点（从0到1始于独特）</li>
 </ol>
-<a href="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2015/09/from0to1.jpeg"><img class="alignleft size-full wp-image-2666" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2015/09/from0to1.jpeg" alt="from0to1" width="479" height="360" /></a>
 
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
-
-&nbsp;
+![zero-to-one](./assets/zero-to-one.jpg)
 
 <!--more-->
 
