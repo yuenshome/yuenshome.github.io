@@ -5,3 +5,5 @@
 <center>The word's gonna fuck ya. All you can do? Take it up the ass and soldier on.</center>
 
 # Life
+
+- [2018-04] [组织公司搬家](../timeline/2018-04/company-move)
