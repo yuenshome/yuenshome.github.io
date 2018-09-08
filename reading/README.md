@@ -16,4 +16,5 @@
 - [2018-02] [读《颠覆者：嘉信公司-重塑华尔街证券经纪业规则》几点收获](../timeline/2018-02/schwab-company)  
 - [2016-02] [《机器人叛乱：在达尔文时代找到意义》读后感](../timeline/2016-02/robot-rebellion/)  
 - [2016-02] [《人工智能狂潮》读后感](../timeline/2016-02/ai-worship/)  
-
+- [2015-09] [《从0到1》读后感](../timeline/2015-09/zero-to-one/)
+- [2015-08] [《万万没想到》读后感](../timeline/2015-08/absolutely-unexpected/)
