@@ -6,4 +6,6 @@
 
 # Life
 
-- [2018-04] [组织公司搬家](../timeline/2018-04/company-move)
+- [2018-04] [组织公司搬家](../timeline/2018-04/company-move)  
+- [2015-07] [学习方法之我见](../timeline/2015-07/how-to-learn/)
+
