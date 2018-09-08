@@ -8,6 +8,7 @@
 
 - [2015-10] [Ubuntu常用命令（不断补充中）](../timeline/2015-10/linux-common-command/)  
 - [2018-02] [git常用命令总结（不断补充中）](../timeline/2018-02/git-common-command/)
+- [2018-07] [通过ADB工具让电脑连接手机](../timeline/2018-07/android-adb-tool/)
 
 <center>凸优化</center>
 
