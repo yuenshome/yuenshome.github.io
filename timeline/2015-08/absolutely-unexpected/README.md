@@ -12,7 +12,6 @@
 </ul>
 
 ![unexpected](./assets/unexpected.png)
-<a href="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2015/08/wanwan.png"><img class="alignleft size-full wp-image-2669" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2015/08/wanwan.png" alt="wanwan" width="299" height="440" /></a>
 
 <!--more-->
 
