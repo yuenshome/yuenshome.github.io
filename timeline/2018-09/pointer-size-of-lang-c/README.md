@@ -1,3 +1,5 @@
+[![header](../../../assets/header06.jpg)](https://yuenshome.github.io)
+
 # C语言指针字节数
 
 结论：32位机器上，指针为4字节，64位机器上，指针为8字节
