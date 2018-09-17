@@ -22,6 +22,7 @@
 - <a href="http://www.deeplearningbook.org/" target="_blank">Deep Learning Book</a>  
 
 ## 小工具  
+- <a href="http://codezen.rishimohan.me" target="_blank">codeZen</a>  
 - <a href="http://octave-online.net/" target="_blank">octave-online</a>  
 - <a href="https://www.overleaf.com" target="_blank">OverLeaf</a>  
 - <a href="http://www.matrixcalculus.org" target="_blank">Matrix Calculus</a>  
