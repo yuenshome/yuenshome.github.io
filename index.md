@@ -1,6 +1,6 @@
 [![header](./assets/header01.jpg)](https://yuenshome.github.io)
 
-<center> <a href="./reading/" target="_blank">Reading</a>  |  <a href="./life/" target="_blank">Life</a>   |  <a href="./photo/" target="_blank">Photo</a>   |   <a href="./study/" target="_blank">Study</a>   |   <a href="./resource/" target="_blank">Resource</a> |  <a href="./about/" target="_blank">About</a>   </center>
+<center> <a href="./reading/" target="_blank">Reading</a>  |  <a href="./life/" target="_blank">Life</a>   |  <a href="./gallery/" target="_blank">Photo</a>   |   <a href="./study/" target="_blank">Study</a>   |   <a href="./resource/" target="_blank">Resource</a> |  <a href="./about/" target="_blank">About</a>   </center>
 
 ------
 
