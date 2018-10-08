@@ -38,6 +38,7 @@
 - <a href="https://amazonaws-china.com/cn/blogs/ai/exploiting-the-unique-features-of-the-apache-mxnet-deep-learning-framework-with-a-cheat-sheet/" target="_blank">MXNet cheat sheet</a>  
 
 ## 做竞赛  
+- <a href="https://oi-wiki.org/" target="_blank">OI Wiki</a>  
 - <a href="http://dreamchallenges.org/" target="_blank">DreamChallenges.org</a>  
 - <a href="http://www.pkbigdata.com/" target="_blank">Data Castle</a>  
 - <a href="http://www.kaggle.com/" target="_blank">Kaggle: The Home of Data Science</a>  
