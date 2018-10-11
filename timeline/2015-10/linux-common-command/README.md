@@ -450,7 +450,7 @@ https://bbs.aliyun.com/read/285602.html</li>
 
 <strong>3.环境变量的查看</strong>
 
-<strong>3.1 使用echo命令查看单个环境变量。</strong>例如：
+<strong>3.1 使用echo命令查看单个环境变量。（使用`LD_LIBRARY_PATH=""`可以清空该变量值）</strong>例如：
 <ul>
 	<li>echo $PATH</li>
 </ul>
