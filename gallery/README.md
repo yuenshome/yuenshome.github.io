@@ -2,7 +2,7 @@
 
 # Gallery
 
-- [手绘] [我的朋友很少, FateStayNight, Angel Beats!](../timeline/2017-04/paintings/)
+- [手绘] [我的朋友很少, FateStayNight, Angel Beats!](../timeline/2017-04/painting/)
 - [Photo] [2017-04] [海淀风景](../timeline/2017-04/views/)
 
 
