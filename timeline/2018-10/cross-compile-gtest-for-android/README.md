@@ -56,7 +56,7 @@ $ cd ~/code/googletest-release-1.8.1
 $ mkdir build
 $ cd build
 $ cmake .. \
-$   -DCMAKE_INSTALL_PREFIX="/home/yuanshuai/software/gtest-android/" # must be absolute path
+$   -DCMAKE_INSTALL_PREFIX="/home/yuanshuai/software/gtest/" # must be absolute path
 $ make -j
 $ make install
 ```
