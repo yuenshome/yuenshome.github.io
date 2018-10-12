@@ -1,6 +1,6 @@
 [![header](../../../assets/header10.jpg)](https://yuenshome.github.io)
 
-# 交叉编译gtest
+# CMake交叉编译googletest
 
 再交叉编译机器上编译Android版本的gtest。
 
