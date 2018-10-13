@@ -28,7 +28,7 @@
 - [2016-07] [4.Oracle数据库思考题：SQL基本命令、简单查询、限定查询](../timeline/2016-07/oracle-database-problem/)
 - [2016-07] [5.单行函数的SQL语法](../timeline/2016-07/sql-single-line-function-grammer/)
 - [2016-07] [6.多表查询的SQL语法](../timeline/2016-07/sql-multi-table-lookup-grammer/)
-- [2016-07] [7.多表查询的SQL语法](../timeline/2016-07/sql-group-function-and-lookup-grammer/)
+- [2016-07] [7.分组函数与分组统计查询的SQL语法](../timeline/2016-07/sql-group-function-and-lookup-grammer/)
 - [2016-07] [8.子查询的SQL语法](../timeline/2016-07/sql-sub-lookup-grammer/)
 
 <center>凸优化</center>
