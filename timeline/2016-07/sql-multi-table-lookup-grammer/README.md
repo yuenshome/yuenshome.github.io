@@ -1,4 +1,4 @@
-[![header](../assets/header37.jpg)](https://yuenshome.github.io)
+[![header](../../../assets/header37.jpg)](https://yuenshome.github.io)
 
 # 多表查询的SQL语法
 
