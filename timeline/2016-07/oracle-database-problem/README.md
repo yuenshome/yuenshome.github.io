@@ -1,4 +1,4 @@
-[![header](../assets/header02.jpg)](https://yuenshome.github.io)
+[![header](../../../assets/header02.jpg)](https://yuenshome.github.io)
 
 # Oracle数据库思考题：SQL基本命令、简单查询、限定查询
 
