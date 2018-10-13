@@ -1,4 +1,4 @@
-[![header](../../../assets/header14.png)](https://yuenshome.github.io)
+[![header](../../../assets/header14.jpg)](https://yuenshome.github.io)
 
 # 简单查询的SQL语法
 
