@@ -6,7 +6,8 @@
 <h1>1. 建立本地到远程服务器的隧道</h1>
 因为本地是Windows系统，使用Xshell客户端进行远程服务器访问，先在Xshell里的该访问的属性，并设置隧道：
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2018/02/jupyter01.png" alt="" width="567" height="494" />这里设定隧道的端口号本地与远程服务器相同，均为9898。
+<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2018/02/jupyter01.png" alt="" width="567" height="494" />
+这里设定隧道的端口号本地与远程服务器相同，均为9898。
 <h1>2. 启动远程服务器的Docker镜像</h1>
 假设镜像是bvlc/caffe:cpu，用如下命令启动镜像：
 <pre class="lang:sh decode:true ">docker run -v /home/yuanshuai/:/home/yuanshuai -p 127.0.0.1:9898:8888 -tdi bvlc/caffe:cpu</pre>
