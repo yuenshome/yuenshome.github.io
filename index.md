@@ -16,7 +16,7 @@
 - <a href="https://www.researchnews.com/" target="_blank">Research News</a>  
 - <a href="https://gitxiv.com/" target="_blank">GitXiv</a>  
 
-![header](../assets/header26.jpg)
+![header](./assets/header26.jpg)
 
 ## 深度学习  
 - <a href="https://deeplearn.org" target="_blank">deeplearn monitor</a>    
@@ -80,3 +80,4 @@
 - <a href="https://pjreddie.com/" target="_blank">Joseph Redmon - Survival Strategies for the Robot Rebellion</a>  
 - <a href="http://wepon.me/" target="_blank">wepon</a>  
 
+![header](./assets/header24.jpg)
