@@ -11,6 +11,8 @@
 - [2018-02] [git常用命令总结（不断补充中）](../timeline/2018-02/git-common-command/)
 - [2015-10] [Ubuntu常用命令（不断补充中）](../timeline/2015-10/linux-common-command/)  
 
+![header](../assets/header19.jpg)
+
 ## 学习笔记 · 杂
 
 - [2018-10] [CMake交叉编译googletest](../timeline/2018-10/cross-compile-gtest-for-android/)
@@ -18,17 +20,25 @@
 - [2018-07] [系统升级导致MySQL数据库崩溃](../timeline/2018-07/blog-crash-due-to-mysql-fault/)
 - [2018-05] [再次安装Caffe:cpu的经历](../timeline/2018-05/install-caffe-again/)
 
+![header](../assets/header17.jpg)
+
 ## C/C++
 
 - [2018-09] [C语言指针字节数](../timeline/2018-09/pointer-size-of-lang-c/)
+
+![header](../assets/header32.jpg)
 
 ## 凸优化
 
 - [2017-11] [高级凸优化](../timeline/2017-11/convex-optimization/)
 
+![header](../assets/header28.jpg)
+
 ## Docker
 
 - []
+
+![header](../assets/header22.jpg)
 
 ## SQL
 
@@ -42,5 +52,7 @@
 - [2016-07] [8.子查询的SQL语法](../timeline/2016-07/sql-sub-lookup-grammer/)
 
 ## 其它
+
+![header](../assets/header29.jpg)
 
 - [2018-06] [财务报表入门](../timeline/2018-06/introduction-to-financial-statements)
