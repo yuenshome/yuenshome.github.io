@@ -6,6 +6,8 @@
 
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
 
+![header](../assets/header14.jpg)
+
 ## 找东西  
 - <a href="https://deepcommunity.com" target="_blank">deepcommunity</a>    
 - <a href="http://guge.suanfazu.com/" target="_blank">Google</a>  
@@ -14,12 +16,16 @@
 - <a href="https://www.researchnews.com/" target="_blank">Research News</a>  
 - <a href="https://gitxiv.com/" target="_blank">GitXiv</a>  
 
+![header](../assets/header26.jpg)
+
 ## 深度学习  
 - <a href="https://deeplearn.org" target="_blank">deeplearn monitor</a>    
 - <a href="http://josephpcohen.com/w/visualizing-cnn-architectures-side-by-side-with-mxnet/" target="_blank">Visualizing CNN architectures side by side with mxnet</a>    
 - <a href="http://deeplearning.net/" target="_blank">DeepLearning.net</a>  
 - <a href="http://neuralnetworksanddeeplearning.com/index.html" target="_blank">Neural networks and deep learning </a>  
 - <a href="http://www.deeplearningbook.org/" target="_blank">Deep Learning Book</a>  
+
+![header](../assets/header36.jpg)
 
 ## 小工具  
 - <a href="http://codezen.rishimohan.me" target="_blank">codeZen</a>  
@@ -37,6 +43,8 @@
 - <a href="http://ufoym.com/" target="_blank">SIFT cheat sheet</a>  
 - <a href="https://amazonaws-china.com/cn/blogs/ai/exploiting-the-unique-features-of-the-apache-mxnet-deep-learning-framework-with-a-cheat-sheet/" target="_blank">MXNet cheat sheet</a>  
 
+![header](../assets/header31.jpg)
+
 ## 做竞赛  
 - <a href="https://oi-wiki.org/" target="_blank">OI Wiki</a>  
 - <a href="http://dreamchallenges.org/" target="_blank">DreamChallenges.org</a>  
@@ -45,11 +53,15 @@
 - <a href="https://tianchi.aliyun.com" target="_blank">阿里天池</a>  
 - <a href="https://grand-challenge.org/All_Challenges/" target="_blank">grand-challenge</a>  
 
+![header](../assets/header23.jpg)
+
 ## 课程  
 - <a href="http://6.869.csail.mit.edu/fa15/schedule.html" target="_blank">Advances in Computer Vision| MIT</a>  
 - <a href="http://dlsys.cs.washington.edu/" target="_blank">DLsys | Washington CSE 599G1</a>  
 - <a href="http://www.cs.cmu.edu/~epxing/Class/10701/" target="_blank">Introduction to Machine Learning | CMU 10701</a>  
 - <a href="https://cs231n.github.io/convolutional-networks" target="_blank">CS231n Convolutional Neural Networks for Visual Recognition</a>   
+
+![header](../assets/header25.jpg)
 
 ## 博客  
 - <a href="http://www.cmsoft.com.br/" target="_blank">CMSoft | OpenCL与计算机视觉</a>  
