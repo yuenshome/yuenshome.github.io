@@ -4,8 +4,6 @@
 
 # Study
 
-<center>top</center>
-
 ## 置顶
 
 - [2018-03] [learn-git-branching知识要点记录](../timeline/2018-03/learn-git-branching/)
