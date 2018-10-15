@@ -137,6 +137,7 @@ libc.so.6=&gt;/lib/libc.so.6(0x400la000)
 <h2>文件大小</h2>
 <ul>
 	<li>查看当前路径下XXX文件的大小：du -sh XXX</li>
+	<li>统计`log_file`文件中每行出现的次数：`sort log_file | uniq -c`。</li>
 </ul>
 <h2>文件执行权限</h2>
 要让文件有能够执行的权限：chmod +x ./abc.sh
