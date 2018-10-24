@@ -9,4 +9,5 @@
 - [primer-ppt] [[code]](./cpp/primer-ppt/class4_code) [class4_class_and_object_construct_func.pdf：重点是引用计数、写时拷贝、移动构造（MyString类中实现）](./cpp/primer-ppt/class4_class_and_object.pdf)
 - [primer-ppt] [[code]](./cpp/primer-ppt/class5_code) [class5_class_and_object_friend_operator_reconstruct.pdf](./cpp/primer-ppt/class5_class_and_object_friend_operator_override.pdf)  
 - [primer-ppt] [[code]](./cpp/primer-ppt/class6_code) [class6_inheritance_and_derivation.pdf](./cpp/primer-ppt/class6_inheritance_and_derivation.pdf)
+- [primer-ppt] [[code]](./cpp/primer-ppt/class7_code) [class7_class_and_object_polymorphic.pdf](./cpp/primer-ppt/class7_class_and_object_polymorphic.pdf)
 
