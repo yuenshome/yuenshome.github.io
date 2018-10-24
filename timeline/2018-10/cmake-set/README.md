@@ -1,3 +1,5 @@
+[![header](../../../assets/header21.jpg)](https://yuenshome.github.io)
+
 # CMake中使用set定义变量
 
 在写项目CMake中，想在test下的CMake中定义`target_link_library`时不再重复定义，即在根目录下的cmake就把要连接的库定义好，避免二次写这些库名的时候出错，这里就用到了set。
