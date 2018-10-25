@@ -42,7 +42,7 @@
 - [2018-02] [本地访问远程服务器的Docker容器的Jupyter Notebook](../timeline/2018-02/visit-remote-server-jupyter-notebook/)
 - [2017-10] [Ubuntu 16.04安装CUDA9+Docker CE+NVIDIA-Docker+TensorFlow/XGBoost](../timeline/2017-10/install-docker-cuda9-tensorflow-xgboost-on-ubuntu16.04/)
 - [2017-08] [Docker常用命令（不断补充中）](../timeline/2017-08/docker-command/)  
-- [2017-02] [Ubuntu16.04安装Docker](../timeline/2017-02/install-docker-on-ubuntu/)  
+- [2017-02] [Ubuntu16.04 安装 Docker](../timeline/2017-02/install-docker-on-ubuntu/)  
 - [2016-05] [Ubuntu16.04 借助 Docker 安装 Caffe](../timeline/2016-05/install-caffe-by-docker/)  
 - [2015-11] [开启Ubuntu的docker之旅](../timeline/2015-11/start-docker-trip/)
 
