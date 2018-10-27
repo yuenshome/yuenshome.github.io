@@ -8,13 +8,13 @@ Simonyan, Karen, and Andrew Zisserman.
 arXiv preprint arXiv:1409.1556 (2014).
 下载地址：https://arxiv.org/pdf/1409.1556.pdf</p>
 </blockquote>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-title.png" alt="" width="467" height="349" />
+<img class="aligncenter" src="./assets/vgg-slide-title.png" alt="" width="467" height="349" />
 
 <strong>这篇文章是以比赛为目的——解决ImageNet中的1000类图像分类和localization</strong>（这里需要注意localization和detection的区别。localization是找到某个物体的检测框，而detection是找到所有物体的检测框，后文会详细说明）。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-submission.png" alt="" width="373" height="219" />
+<img class="aligncenter" src="./assets/vgg-slide-submission.png" alt="" width="373" height="219" />
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-imgnet-result-winners.png" alt="" width="472" height="223" />
+<img class="aligncenter" src="./assets/vgg-imgnet-result-winners.png" alt="" width="472" height="223" />
 
 作者对六个网络的实验结果在深度对模型影响方面，进行了感性分析（越深越好），实验结果是16和19层的VGGNet（VGG代表了牛津大学的<a href="http://www.robots.ox.ac.uk/~vgg/" target="_blank">Oxford Visual Geometry Group</a>，该小组隶属于1985年成立的<a href="http://www.robots.ox.ac.uk" target="_blank">Robotics Research Group</a>，该Group研究范围包括了机器学习到移动机器人）分类和localization的效果好（作者斩获2014年分类第二，localization第一，分类第一是当年的GoogLeNet）。下面是来自一段对同年的GoogLeNet和VGG的描述：
 <blockquote>GoogLeNet和VGG的Classification模型从原理上并没有与传统的CNN模型有太大不同。大家所用的Pipeline也都是：训练时候：各种数据Augmentation（剪裁，不同大小，调亮度，饱和度，对比度，偏色），剪裁送入CNN模型，Softmax，Backprop。测试时候：尽量把测试数据又各种Augmenting（剪裁，不同大小），把测试数据各种Augmenting后在训练的不同模型上的结果再继续Averaging出最后的结果。
@@ -22,7 +22,7 @@ arXiv preprint arXiv:1409.1556 (2014).
 https://www.zhihu.com/question/24904450/answer/29400634</blockquote>
 需要注意的是，在VGGNet的6组实验中，后面的几个网络使用了pre-trained model A的某些层来做参数初始化。这点上虽然作者没有提该方法带来的性能增益，但其实是很大的（我会在下文中<strong>优秀的特征提取器和泛化能力</strong>具体说明）。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-cs231n-tiny-vggnet.png" alt="" width="1255" height="601" />
+<img class="aligncenter" src="./assets/vgg-cs231n-tiny-vggnet.png" alt="" width="1255" height="601" />
 
 上图来自CS231n课程blog的tiny-vggnet模型架构，可以看到有三组卷积后接一个全连接层，每组卷积（blog里称为pattern）的形式都是一样的（conv-relu-conv-relu-pool），实际的VGG16（只算卷积和全连接层的个数是16）与上图略有不同（前两组conv-relu-conv-relu-pool，中间三组conv-relu-conv-relu-conv-relu-pool，最后三个fc，前两个fc是fc-relu-dropout，最后一个fc仅有fc。后文ConvNet Configurations部分我会具体说明），<strong>不过整体来说作者也承认是继承了AlexNet和OverFeat</strong>：
 
@@ -31,7 +31,7 @@ https://www.zhihu.com/question/24904450/answer/29400634</blockquote>
 
 <span style="color: #ff0000;">VGGNet的两个特点：层数更深更宽、卷积核更小</span><strong>。因为卷积核变小全部改用3x3大小（性能最好的两个网络：实验D（VGG16）和实验E（VGG19）），<span style="color: #ff0000;">小卷积核的使用带来参数量减少，可以更加steadily地增加层数得同时不会太过于担心计算量的暴增</span>。</strong>因为这篇文章正文写的是分类，附录介绍了VGGNet在localization上的工作，我也会对localization任务的解决进行分析。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-depth-effect.png" alt="" width="405" height="204" />
+<img class="aligncenter" src="./assets/vgg-slide-depth-effect.png" alt="" width="405" height="204" />
 
 这篇文章的主要特别的地方是前两点（换句话说，抄的不是很明显）：
 <ol>
@@ -43,7 +43,7 @@ https://www.zhihu.com/question/24904450/answer/29400634</blockquote>
 </ol>
 下面我将会任务背景开始说明，最后我会再次引用CS231n对于VGG的中肯评价进行总结。<!--more-->
 <h1>1. 任务背景</h1>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-cs231n-case-study-overview.png" alt="" width="860" height="436" />
+<img class="aligncenter" src="./assets/vgg-cs231n-case-study-overview.png" alt="" width="860" height="436" />
 
 因为VGGNet在AlexNet之后，有必要先说一下问题的背景：自从AlexNet将深度学习的方法应用到图像分类取得state of the art的惊人结果后，大家都竞相效仿并在此基础上做了大量尝试和改进，先从两个性能提升的例子说起：
 <ol>
@@ -55,7 +55,7 @@ https://www.zhihu.com/question/24904450/answer/29400634</blockquote>
 <h3>1.1.1 特征提取器</h3>
 另外，作者发现训练出的卷积网络是一个天然的且十分优秀的特征提取器（在不对卷积网络进行fine-tuning而直接在其后接一个SVM分类器并训练该SVM，最终结果也很好），而且特征提取器在其他数据集上具有通用性。说到这点不得不提到RCNN这篇文章，因为该作者将CNN作为一个特征提取器，主要流程是前三个步骤（第四个检测框回归也只是在附录写到，下图是我基于作者修改的图，略有不同）：
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-rcnn.png" alt="" width="968" height="425" />
+<img class="aligncenter" src="./assets/vgg-rcnn.png" alt="" width="968" height="425" />
 <ol>
 	<li>（Supervised pre-training）用12年的分类数据去pre-train模型，CNN后接1k-way softmax</li>
 	<li>（Domain-specific fine-tuning）用当年20类检测数据集生成分类数据（根据检测数据通过selective search生成小图，然后计算IOU大于0.5视为该类图像），去fine-tune模型，CNN后接20-way softmax；</li>
@@ -64,7 +64,7 @@ https://www.zhihu.com/question/24904450/answer/29400634</blockquote>
 </ol>
 在此过程中，RCNN作者预训练CNN，之后又用任务数据去fine-tune网络，最后把CNN作为特征提取器给SVM。同样展示了CNN的强大特征提取能力。说到这里不得不提pre-train和fine-tune。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-transfer-learning.png" alt="" width="1302" height="664" />
+<img class="aligncenter" src="./assets/vgg-transfer-learning.png" alt="" width="1302" height="664" />
 
 VGGNet 6组实验中的后面几组中用到了pre-train后的A模型的部分层作为网络初始化的参数。上图是AlexNet作者在16年的深度学习暑期学校时候课上的一页PPT。可以看出三种针对不同数据量级而选择的训练策略。之前做过的几次Kaggle比赛中，使用pre-trained model和train-from-scratch拿到的性能结果差距不小。Alex讲到，对于在ImageNet上训练过的pre-trained model，其参数可以用来初始化别的任务：
 <ul>
@@ -73,19 +73,19 @@ VGGNet 6组实验中的后面几组中用到了pre-train后的A模型的部分�
 </ul>
 但实际来说，什么是小和大往往没有定量的描述，我觉得还是需要根据pretrain模型时的数据和新问题的数据之间的多样性复杂程度来评估，只是说，可finetune的层数越多，可以拟合新数据的分布的参数越多，这一个观点。但若是认真去解决问题且时间充裕，需要把所有可能都尝试到。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-feature-vis.png" alt="" width="1363" height="572" />
+<img class="aligncenter" src="./assets/vgg-feature-vis.png" alt="" width="1363" height="572" />
 
 “<strong><span style="color: #ff0000;">浅层学到的是纹理特征，而深层学到的是语义特征</span></strong>”，这句话是从某篇博文看到的，我认为网络层数在特征提取这里，单从可视化的角度来讲，如果是线性模型对学出的权重矩阵进行可视化，那么得到的是对应各类别图像的轮廓，这是CS231n课程有讲到的。然而上图是对GoogLeNet这一网络的特征图可视化的结果，可以看到浅层学到的是边缘（Edges）、纹理（Texture）等，深层学到的是更偏向语义的信息，相当于把原本线性模型的feature map拉长了。本质还是那么多信息，只是中间的过程更加清晰可见，看上图中最后一组6张图中第一列放大的图，有建筑物的特征，而且颜色偏蓝，应该是训练数据中该类的图像大多有云朵和天空作为建筑物的背景。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-cs231n-linear-classifier.png" alt="" width="848" height="462" />
+<img class="aligncenter" src="./assets/vgg-cs231n-linear-classifier.png" alt="" width="848" height="462" />
 
 不过可以发现，无论网络深浅，<strong><span style="color: #ff0000;">最后一层（或几层）总是对应类别的轮廓，即语义信息</span></strong>。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-feature-object.png" alt="" width="892" height="310" />
+<img class="aligncenter" src="./assets/vgg-feature-object.png" alt="" width="892" height="310" />
 
 根据优化的目标不同，得到的可视化结果不同，如DeepDream就是对feature map的结果backprop回去更新输入图像进行可视化（该过程的流程如下图，该图来自zhihu的一篇博客见参考部分。关于可视化这里我没有仔细看，需要结合Feature Visualization这篇文章、Google Blog上关于DeepDream的两篇文章以及风格迁移学习那篇文章再深入分析）。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-deepdream.png" alt="" width="654" height="663" />
+<img class="aligncenter" src="./assets/vgg-deepdream.png" alt="" width="654" height="663" />
 <h3>1.1.2 在其它数据集上的泛化性</h3>
 作者通过在ImageNet预训练得到的模型，在其他小数据（VOC-2007、VOC-2012、Caltech-101、Caltech-256等图像分类任务）上发现优秀的泛化性能（这部分来自本篇文章附录Localization的Generation of Very Deep Features），作者说到使用pre-trained模型，再在自己的小数据上训练不容易过拟合，关于这点我的理解是：
 <ol>
@@ -99,15 +99,15 @@ $$
 
 作者在使用pre-trained模型的时候，是把用于喂给softmax前、产生1000维的最后一层全连接层去掉，使用倒数第二个全连接层产生聚合了位置和尺度的4096维图像特征，将这个特征做L2-normalization（上面公式便是图像上位于第i行j列的像素点$x_{i,j}$经过L2-norm后的像素值$x'_{i,j}$，需要注意的是这里是图像处理中L2-normalize）后给SVM分类器训练1VsALL模型，提取特征的CNN没有做fine-tune操作。作者用倒数第二层的4096维的特征的考量是这个维度一定程度聚合了multiple location和scale的信息，我觉得这个说法还是有些道理，一是网络有三个全连接层，经过1个或者2个全连接，原本的带有位置的局部信息被聚合起来了，但是4096维度的数目这个超参数还可以进一步使用交叉验证来优化，此外作者使用的是第二个fc后的特征，也不妨试试第一个fc后的特征、或者最后一个卷积的特征、甚至是将这些拼起来，说不定效果会更好。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-nin-global-average-pooling.png" alt="" width="817" height="303" />
+<img class="aligncenter" src="./assets/vgg-nin-global-average-pooling.png" alt="" width="817" height="303" />
 
 此外，作者在对CNN提取到的特征做了聚合和一些变换，作者对4096维的resulting feature map（也就是刚做过l2-normalize过程的）再做global average pooling产生一样维度的输出，并将与之镜像的图片也做同样的过程，最后将二者的特征加和求平均。当然全局平均池化（global average pooling，Network In Network有介绍该方法和dropout在作用上都起到正则作用，但有两个特点：1. 让feature map与类别通过softmax时的计算更自然，feature map也即对应类别的置信度分数；2. 无参数的策略，避免了过拟合问题。更多的参考上图NIN的截图）是一种聚合方法，作者也说到还可以使用stacking到一起，我想应该类似concate。
 <h1>2. ConvNet Configurations</h1>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-network-design.png" alt="" width="562" height="435" />
+<img class="aligncenter" src="./assets/vgg-slide-network-design.png" alt="" width="562" height="435" />
 
 为了方便分析，先把VGGNet16的结构图放出来，即将说到的内容会跟下面这幅图有很密切的关系：
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-16-netscope.png" alt="" width="828" height="2633" />
+<img class="aligncenter" src="./assets/vgg-16-netscope.png" alt="" width="828" height="2633" />
 
 结合这张图，我们有网络D的参数表格（参数来自CS231n的计算，我这里重新排版）：
 <table class="md-table" contenteditable="false">
@@ -293,7 +293,7 @@ $$
 </table>
 网络的输入尺寸为224x224的图像，输入前需要减去RGB均值（提前跑了一遍train set，resize到224并计算每个位置的强度均值）。下面是作者作的六组实验，观察深度、LRN、conv1x1的小卷积这三个因素对结果的影响（另外，也可以看出层数的算法，是只统计卷积层和全连接层）。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv-config.png" alt="" width="575" height="578" />
+<img class="aligncenter" src="./assets/vgg-conv-config.png" alt="" width="575" height="578" />
 
 在具体说明结构之前，先说一下在AlexNet中出现的LRN（Local Response Normalization）层，该层会对相邻的N个通道在同一(x,y)位置处的像素值进行normalize。VGGNet作者发现（实验A和A-LRN），LRN层对分类准确率不仅没有提升，还带来更多的显存占用和计算时间，因此在之后的四组（B、C、D、E）实验中均没有出现LRN层。
 
@@ -304,7 +304,7 @@ $$
 </ol>
 此外，所有实验中的网络结构除了层数大体相同，均是五组卷积（每一组可能有多个卷积层，A网络包含8个卷积，E网络包含16个卷积），再接三个全连接层。网络得到的feature map从64开始随卷积组数的推进逐渐递增，以2的倍率扩大直到达到512的channel数。因为小卷积核的缘故，网络即使很深也不会带来过大的参数量（见上图Table2）。
 <h2>2.1 卷积</h2>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-cs231n-conv.png" alt="" width="582" height="506" />
+<img class="aligncenter" src="./assets/vgg-cs231n-conv.png" alt="" width="582" height="506" />
 
 上图是卷积核在feature map上滑动的过程，这幅图来自CS231n。下面是Deep Learning for Computer Vision (Andrej Karpathy, OpenAI)暑期学校课上列出的卷积公式：
 $$
@@ -318,19 +318,19 @@ $$
 
 在知乎的“如何通俗的理解卷积？”这个问题下，找到一个比贾扬清的回答更易于理解的一个回答，下面是该回答中的计算过程示意图：
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv-mm.png" alt="" width="707" height="422" />
+<img class="aligncenter" src="./assets/vgg-conv-mm.png" alt="" width="707" height="422" />
 
 这幅图描述的是卷积的两种实现方式，上面的中括号Traditional convolution就是直接法实现卷积，而下面的Matrix Product Version of Convolution则是使用矩阵乘法实现卷积，可以看到该方法会先对原图上卷积核2x2的大小的位置进行提取，也就是im2col的过程，在这里depth是3，即三个通道，那么对输入的三通道图像的第一个计算卷积的位置处，会提取出2x2x3=12个元素成为一行，然后对所有的位置提取，多少个位置对应Input features (Matrix)的行数，而卷积核的个数对应kernel matrix的列数。刚好矩阵A（即Input features）的第一行和矩阵B（即Kernel Matrix）的第一列的结果就是结果矩阵第一个位置对应元素的结果，也就是卷积后的结果。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv-mm2.png" alt="" width="710" height="596" />
+<img class="aligncenter" src="./assets/vgg-conv-mm2.png" alt="" width="710" height="596" />
 
 上图就是进一步列成矩阵乘法的样子，进一步抽象并列出公式的示意图。矩阵A（Input matrix）的行数相当于下图卷积在原图上滑动的次数，列数就是KxKxC，其中K和C分别是卷积核的宽/高、feature map的通道数（Channel/Depth）：
 
-<img class="alignnone" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv-gif.gif" alt="" width="648" height="213" />
+<img class="alignnone" src="./assets/vgg-conv-gif.gif" alt="" width="648" height="213" />
 
 但需要注意的是，input matrix通常都是带有深度，或者说是厚度的（depth/channel），这个动态地在不同位置处卷积的过程也可用下图表示：
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv-procedure.png" alt="" width="196" height="278" />
+<img class="aligncenter" src="./assets/vgg-conv-procedure.png" alt="" width="196" height="278" />
 
 既然知道了卷积的做法，那么下面我将分析：
 <ol>
@@ -558,7 +558,7 @@ $$
 </table>
 可以看出AlexNet虽然也有用3x3的卷积核，而且是大规模用，但即便都是在网络的中后期。一开始却用了11x11这样的大卷积核，需要注意该卷积核对应的stride为4。我的理解是，一开始原图的尺寸虽然很大很冗余，但最为原始的纹理细节的特征变化一开始就用大卷积核尽早捕捉到比较好，后面的更深的层数害怕会丢失掉较大局部范围内的特征相关性，因为后面更多是3x3这样的小卷积核（和一个5x5卷积）。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv11x11.png" alt="" width="867" height="468" />
+<img class="aligncenter" src="./assets/vgg-conv11x11.png" alt="" width="867" height="468" />
 
 另外，conv11x11这样的大卷积核使用的stride为4，见上图是我画的在一张19x19的图上做11x11的卷积，其实会发现即使是stride为4，对于11x11的kernel size而言，中间有很大的重叠，计算出的3x3区域每个值很过于受到周边像素的影响，每个位置卷积的结果会更多考虑周边局部的像素点，原始的特征多少有被平滑掉的感觉。换句话说，局部信息因为过大的重叠，会造成更多细节信息的丢失。那大卷积核，是否带来更大的参数和feature map大小呢？我计算了同样conv3x3、conv5x5、conv7x7、conv9x9和conv11x11，在224x224x3的RGB图上（设置pad=1，stride=4，output_channel=96）做卷积，卷积层的参数规模和得到的feature map的大小：
 <table class="md-table" contenteditable="false">
@@ -629,22 +629,22 @@ $$
 </table>
 看来大卷积核带来的参数量并不大（卷积核参数+卷积后的feature map参数，不同kernel大小这二者加和都是30万的参数量），即使考虑AlexNet中有两种形式的卷机组（[conv-relu]-lrn-pool和[conv-relu]-[conv-relu]-[conv-relu]-pool）。实际增大的是计算量（上面我列出了计算量的公式，最后要乘以2，代表乘加操作）。为了尽可能证一致，我这里所有卷积核使用的stride均为4，可以看到，conv3x3、conv5x5、conv7x7、conv9x9、conv11x11的计算规模依次为：1600万，4500万，1.4亿、2亿，这种规模下的卷积，虽然参数量增长不大，但是计算量是恐怖的。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-cs231n-case-study.png" alt="" width="860" height="437" />
+<img class="aligncenter" src="./assets/vgg-cs231n-case-study.png" alt="" width="860" height="437" />
 
 其实对比参数量，单层卷积核参数的量级在十万，一般都不会超过百万。相比全连接的参数规模是上一层的feature map和全连接的神经元个数相乘，这个也很恐怖。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv-kernel.png" alt="" width="851" height="407" />
+<img class="aligncenter" src="./assets/vgg-conv-kernel.png" alt="" width="851" height="407" />
 
 作者在VGGNet的实验中只用了两种卷积核大小：1x1和3x3。作者认为两个3x3的卷积堆叠获得的感受野大小，相当一个5x5的卷积；而3个3x3卷积的堆叠获取到的感受野相当于一个7x7的卷积。见上图，输入的8个元素可以视为feature map的宽或者高，我画了当输入为8个神经元经过三层conv3x3的卷积得到2个神经元。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-discussion.png" alt="" width="669" height="464" />
+<img class="aligncenter" src="./assets/vgg-slide-discussion.png" alt="" width="669" height="464" />
 
 此外，在分割问题中卷积核的大小对结果有一定的影响，在上图三层的conv3x3中，最后一个神经元的计算是基于第一层输入的7个神经元，换句话说，反向传播时，该层会影响到第一层conv3x3的前7个参数。从输出层往回forward同样的层数下，大卷积影响（做参数更新时）到的前面的输入神经元越多。
 <ul>
 	<li>input=8，3层conv3x3后，output=2，等同于1层conv7x7的结果；</li>
 	<li>input=8，2层conv3x3后，output=2，等同于2层conv5x5的结果。</li>
 </ul>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv3x3x2.jpg" alt="" width="327" height="287" />
+<img class="aligncenter" src="./assets/vgg-conv3x3x2.jpg" alt="" width="327" height="287" />
 
 上图是用2个stride=1、padding=0的conv3x3来代替1个stride=2的conv5x5的例子。此外，作者在3个conv3x3代替1个conv7x7的做法上，认为有以下三点优势：
 <ol>
@@ -680,11 +680,11 @@ $$
 	<li>专注于跨通道的特征组合：conv1x1根本不考虑单通道上像素的局部信息（<strong>不考虑局部信息</strong>），专注于那一个卷积核内部通道的信息整合。conv3x3既考虑跨通道，也考虑局部信息整合；</li>
 	<li>对feature map的channel级别降维或升维：例如224x224x100的图像（或feature map）经过20个conv1x1的卷积核，得到224x224x20的feature map。尤其当卷积核（即filter）数量达到上百个时，3x3或5x5卷积的计算会非常耗时，所以1x1卷积在3x3或5x5卷积计算前先降低feature map的维度。</li>
 </ol>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-googlenet-module.png" alt="" width="479" height="545" />
+<img class="aligncenter" src="./assets/vgg-googlenet-module.png" alt="" width="479" height="545" />
 
 关于小卷积核前人就有使用，如Ciresan et al. (2011)还有Goodfellow et al. (2014)，后者使用11层的网络解决街道数量的识别问题（street number classification，我也没看懂是回归还是分类），结果显示更深的网络可以带来更好地网络性能。而作者在小卷积核的基础上使用了更多层数，2014年ImageNet分类比赛的第一名使用GoogLeNet，Szegedy et al., (2014)也使用了更小的卷积核、更深达到22层的网络，使用了5x5、3x3和1x1卷积（实际还用到了7x7的卷积，第一层卷积）。但GoogLeNet的拓扑结构比较复杂，上图是Inception module的结构图，可以看到module内直接使用了常见的三种卷积核进行并联，并将最后的结果feature map直接concate到一起，而VGGNet则是使用传统卷积核串联的方式。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-imgnet-result.png" alt="" width="714" height="338" />
+<img class="aligncenter" src="./assets/vgg-imgnet-result.png" alt="" width="714" height="338" />
 
 然而，分类性能上同样的单模型，VGGNet比GoogLeNet在top5的错分率要低，而多模型下，同样七个网络的VGGNet不如GoogLeNet。
 <h3>2.1.2 feature map的维度变化</h3>
@@ -716,7 +716,7 @@ CS231n的blog里将这种形式称为layer pattern，一般常见的网络都可
 </ol>
 </li>
 </ol>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-autoencoder-pretrain.png" alt="" width="482" height="357" />
+<img class="aligncenter" src="./assets/vgg-autoencoder-pretrain.png" alt="" width="482" height="357" />
 
 其实说到这里，我想到一种古老的pretrain网络的方式（见上图，来自台大的机器学习技法课程）：使用auto-encoder和decoder去逐层预训练网络，逐层地用输入x预测输入x。虽然说和这里的卷积组的形式还是差异比较大，但是逐渐逐层地去学习的意思在里面。逐层的预训练网络，在我理解就是想通过这样的方式训练处能够提取深层特征表征的网络权重。多少有点类似（其实有点牵强）这里更深的一种卷积组的感觉，类比一下，每次我都在训练一种卷积组，第一次可能是一层的卷积，第二次是两层的，第三次是三层的，依此类推。我既希望这样保证学到的权重不会导致结果发散（爆炸或者消失），也希望可以有足以让当前层特征传递到下一层、维持高效表示的特征权重（重点在于这一点）。
 
@@ -748,18 +748,18 @@ $$
 P = \frac{S(W-1) - W + F}{2}
 $$
 当Stride=1时，那么pad=(F-1)/2。因为现在stride=1的3x3卷积用的多，所以大家会默认说是pad=1。
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv3x3-stride1-pad1.png" alt="" width="380" height="293" />上图就是stride=1、padding=1的conv3x3的效果图。关于这点上，也是由于实验发现这样保留feature map的宽高情况下，性能好的缘故，我认为填补主要是针对stride大于1的情况带来的边界问题，如果input尺寸不是事先设定的$a \times 2^n$，那么就会有边界无法卷积到的问题带来信息丢失。不过这种填补我认为也有一定问题，就是说原本conv3x3去计算对应位置的3x3，而填补后为0，这样相当于少算了一些值，这肯定还是有影响的。但若stride不是1，那么要保证前后feature map的宽高一样，就要根据上面的公式计算得出。
+<img class="aligncenter" src="./assets/vgg-conv3x3-stride1-pad1.png" alt="" width="380" height="293" />上图就是stride=1、padding=1的conv3x3的效果图。关于这点上，也是由于实验发现这样保留feature map的宽高情况下，性能好的缘故，我认为填补主要是针对stride大于1的情况带来的边界问题，如果input尺寸不是事先设定的$a \times 2^n$，那么就会有边界无法卷积到的问题带来信息丢失。不过这种填补我认为也有一定问题，就是说原本conv3x3去计算对应位置的3x3，而填补后为0，这样相当于少算了一些值，这肯定还是有影响的。但若stride不是1，那么要保证前后feature map的宽高一样，就要根据上面的公式计算得出。
 另一个点是通常与Input比较接近的conv会采用大卷积核。关于接近input层使用较大的卷积核这点，我认为先是考虑到后面的操作，先尽可能用大的卷积核cover更多的原始信息（虽然经过了卷积有一些变换），第二点在于大卷积核带来的大感受野，后面的卷积层能的一个神经元能看到更大的input，第三点是GPU的显存受限，经典的例子就是AlexNet使用stride=4的conv11x11，目的就是从一开始就减少显存占用，其实这里的大stride，我觉得起到了一些正则的作用。但缺点也很明显，因为卷积核变大，矩阵乘法实现卷积时，若没有大stride，那么第一个矩阵的列数，也就是第二个矩阵的行数，会变大，带来大的计算量。所以在AlexNet中，大卷积核也对应使用了大的stride值；</li>
 	<li>池化层：常见2x2的max-pooling，少见3x3或者更大的kernel。更大的kernel带来的问题是信息丢失带来的信息损失，此外，stride通常为2；其实按照以上的设定看来，也是有好处的。卷积专注于保留空间信息前提下的channel变换，而池化则专注于空间信息的变换（下采样）。</li>
 </ol>
 <h2>2.2 池化</h2>
 VGGNet中的max-pool均采用kernel为2x2的尺寸，stride为2的设定。这里和AlexNet有区别，AlexNet使用的max-pool的kernel为3x3大小，stride为2的pool。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv.png" alt="" width="456" height="148" />
+<img class="aligncenter" src="./assets/vgg-conv.png" alt="" width="456" height="148" />
 
 那么我想卷积核也可以是2x2、4x4这种偶数的吧，为什么大家都用奇数呢？我问了些人他们的回答也是说感受野中心这个问题。其实我觉得感受野中心看怎么理解，如果是4x4的卷积核，可以说4x4因为是偶数，中间没有感受野中心，但是也可以说4x4有4个感受野中心，也可以捕捉上下左右的信息，说不定效果比3x3还更好！在计算上，也是对应位置相乘后整体加，不过当前大家都在用奇数尺寸的卷积核，但这需要进一步实验说明。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/max-poolfig.gif" alt="" width="543" height="544" />
+<img class="aligncenter" src="./assets/max-poolfig.gif" alt="" width="543" height="544" />
 
 另外一个是池化，先前没有注意到AlexNet的pooling的kernel size全是奇数，里面所有池化采用kernel size为3x3，stride为2的max-pooling。而VGGNet所使用的 max-pooling的kernel size均为2x2，stride为2的max-pooling。pooling kernel size从奇数变为偶数。小kernel带来的是更细节的信息捕获，且是max-pooling更见微的同时进一步知躇（见微知著，微:隐约；著:明显。意指看到微小的苗头，就知道可能会发生显著的变化。比喻小中见大、以小见大）。
 
@@ -782,11 +782,11 @@ VGGNet中的max-pool均采用kernel为2x2的尺寸，stride为2的设定。这�
 <h2>2.4 其它</h2>
 我发现AlexNet和VGGNet的SoftMax层最后都是1000个输出，但是有小伙伴说，经常有不在这1000类里的物体被分类到了这一千类中的某一类，可能置信度还很高如80%等等，那我想在训练的过程中加一个背景这一类进行输出，这样用一些非1000类物体中的图片去训练。有小伙伴实验表示，这样性能会有小的提升。其实我们在一些分割或检测问题中，也见过不少作者是用原本的类别数加一类背景类去训练。
 <h1>3. 训练和测试</h1>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-impl.png" alt="" width="619" height="472" />
+<img class="aligncenter" src="./assets/vgg-slide-impl.png" alt="" width="619" height="472" />
 
 实现是基于Caffe框架，作者branch out出一个caffe的分支，在一台4张NVIDIA Titan BLACK的机器上完成的，梯度的计算是汇总多张卡同步后的结果，因此和在单GPU上训练的结果是一致的（4张卡相比单张有3.75倍的加速），训练一个网络根据架构的不同大概要2到3周的时间。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-train.png" alt="" width="598" height="453" />
+<img class="aligncenter" src="./assets/vgg-slide-train.png" alt="" width="598" height="453" />
 <h2>3.1 训练阶段</h2>
 除了对训练图像的多尺度后的crop进行采样训练，其它和AlexNet基本一致：
 <ul>
@@ -819,7 +819,7 @@ https://www.zhihu.com/question/24904450</blockquote>
 <h3>3.1.1 训练图像尺寸</h3>
 模型输入的固定input大小是224x224，这个大小的图是由rescale后的训练图像随机crop得到的（rescale是VGGNet的特色，后面会详细讲到），（即使是同一张图像）每次SGD的iteration的crop都不同。为了进一步data augmentation，在crop上又做了随机水平翻转（random horizontal flipping）和随机的RGB颜色抖动，这两个小技巧也都来自AlexNet。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-train02.png" alt="" width="659" height="429" />
+<img class="aligncenter" src="./assets/vgg-slide-train02.png" alt="" width="659" height="429" />
 
 设置S是rescale后的训练图像的短边，用S代指训练过程使用的尺度。但crop的大小是固定的：224x224。总之S不小于224，但当S=224时，因为长边大于等于224,，所以crop尺寸可以大体上捕捉整幅图片。而当训练的图像尺度S远远大于224时，crop将只会对应图像的一小部分或者某些物体的部分。
 
@@ -831,7 +831,7 @@ https://www.zhihu.com/question/24904450</blockquote>
 <h2>3.2 测试阶段</h2>
 测试阶段先对输入图像的短边rescale到预设尺度Q（测试图像的尺度），测试图像的尺寸Q和训练图像的尺寸S没必要完全一样。后文中作者提到对于每个训练图像的尺寸S，都有几个不同的Q来去预测，可以得到更好地性能。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-test.png" alt="" width="648" height="438" />
+<img class="aligncenter" src="./assets/vgg-slide-test.png" alt="" width="648" height="438" />
 
 原图比方左上角有个5x5的区域，crop出的224x224的左上角可以在里面移动（也就是说图像crop前，要resize到可以移动5x5格子的size，即224+5-1=228），另外加上水平翻转带来的可能性，那就是5x5x2=50种情况，作者总共在test阶段用了三个scale，即三个Q，那么一张图总共有150 crops。网络将会分别跑一张图的150个crops，然后将结果average，作者的150crops相比GoogLeNet（Szegedy et al. (2014)）的 4 scale的 144 crops（可以算一下，每个scale是36crops，如果其中包含水平翻转的话，那么就是18crops，可能是一个3x6的regular grid，类似的方法，因为没看文章这里只是猜测），并没有很大的性能提升。
 <h3>3.2.1 全连接转为卷积</h3>
@@ -841,7 +841,7 @@ https://www.zhihu.com/question/24904450</blockquote>
 <blockquote>Namely, the fully-connected layers are first converted to convolutional layers (the first FC layer to a 7 × 7 conv. layer, the last two FC layers to 1 × 1 conv. layers).</blockquote>
 也就是说，作者在测试阶段把网络中原本的三个全连接层依次变为1个conv7x7，2个conv1x1，也就是三个卷积层。改变之后，整个网络由于没有了全连接层，网络中间的feature map不会固定，所以网络对任意大小的输入都可以处理，因而作者在紧接着的后一句说到： The resulting fully-convolutional net is then applied to the whole (uncropped) image。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-fc-conv.png" alt="" width="804" height="559" />
+<img class="aligncenter" src="./assets/vgg-fc-conv.png" alt="" width="804" height="559" />
 
 上图是VGG网络最后三层的替换过程，上半部分是训练阶段，此时最后三层都是全连接层（输出分别是4096、4096、1000），下半部分是测试阶段（输出分别是1x1x4096、1x1x4096、1x1x1000），最后三层都是卷积层。下面我们来看一下详细的转换过程（以下过程都没有考虑bias，略了）：
 
@@ -853,7 +853,7 @@ https://www.zhihu.com/question/24904450</blockquote>
 
 其实VGG的作者把训练阶段的全连接替换为卷积是参考了OverFeat的工作，如下图是OverFeat将全连接换成卷积后，带来可以处理任意分辨率（在整张图）上计算卷积，而无需对原图resize的优势。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-overfeat-last-conv.png" alt="" width="668" height="607" />
+<img class="aligncenter" src="./assets/vgg-overfeat-last-conv.png" alt="" width="668" height="607" />
 
 不过可以看到，训练阶段用的是crop或者resize到14x14的输入图像，而测试阶段可以接收任意维度，如果使用未经crop的原图作为输入（假设原图比crop或者resize到训练尺度的图像要大），这会带来一个问题：feature map变大了。比方VGG训练阶段用224x224x3的图作为模型输入，经过5组卷积和池化，最后到7x7x512维度，最后经过无论是三个卷积或者三个全连接，维度都会到1x1x4096-&gt;1x1x4096-&gt;1x1x1000，而使用384x384x3的图做模型输入，到五组卷积和池化做完（即$2^5=32$），那么feature map变为12x12x512，经过三个由全连接变的三个卷积，即feature map经历了6x6x4096-&gt;6x6x4096-&gt;6x6x1000的变化过程后，再把这个6x6x1000的feature map最终交给SoftMax进行分类。
 
@@ -876,18 +876,18 @@ https://www.zhihu.com/question/24904450</blockquote>
 
 因为作者自己在下面实验的缘故，当然没有测试集的ground truth类别，所以作者就用验证集当做测试集来观察模型性能。这里作者使用两种方式来评估模型在测试集（实际的验证集）的性能表现：single scale evaluation和multi-scale evaluation。
 <h2>4.1 单尺度评估</h2>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-conv-config.png" alt="" width="575" height="578" />
+<img class="aligncenter" src="./assets/vgg-conv-config.png" alt="" width="575" height="578" />
 
 对每个网络（总共六个）进行单独评估，测试图像尺寸依训练时的尺寸设定分为两种情况：
 <ol>
 	<li>训练图像的尺寸S固定时，设置训练图像尺寸S等于测试图像尺寸Q；</li>
 	<li>训练图像尺寸S是介于$[S_{min}, S_{max}]$时，设置测试图像尺寸$Q=0.5(S_{min}+S_{max})$。</li>
 </ol>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-single-scale-result.png" alt="" width="519" height="224" />
+<img class="aligncenter" src="./assets/vgg-single-scale-result.png" alt="" width="519" height="224" />
 
 作者发现，即使是单一尺度（Scale），训练时进行尺度随机（scale jittering）resize再crop图像（$S \in [256; 512]$）的方式比固定最小边后crop图片（S=256或者S=384）去训练的效果好。也再次印证了对训练图像以scale jittering的方式做augmentation（捕捉多尺度信息上）是有效果的。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-compare-size.png" alt="" width="683" height="413" />
+<img class="aligncenter" src="./assets/vgg-slide-compare-size.png" alt="" width="683" height="413" />
 
 实验结论：
 <ol>
@@ -903,34 +903,34 @@ https://www.zhihu.com/question/24904450</blockquote>
 <h2>4.2 多尺度评估</h2>
 也就是对输入图像在一定范围内的随机尺度缩放，模型最终的结果，是基于不同尺度（赌赢多个不同值的Q）且是crop后的图像跑网络得到的softmax结果的平均。
 
-<img class="alignnone" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-compare-size2.png" alt="" width="681" height="454" />
+<img class="alignnone" src="./assets/vgg-slide-compare-size2.png" alt="" width="681" height="454" />
 <ul>
 	<li>用固定大小的尺度S训练的模型，用三种尺寸Q去评估，其中$Q=[S - 32, S, S + 32]$ ；</li>
 	<li>用尺度S随机的方式训练模型，$S \in [S_{min}; S_{max}]$，评估使用更大的尺寸范围$Q=\{S_{min}, 0.5(S_{min}+S_{max}), S_{max}\}$。</li>
 </ul>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-multi-scale-result.png" alt="" width="669" height="233" />
+<img class="aligncenter" src="./assets/vgg-multi-scale-result.png" alt="" width="669" height="233" />
 
 多尺度评估结果如上表所示，C、D、E这三组有随机尺度训练，发现效果比固定尺度训练的模型带来的性能更好。但我认为也很有可能是尺寸大带来的结果，之前我在跑120类狗分类数据集时，尺寸设置224和512分别训练，训练集和验证集的准确率基本收敛时，分辨率224x224的top1 accuracy在30%左右，而分辨率512x512的top1 accuracy在50%~60%。所以我觉得这个实验不够说明随机scale带来的性能优势，因为固定尺寸的最大尺寸（384）比随机尺寸的最大尺寸（512）要小很多。当然，仍旧是深度随着递增越来越深（C、D、E，也要考虑宽度）的网络性能越好。
 <h2>4.3 多crop评估</h2>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-multi-crop-result.png" alt="" width="688" height="169" />
+<img class="aligncenter" src="./assets/vgg-multi-crop-result.png" alt="" width="688" height="169" />
 
 作者比较了dense ConvNet evaluation和multi-crop evaluation。发现multi-crop比dense ConvNet的evaluation性能稍好，二者通过averaging softmax output结合起来使用效果比二者之一要好。作者得到这样的结论有假定，这句话：
 <blockquote>As noted above, we hypothesize that this is due to a different treatment of convolution boundary conditions.</blockquote>
 没看懂这里的convolution boundary conditions是指什么，另外，关于dense crop/application/evaluation，这是在OverFeat有讲到的、偏工程刷比赛的做法，没什么实质性意义，经常刷比赛的同学可以去查查OverFeat中的dense evaluation。
 <h2>4.4 卷积网络融合（ConvNet Fusion）</h2>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-compare-size3.png" alt="" width="681" height="455" />
+<img class="aligncenter" src="./assets/vgg-slide-compare-size3.png" alt="" width="681" height="455" />
 
 多模型融合是基于多个网络softmax输出的结果的平均，该方法在AlexNet和OverFeat中也有用到。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-multi-models.png" alt="" width="710" height="199" />
+<img class="aligncenter" src="./assets/vgg-multi-models.png" alt="" width="710" height="199" />
 
 融合多卷积网络前，作者单尺度或者多尺度训练了模型，七个模型ensemble后的性能可以达到7.3%的top-5 error。最终作者选出两个最好的多尺度模型（D、E）融合，并使用dense和multi-crop的evaluation，top-5 error降到7.0%。最好的单模型是E，top-5 error为7.1%。
 <h2>4.6 与其他SOTA模型比较</h2>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-slide-compare-size5.png" alt="" width="640" height="458" />
+<img class="aligncenter" src="./assets/vgg-slide-compare-size5.png" alt="" width="640" height="458" />
 
 与其他state of the art的模型比较来看，单模型里最好的还是VGG，比GoogLeNet最好的单模型也要少0.9%的top-5 error。作者认为自己只是继承了1989年LeNet的卷积架构的基础上，主要就是加深了深度带来如此性能提升，当然我觉得这样说不合理，前面已经说过了，略。
 
-<img class="alignnone" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-sota-result.png" alt="" width="710" height="336" />
+<img class="alignnone" src="./assets/vgg-sota-result.png" alt="" width="710" height="336" />
 <h1>5. Localization</h1>
 作者在结论部分就是说模型在其他数据及上的性能也不错，另外就是深度matters。好了不说这些了，下面看看VGGNet是如何做到Localization第一的。
 
@@ -970,7 +970,7 @@ top[0]-&gt;mutable_cpu_data()[0] = loss;
 }</pre>
 用caffe_sub来实现预测值和真实值相减，再用caffe_cpu_dot实现差值的平方最后把结果保存在dot变量里，并除以2N后将loss保存。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/vgg-sigmoid-shape.png" alt="" width="680" height="399" />
+<img class="aligncenter" src="./assets/vgg-sigmoid-shape.png" alt="" width="680" height="399" />
 
 作者训练了两个不同尺度S的模型：S=256、S=384。因为ImageNet比赛deadline缘故，没有做训练图像的尺度随机（scale jittering）resize的augmentation。训练初始化是用对应的分类模型（同样尺度规模），初始学习率为0.001。作者尝试了fine-tune所有层以及前两个全连接层两种，OverFeat也曾使用过的方法。最后一个全连接层随机初始化并从头训练。作者正文写的是VGG用于分类的描述，这里区别是将最后一个SoftMax层（SoftMax就是逻辑斯特回归的更一般形式，虽名为回归，但实际一般是用于分类问题，“逻辑”我的理解是最后的值映射范围在零与一之间的小数，即逻辑值。上图的Sigmoid即S型函数，也是逻辑回归函数的形式，这一形式包括Tanh也是传统的激活函数的形式）换成欧氏距离等可以衡量距离的损失/目标函数的形式。
 
@@ -994,7 +994,7 @@ http://www.cs.cmu.edu/~liuy/distlearn.htm</li>
 
 此外，作者还发现fine-tune所有层后的性能要比仅fine-tune全连接层拿到的结果好。这是对于作者用CNN做Localization来说的（其它分类任务时，CNN只是用来提取特征，用SVM来做分类）。
 
-<img class="alignnone" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/12/VGG-localization-result.png" alt="" width="576" height="127" />
+<img class="alignnone" src="./assets/VGG-localization-result.png" alt="" width="576" height="127" />
 
 上图是作者根据下面的参数设定得到的性能结果，比较流程如下：
 <ol>
