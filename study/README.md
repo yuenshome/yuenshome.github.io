@@ -14,7 +14,7 @@
 
 -----
 
-## 深度学习论文核心拆解系列
+## 深度学习核心拆解系列
 
 - [2017-12] [Very Deep Convolutional Networks for Large-Scale Image Recognition](../timeline/2017-12/vgg/)
 - [2017-11] [ImageNet Classification with Deep Convolutional Neural Networks](../timeline/2017-11/alexnet/) 
