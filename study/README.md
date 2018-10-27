@@ -12,6 +12,13 @@
 - [2017-08] [Docker常用命令（不断补充中）](../timeline/2017-08/docker-command/)  
 - [2015-10] [Ubuntu常用命令（不断补充中）](../timeline/2015-10/linux-common-command/)  
 
+-----
+
+## 深度学习论文核心拆解系列
+
+- [2017-12] [Very Deep Convolutional Networks for Large-Scale Image Recognition](../timeline/2017-12/vgg/)
+- [2017-11] [ImageNet Classification with Deep Convolutional Neural Networks](../timeline/2017-11/alexnet/) 
+
 ![header](../assets/header19.jpg)
 
 ## 学习笔记 · 杂
