@@ -1,5 +1,7 @@
 [![header](../../../assets/header30.jpg)](https://yuenshome.github.io)
 
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+
 # ImageNet Classification with Deep Convolutional Neural Networks
 
 这篇文章是Alex Krizhevsky在2012年提出的，Alex师从Hinton（也是本文的第三作者），之后也是FeiFei Li的学生。下面这幅图是模型的架构图（五个卷积后接三个全连接，最后是处理1000个元素的feature map的softmax，但softmax没画出来。后文会具体说明）：
