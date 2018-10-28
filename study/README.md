@@ -29,6 +29,7 @@
 - [2018-07] [通过ADB工具让电脑连接手机](../timeline/2018-07/android-adb-tool/)
 - [2018-07] [系统升级导致MySQL数据库崩溃](../timeline/2018-07/blog-crash-due-to-mysql-fault/)
 - [2018-05] [再次安装Caffe:cpu的经历](../timeline/2018-05/install-caffe-again/)
+- [2017-10] [CPU超频模式简介](../timeline/2017-10/cpu-freq-mode/)
 
 ![header](../assets/header17.jpg)
 
