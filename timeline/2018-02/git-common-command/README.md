@@ -124,3 +124,18 @@ https://stackoverflow.com/questions/1337320/how-to-grep-git-commit-diffs-or-cont
 https://blog.csdn.net/dong19900415/article/details/70495716/
 
 <audio style="display: none;" controls="controls"></audio>
+
+## 7.项目有子项目submodule时的git命令
+
+来自：Git update submodule recursive - Stack Overflow
+https://stackoverflow.com/questions/10168449/git-update-submodule-recursive
+
+项目的目录结构如下，其中Twig是框架A的子模块：
+<pre class="lang:sh decode:true">ProjectA
+-FrameworkA (submodule)
+--Twig (submodule of FrameworkA)</pre>
+如何递归地更新子模块。使用命令：
+<pre class="lang:sh decode:true">git submodule update --recursive</pre>
+或者你也可能需要对未初始化的子模块（uninitialized submodules）在命令加上--init选项来初始化子模块：
+<pre class="lang:sh decode:true ">git submodule update --init --recursive</pre>
+&nbsp;
