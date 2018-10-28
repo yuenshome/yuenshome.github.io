@@ -1,5 +1,7 @@
 [![header](../../../assets/header32.jpg)](https://yuenshome.github.io)
 
+# CPU超频解读
+
 <blockquote>转载自：超频必读CPU模式ondemand, - Galaxy Nexus ROM 相关下载 机锋论坛
 http://bbs.gfan.com/android-4165836-1-1.html</blockquote>
 这是在网络上看到的一篇文章，关于介绍各种CPU模式，当然GPU也可以参考基本。
