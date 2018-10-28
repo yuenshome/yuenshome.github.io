@@ -2,8 +2,6 @@
 
 # git cannot pull, clone or push? failed to connect, connection refused
 
-[toc]
-
 git pull的时候出现这个问题，搜了下看到一个csdn引自stackoverflow上的回答，按照提示解决了这个问题。具体如下：
 <h1>原问题</h1>
 After <code>git push -u origin master</code> I got:
