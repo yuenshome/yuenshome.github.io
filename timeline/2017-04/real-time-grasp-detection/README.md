@@ -6,7 +6,7 @@
 
 借助百度脑图（naotu.baidu.com）画出本文大致结构，建议去百度查看高清大图-&gt;<a href="http://naotu.baidu.com/file/7067316d366df78ad1eda60e8dd6ede5?token=e6c255eaedc427ab" target="_blank">点击这里查看</a>。
 
-<a href="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/04/Real-Time+Grasp+Detection+Using+Convolutional+Neural+Networks.png" target="_blank"><img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/04/Real-Time+Grasp+Detection+Using+Convolutional+Neural+Networks.png" alt="" width="319" height="206" /></a>
+<a href="./assets/grasp-detection-overview.png" target="_blank"><img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/04/Real-Time+Grasp+Detection+Using+Convolutional+Neural+Networks.png" alt="" width="319" height="206" /></a>
 <h1>使用卷积神经网络做实时抓取检测<del></del></h1>
 <ul>
 	<li>题目：Real-Time Grasp Detection Using Convolutional Neural Networks</li>
