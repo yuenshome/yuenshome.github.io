@@ -1,6 +1,6 @@
 [![header](../../../assets/header25.jpg)](https://yuenshome.github.io)
 
-# 我的Shell脚本进化史
+# 性能测试常用命令及脚本
 
 本文有点类似工作日志，我也是对Linux Shell一点都不懂，这里只是一点点积累自己写的算法测试脚本。每次做一点更新和改动，学一点新东西，还在不断完善补充中。[toc]<!--more-->
 <h1>-1. 安装OpenBLAS</h1>
