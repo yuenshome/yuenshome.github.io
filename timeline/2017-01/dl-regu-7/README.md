@@ -22,11 +22,11 @@ Dropout（Srivastava等人，2014）是一种计算量不大但功能强大的�
 
 Dropout训练与bagging训练不完全相同。在bagging策略下，模型都是独立的。在dropout策略下，模型共享参数，每个模型继承来自父神经网络参数的不同子集。该参数共享使得用少量的内存就可以表示指数数量的模型。在bagging策略下，每个模型的训练都会收敛其相应的训练集。在dropout策略下，通常大多数模型没有被明确训练——通常当模型足够大时，若有足够多的时间，采样所有可能的子网络是可行的。相反，单步更新是基于采样到的子网络的训练，并且参数共享使得剩余子网络的参数达到较好值。这些是dropout和bagging的唯一区别。除此之外，dropout与bagging算法一致。例如，每个子网络的训练集合是用替换采样原始训练集合的方法得到的子集。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/01/deeplearning_chapter7_figure7.6.png" alt="" width="949" height="928" />
+<img class="aligncenter" src="./assets/deeplearning_chapter7_figure7.6.png" alt="" width="949" height="928" />
 
 <strong>图7.6：dropout的训练基于所有子网络组成的集成，可以通过从底层基础网络中删除非输出单元后得到的网络来构建。这里，我们从具有两个可见单元和两个隐含单元的基本网络开始。这四个单元有十六中可能的网络子集。改图展示了从原始网络中丢弃不同的单元子集而形成的所有十六个子网络。在这个小例子中，所得到的网络的大部分没有输入单元或没有将输入连接到输出的路径。这个问题相比具有较宽层的网络变得不重要，丢弃从输入到输出的所有可能路径的对较宽层网络的概率更低。</strong>
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/01/deeplearning_chapter7_figure7.7.png" alt="" width="454" height="900" />
+<img class="aligncenter" src="./assets/deeplearning_chapter7_figure7.7.png" alt="" width="454" height="900" />
 
 <strong>图7.7：使用dropout策略下网络正向传播的示例。（在上图中）有两个输入单元，一个隐藏层和两个隐藏单元以及一个输出单元的前馈网络。（在下图中）是dropout策略下的正向传播，对于网络中的每个输入或隐藏单元，随机抽取矢量 $\mu$ 中的一个元素。 <strong>$\mu$ </strong>的元素都是二进制的，并且彼此独立地采样。每个元素为 $1$ 的概率是超参数，对于隐藏层该超参数通常为 $0.5$ ，而输入层通常为 $0.8$ 。网络中的每个单元乘以相应的掩码，然后正常传播继续通过网络的其余部分。这相当于从图7.6中随机选择一个子网络，并向前传播。</strong>
 
@@ -38,29 +38,29 @@ $$
 
 在dropout策略下，由掩码向量 $\mu$ 定义的每个子模型，每个自模型定义概率分布 $p(y | x, \mu)$ 。 所有掩码的算术平均值由下式给出
 
-$$
+    $$
 \sum_{\mu} p(\mu) p(y|x,\mu)
-$$
+    $$
 
-其中 $p(\mu)$ 是用于在训练时间采样 $\mu$ 的概率分布。
+    其中 $p(\mu)$ 是用于在训练时间采样 $\mu$ 的概率分布。
 
-因为这个加和包括指数数目的项，除非模型结构允许某种形式简化的情况下，否则难以评估。到目前为止，深层神经网不允许任何易于理解的简化。相反，我们可以用抽样来近似推理，通过对许多掩码的输出求平均来近似。即使是10-20个掩码，通常也足以获得良好的性能。
+    因为这个加和包括指数数目的项，除非模型结构允许某种形式简化的情况下，否则难以评估。到目前为止，深层神经网不允许任何易于理解的简化。相反，我们可以用抽样来近似推理，通过对许多掩码的输出求平均来近似。即使是10-20个掩码，通常也足以获得良好的性能。
 
-然而有一个更好的方法，能够仅以一个前向传播的代价获得整个集成模型预测的良好近似。为此，在集成模型成员的预测分布上我们从几何平均数改用算术平均数。Warde-Farley等人（2014）提出的论点和实证证据表明在这种情况下几何平均值与算术平均值等价。
+    然而有一个更好的方法，能够仅以一个前向传播的代价获得整个集成模型预测的良好近似。为此，在集成模型成员的预测分布上我们从几何平均数改用算术平均数。Warde-Farley等人（2014）提出的论点和实证证据表明在这种情况下几何平均值与算术平均值等价。
 
-多个概率分布的几何平均值不能保证为概率分布。为了保证结果是一个概率分布，我们强加的要求是，没有一个子模型将概率 $0$ 分配给任何事件，并且我们对结果分布进行重新归一化。由几何平均直接定义的非规格化概率分布（unnormalized probability distribution）由下式给出
+    多个概率分布的几何平均值不能保证为概率分布。为了保证结果是一个概率分布，我们强加的要求是，没有一个子模型将概率 $0$ 分配给任何事件，并且我们对结果分布进行重新归一化。由几何平均直接定义的非规格化概率分布（unnormalized probability distribution）由下式给出
 
-$$
-\begin{align}
-\tilde{p}_{\text{ensemble}}(y \mid x) = \sqrt[2^d]{\prod_{\mu} p(y \mid x, \mu)},
-\end{align}
-$$
+    $$
+    \begin{align}
+    \tilde{p}_{\text{ensemble}}(y \mid x) = \sqrt[2^d]{\prod_{\mu} p(y \mid x, \mu)},
+    \end{align}
+    $$
 
-其中 $d$ 是可以丢弃的单元数。这里我们使用均匀分布 $\mu$ 来简化表示，但非均匀分布也是可能的。为了做出预测，我们必须重新标准化集成模型（re-normalize the ensemble）：
+    其中 $d$ 是可以丢弃的单元数。这里我们使用均匀分布 $\mu$ 来简化表示，但非均匀分布也是可能的。为了做出预测，我们必须重新标准化集成模型（re-normalize the ensemble）：
 
-$$
-\begin{align}
-p_{\text{ensemble}}(y \mid x) = \frac{\tilde{p}_{\text{ensemble}}(y \mid x)}
+    $$
+    \begin{align}
+    p_{\text{ensemble}}(y \mid x) = \frac{\tilde{p}_{\text{ensemble}}(y \mid x)}
 {\sum_{y'}\tilde{p}_{\text{ensemble}}(y' \mid x) }.
 \end{align}
 $$
@@ -91,28 +91,28 @@ $$
 \begin{align}
 P_{\text{ensemble}}(y = y \mid v) = \frac{\tilde{P}_{\text{ensemble}}(y = y \mid v)}
 {\sum_{y'}\tilde{P}_{\text{ensemble}}(y = y' \mid v) },
-\end{align}
-$$
+    \end{align}
+    $$
 
-其中有
+    其中有
 
-$$
-\begin{align}
-\tilde{P}_{\text{ensemble}}(y=y \mid v) =
-\sqrt[2^n]{\prod_{d \in \{0,1\}^n} P(y = y \mid v; d)}.
-\end{align}
-$$
+    $$
+    \begin{align}
+    \tilde{P}_{\text{ensemble}}(y=y \mid v) =
+    \sqrt[2^n]{\prod_{d \in \{0,1\}^n} P(y = y \mid v; d)}.
+    \end{align}
+    $$
 
-为了看到权重缩放规则是精确的，我们可以简化 $\widetilde{P}_{ensemble}$ ：
+    为了看到权重缩放规则是精确的，我们可以简化 $\widetilde{P}_{ensemble}$ ：
 
-$$
-\begin{align}
-\tilde{P}_{\text{ensemble}}(y=y \mid v) =
-\sqrt[2^n]{\prod_{d \in \{0,1\}^n} P(y = y \mid v; d)} \\
-= \sqrt[2^n]{\prod_{d \in \{0,1\}^n} \text{softmax}(W^\top(d \odot v) + b)_y} \\
-= \sqrt[2^n]{\prod_{d \in \{0,1\}^n} \frac{\exp (W_{y,:}^\top(d \odot v) + b_y)}
-{\sum_{y'}\exp (W_{y',;}^\top(d \odot v) + b_{y'})}}\\
-= \frac{\sqrt[2^n]{\prod_{d \in \{0,1\}^n}\exp (W_{y,:}^\top(d \odot v) + b_y)}}
+    $$
+    \begin{align}
+    \tilde{P}_{\text{ensemble}}(y=y \mid v) =
+    \sqrt[2^n]{\prod_{d \in \{0,1\}^n} P(y = y \mid v; d)} \\
+        = \sqrt[2^n]{\prod_{d \in \{0,1\}^n} \text{softmax}(W^\top(d \odot v) + b)_y} \\
+        = \sqrt[2^n]{\prod_{d \in \{0,1\}^n} \frac{\exp (W_{y,:}^\top(d \odot v) + b_y)}
+            {\sum_{y'}\exp (W_{y',;}^\top(d \odot v) + b_{y'})}}\\
+                = \frac{\sqrt[2^n]{\prod_{d \in \{0,1\}^n}\exp (W_{y,:}^\top(d \odot v) + b_y)}}
 { \sqrt[2^n] \prod_{d \in \{0,1\}^n} \sum_{y'}\exp (W_{y',:}^\top(d \odot v) + b_{y'})}
 \end{align}
 $$
@@ -123,10 +123,10 @@ $$
 \begin{align}
 \tilde{P}_{\text{ensemble}}(y=y \mid v) &amp;\propto
 \sqrt[2^n]{\prod_{d \in \{0,1\}^n} \exp (W_{y,:}^\top(d \odot v) + b_y)} \\
-&amp; = \exp \Bigg(\frac{1}{2^n} \sum_{d \in \{0,1\}^n} W_{y,;}^\top(d \odot v) + b_y \Bigg) \\
-&amp; = \exp \Big(\frac{1}{2}W_{y,:}^\top v + b_y \Big) .
-\end{align}
-$$
+        &amp; = \exp \Bigg(\frac{1}{2^n} \sum_{d \in \{0,1\}^n} W_{y,;}^\top(d \odot v) + b_y \Bigg) \\
+        &amp; = \exp \Big(\frac{1}{2}W_{y,:}^\top v + b_y \Big) .
+        \end{align}
+        $$
 
 将其代入方程7.58（$\begin{align} P_{\text{ensemble}}(y = y \mid v) = \frac{\tilde{P}_{\text{ensemble}}(y = y \mid v)} {\sum_{y’}\tilde{P}_{\text{ensemble}}(y = y’ \mid v) }, \end{align}$），我们得到一个softmax分类器，权重为 $\frac{1}{2}W$ 。
 
