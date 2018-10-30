@@ -1,4 +1,6 @@
-[![header](../../../assets/header39.jpg)](https://yuenshome.github.io)
+[![header](../../../assets/header22.jpg)](https://yuenshome.github.io)
+
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
 
 # 深度学习正则化系列7：Dropout
 
