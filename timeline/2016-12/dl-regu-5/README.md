@@ -28,173 +28,173 @@ Salakhutdinov和Hinton（2008）描述了一种用于学习用于回归问题的
 
 图 7.2 展示了一种非常常见的多任务学习形式，不同的监督任务（在给定 $x$ 时输出预测类别 $y^{(i)}$ ）共享相同的输入 $x$ ，以及中间层的表示 $h^{(shared)}$ （多任务共享的），这些中间层的聚合因素池也是公共的（capturing a common pool of factors.）。该模型与其相关参数一般可以分为两类部分：
 <ol>
-	<li>特定任务的参数 （只能通过各自特定任务中的样本中获得好的泛化能力），如图 7.2 中的上层。</li>
-	<li>所有任务共享的通用参数（从所有不同任务汇集数据获得性能提升），如图 7.2 中的下层。</li>
-</ol>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2016/12/deeplearning_chapter7_figure7.2.png" alt="" width="309" height="388" />
+    <li>特定任务的参数 （只能通过各自特定任务中的样本中获得好的泛化能力），如图 7.2 中的上层。</li>
+        <li>所有任务共享的通用参数（从所有不同任务汇集数据获得性能提升），如图 7.2 中的下层。</li>
+        </ol>
+        <img class="aligncenter" src="./assets/deeplearning_chapter7_figure7.2.png" alt="" width="309" height="388" />
 
-<strong>图7.2：多任务学习可以在深度学习框架中以多种方式进行，该图描述了一个通用情况，不同任务共享相同的输入但涉及不同的目标随机变量。深层网络的较低层（无论是前馈式的监督学习还是包括具有向下箭头的生成式学习）可以在不同的任务之间共享，而对于特定任务的参数（分别到达 $h^{(1)}$ 和 $h^{(2)}$ 的任务）可以在共享表示　$h^{(shared)}$ 之上被学习。基本的假设是：存在解释输入 $x$ 变化的大量共同权重因子，而每个特定任务只与这些权重因子的子集相关联。在该图的示例中，增加了假设：上层的隐藏层单元 $h^{(1)}$ 和 $h^{(2)}$ 专注于特定任务（分别预测 $y^{(1)}$ 和 $y^{(2)}$），而一些中间级的表示 $h^{(shared)}$ 则在所有任务之间共享。在无监督学习中，一些上层权重与任何输出任务（$h^{(3)}$）都不相关是有意义的： $h^{(3)}$ 相关的权重揭示了输入的变化但与预测 $y^{(1)}$ 或 $y^{(2)}$ 是不相关的。</strong>
+        <strong>图7.2：多任务学习可以在深度学习框架中以多种方式进行，该图描述了一个通用情况，不同任务共享相同的输入但涉及不同的目标随机变量。深层网络的较低层（无论是前馈式的监督学习还是包括具有向下箭头的生成式学习）可以在不同的任务之间共享，而对于特定任务的参数（分别到达 $h^{(1)}$ 和 $h^{(2)}$ 的任务）可以在共享表示　$h^{(shared)}$ 之上被学习。基本的假设是：存在解释输入 $x$ 变化的大量共同权重因子，而每个特定任务只与这些权重因子的子集相关联。在该图的示例中，增加了假设：上层的隐藏层单元 $h^{(1)}$ 和 $h^{(2)}$ 专注于特定任务（分别预测 $y^{(1)}$ 和 $y^{(2)}$），而一些中间级的表示 $h^{(shared)}$ 则在所有任务之间共享。在无监督学习中，一些上层权重与任何输出任务（$h^{(3)}$）都不相关是有意义的： $h^{(3)}$ 相关的权重揭示了输入的变化但与预测 $y^{(1)}$ 或 $y^{(2)}$ 是不相关的。</strong>
 
-因为共享参数，泛化性能得以提升并且可以得到泛化误差界限（Baxter，1995），（与单个任务相比，对于共享参数，样本数量的成比例增加）使共享参数的统计强度大大提高。当然，只有当不同任务间的统计关系的假设是有效时，某些不同任务间的参数才可以被共享使用。
+        因为共享参数，泛化性能得以提升并且可以得到泛化误差界限（Baxter，1995），（与单个任务相比，对于共享参数，样本数量的成比例增加）使共享参数的统计强度大大提高。当然，只有当不同任务间的统计关系的假设是有效时，某些不同任务间的参数才可以被共享使用。
 
-从深度学习的角度来看，有如下的潜在先验知识：观察不同任务的数据变化权重，一些权重是可以在两个或多个任务之间共享的。
-<h1>7.8 提前终止</h1>
-因为大模型具有足够的代表能力，所以在训练大模型完成任务时，我们经常观察到随时间训练误差稳定下降，但是验证集误差开始再次上升。这个过程的示例请参见图7.3 ，该过程一般都会发生。
+        从深度学习的角度来看，有如下的潜在先验知识：观察不同任务的数据变化权重，一些权重是可以在两个或多个任务之间共享的。
+        <h1>7.8 提前终止</h1>
+        因为大模型具有足够的代表能力，所以在训练大模型完成任务时，我们经常观察到随时间训练误差稳定下降，但是验证集误差开始再次上升。这个过程的示例请参见图7.3 ，该过程一般都会发生。
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2016/12/deeplearning_chapter7_figure7.3.png" alt="" width="895" height="429" />
+        <img class="aligncenter" src="./assets/deeplearning_chapter7_figure7.3.png" alt="" width="895" height="429" />
 
-<strong>图7.3：显示负对数似然损失随时间变化的学习曲线（横坐标表示基于数据集的训练迭代次数或者一次完整的数据集遍历）。 在本例中，我们在 MNIST 上训练一个 maxout 网络。观察到训练集的目标函数值随时间持续减小，但验证集平均损失函数值开始再次增加，形成不对称的 U 形曲线。</strong>
+        <strong>图7.3：显示负对数似然损失随时间变化的学习曲线（横坐标表示基于数据集的训练迭代次数或者一次完整的数据集遍历）。 在本例中，我们在 MNIST 上训练一个 maxout 网络。观察到训练集的目标函数值随时间持续减小，但验证集平均损失函数值开始再次增加，形成不对称的 U 形曲线。</strong>
 
-这意味着我们可以得到验证集误差最低时（并且很可能有更低的测试集误差）的模型。每当验证集上的误差降低时，我们便会存储此时的模型参数副本。 当训练算法终止时，我们返回所有存储的模型参数，而不是最后一次的模型参数。当达到预先规定的迭代次数没有参数比最佳记录的验证误差更小时，该算法终止。 这个过程在算法中有更正式的指定。
+        这意味着我们可以得到验证集误差最低时（并且很可能有更低的测试集误差）的模型。每当验证集上的误差降低时，我们便会存储此时的模型参数副本。 当训练算法终止时，我们返回所有存储的模型参数，而不是最后一次的模型参数。当达到预先规定的迭代次数没有参数比最佳记录的验证误差更小时，该算法终止。 这个过程在算法中有更正式的指定。
 
-<hr />
+        <hr />
 
-&nbsp;
-<h2>算法7.1 用来确定最佳训练次数的提前终止（early_stopping）元算法</h2>
-这种元算法是一种通用策略，可以很好地与各种训练算法和验证集上的误差量化方法相结合。
-令 $n$ 为两次评估之间的步数。
-令 $p$ 为耐心程度（patience），即在算法停止前容忍算法出现更大验证集误差的次数。
-令 $\theta_{o}$ 为初始权重参数。
-$\theta \leftarrow \theta_{o}$
-$i \leftarrow 0$
-$j \leftarrow 0$
-$v \leftarrow \infty$
-$\theta^* \leftarrow \theta$
-$i^* \leftarrow i$
-WHILE $j &lt; p$
-$\quad$ 运行训练算法$n$步，更新 $\theta$ 。
-$\quad$ $i \leftarrow i + n$
-$\quad$ $v' \leftarrow \text{ValidationSetError}(\theta)$
-$\quad$ IF $v' &lt; v$
-$\quad \quad j \leftarrow 0$
-$\quad \quad \theta^* \leftarrow \theta$
-$\quad \quad i^* \leftarrow i$
-$\quad \quad v \leftarrow v'$
-$\quad $ ELSE
-$\quad \quad j \leftarrow j + 1$
-$\quad$ ENDIF
-ENDWHILE
-最佳参数为 $theta^*$，最佳训练步数为 $i^*$
+        &nbsp;
+        <h2>算法7.1 用来确定最佳训练次数的提前终止（early_stopping）元算法</h2>
+        这种元算法是一种通用策略，可以很好地与各种训练算法和验证集上的误差量化方法相结合。
+        令 $n$ 为两次评估之间的步数。
+        令 $p$ 为耐心程度（patience），即在算法停止前容忍算法出现更大验证集误差的次数。
+        令 $\theta_{o}$ 为初始权重参数。
+        $\theta \leftarrow \theta_{o}$
+        $i \leftarrow 0$
+        $j \leftarrow 0$
+        $v \leftarrow \infty$
+        $\theta^* \leftarrow \theta$
+        $i^* \leftarrow i$
+        WHILE $j &lt; p$
+        $\quad$ 运行训练算法$n$步，更新 $\theta$ 。
+        $\quad$ $i \leftarrow i + n$
+        $\quad$ $v' \leftarrow \text{ValidationSetError}(\theta)$
+        $\quad$ IF $v' &lt; v$
+        $\quad \quad j \leftarrow 0$
+        $\quad \quad \theta^* \leftarrow \theta$
+        $\quad \quad i^* \leftarrow i$
+        $\quad \quad v \leftarrow v'$
+        $\quad $ ELSE
+        $\quad \quad j \leftarrow j + 1$
+        $\quad$ ENDIF
+        ENDWHILE
+        最佳参数为 $theta^*$，最佳训练步数为 $i^*$
 
-<hr />
+        <hr />
 
-这种策略被称为提前终止。它可能是深度学习中最常用的正则化形式，该方法的普及是因为有效和简单。
+        这种策略被称为提前终止。它可能是深度学习中最常用的正则化形式，该方法的普及是因为有效和简单。
 
-提前终止（early stopping）可以被认为是非常高效的超参数选择算法。在这一个观点下，训练步数只是另一个超参数。可以在图7.3中看到，这个超参数具有 U 形验证集的性能曲线。大多数控制模型能力的超参数都具有如图5.3所示的 U 形验证集性能曲线。在使用提起终止（early stopping）的情况下，通过确定对训练集拟合所需的训练步数来控制模型能力。大多数超参数选择所需的计算和检查的代价都很大，在训练开始时设置超参数，然后运行几步训练查看效果。“训练时间”（training time）超参数是唯一的，因为它定义了训练所需的时间，并在此训练过程中尝试了其他超参数的许多值。通过提前终止（early stopping）自动选择此超参数的唯一需要的是在训练期间定期对验证集评估。理想情况下，这个过程是在单独机器，或单独CPU或单独GPU上进行的，与训练过程并行完成。如果没有这么多计算资源，则可以使用比训练集小的验证集验证，或减少评估验证集误差的次数，来获得最佳训练时间的大致估计来降低周期性估计超参数带来的成本。
+        提前终止（early stopping）可以被认为是非常高效的超参数选择算法。在这一个观点下，训练步数只是另一个超参数。可以在图7.3中看到，这个超参数具有 U 形验证集的性能曲线。大多数控制模型能力的超参数都具有如图5.3所示的 U 形验证集性能曲线。在使用提起终止（early stopping）的情况下，通过确定对训练集拟合所需的训练步数来控制模型能力。大多数超参数选择所需的计算和检查的代价都很大，在训练开始时设置超参数，然后运行几步训练查看效果。“训练时间”（training time）超参数是唯一的，因为它定义了训练所需的时间，并在此训练过程中尝试了其他超参数的许多值。通过提前终止（early stopping）自动选择此超参数的唯一需要的是在训练期间定期对验证集评估。理想情况下，这个过程是在单独机器，或单独CPU或单独GPU上进行的，与训练过程并行完成。如果没有这么多计算资源，则可以使用比训练集小的验证集验证，或减少评估验证集误差的次数，来获得最佳训练时间的大致估计来降低周期性估计超参数带来的成本。
 
-提前终止（early stopping）还要做的保存一份当前得到的最佳参数的副本。该操作通常可以忽略，因为可以将这些参数存储在较慢和较大形式的存储器中（例如，在 GPU 存储器中训练，在主机存储器或磁盘驱动器中存储训练得到的最佳参数）。由于最佳参数很少写入并且在训练期间从不读取，所以这些偶尔的慢写入对总训练时间几乎没有影响。
+        提前终止（early stopping）还要做的保存一份当前得到的最佳参数的副本。该操作通常可以忽略，因为可以将这些参数存储在较慢和较大形式的存储器中（例如，在 GPU 存储器中训练，在主机存储器或磁盘驱动器中存储训练得到的最佳参数）。由于最佳参数很少写入并且在训练期间从不读取，所以这些偶尔的慢写入对总训练时间几乎没有影响。
 
-提前终止（early stopping）是一种非常不明显的正则化形式，因为它对训练中的目标函数或参数空间的值的集合几乎没有改变。这意味着在不损害学习的动态过程中，提前终止（early stopping）是易于使用的。这与权重衰减形成对比，必须注意不要使用太大的权重衰减，因为这回导致网络陷入陷入不好的局部最小值，对应得到不正确的小值权重。
+        提前终止（early stopping）是一种非常不明显的正则化形式，因为它对训练中的目标函数或参数空间的值的集合几乎没有改变。这意味着在不损害学习的动态过程中，提前终止（early stopping）是易于使用的。这与权重衰减形成对比，必须注意不要使用太大的权重衰减，因为这回导致网络陷入陷入不好的局部最小值，对应得到不正确的小值权重。
 
-提前终止（early stopping）可以单独使用或与其它正则化策略结合使用。即使通过修正目标函数的方法以促进更好的泛化性能的正则化策略时，最好的泛化表现很少出现在训练目标函数的局部最小值处。
+        提前终止（early stopping）可以单独使用或与其它正则化策略结合使用。即使通过修正目标函数的方法以促进更好的泛化性能的正则化策略时，最好的泛化表现很少出现在训练目标函数的局部最小值处。
 
-提起终止（early stopping）需要一个验证集，这意味着有一些训练数据不会用于模型训练。为了能最好地利用这一额外的数据，其一是可以在初始训练与提前终止完成之后执行额外的训练。在第二个额外训练步骤中，包括所有训练数据。有两个基本策略可以用于该第二训练过程。
+        提起终止（early stopping）需要一个验证集，这意味着有一些训练数据不会用于模型训练。为了能最好地利用这一额外的数据，其一是可以在初始训练与提前终止完成之后执行额外的训练。在第二个额外训练步骤中，包括所有训练数据。有两个基本策略可以用于该第二训练过程。
 
-一个策略（算法7.2）是再次初始化模型并基于所有数据重新训练。在第二次训练中，我们训练使用第一次训练中提前停止确定的最佳的迭代次数。在此过程中有一些细节，例如，没有一种好的方式来知道是否基于数据集重新训练相同数量的参数更新，或相同数量的传播。在第二轮训练中，每次通过数据集将需要更多的参数更新，因为训练集更大。
+        一个策略（算法7.2）是再次初始化模型并基于所有数据重新训练。在第二次训练中，我们训练使用第一次训练中提前停止确定的最佳的迭代次数。在此过程中有一些细节，例如，没有一种好的方式来知道是否基于数据集重新训练相同数量的参数更新，或相同数量的传播。在第二轮训练中，每次通过数据集将需要更多的参数更新，因为训练集更大。
 
-<hr />
+        <hr />
 
-<h2>算法7.2</h2>
-使用提前终止（early stopping）确定训练步数，之后在所有数据重新训练的元算法。
+        <h2>算法7.2</h2>
+        使用提前终止（early stopping）确定训练步数，之后在所有数据重新训练的元算法。
 
-$X^{(train)}$ 和 $y^{(train)}$ 是训练集。
-将训练集$X^{(train)}$ 和 $y^{(train)}$ 分别切分成 $(X^{(subtrain)}, X^{(valid)})$ 和 $(y^{(subtrain)}, y^{(valid)})$ 。
-执行提前终止（算法7.1），随机初始化 $\theta$ ，使用训练数据集 $(X^{(subtrain)}, y^{subtrain})$ 以及验证数据集 $X^{(valid)}$ 和 $y^{(valid)}$ 。将返回 $i^*$ ，即最佳的迭代次数。
-再次对 $\theta$ 随机初始化。
-基于训练数据集 $X^{train}$ 和 $y^{(train)}$ 迭代 $i^*$ 次。
+        $X^{(train)}$ 和 $y^{(train)}$ 是训练集。
+        将训练集$X^{(train)}$ 和 $y^{(train)}$ 分别切分成 $(X^{(subtrain)}, X^{(valid)})$ 和 $(y^{(subtrain)}, y^{(valid)})$ 。
+        执行提前终止（算法7.1），随机初始化 $\theta$ ，使用训练数据集 $(X^{(subtrain)}, y^{subtrain})$ 以及验证数据集 $X^{(valid)}$ 和 $y^{(valid)}$ 。将返回 $i^*$ ，即最佳的迭代次数。
+        再次对 $\theta$ 随机初始化。
+        基于训练数据集 $X^{train}$ 和 $y^{(train)}$ 迭代 $i^*$ 次。
 
-<hr />
+        <hr />
 
-另一个基于所有数据的策略是保持从第一轮训练中获得的参数，然后继续训练，但现在使用所有数据。在该阶段已经不再有一个何时哪次迭代停止的引导。相反，可以监视验证集上的平均损失函数，并继续训练直到它低于训练集目标函数的值，在该值处执行提前终止（early stopping）。这种策略避免了从头开始重新训练模型的高成本，但是表现并不是很好。例如，无法保证验证集的目标函数值将达到目标值，该策略甚至不能保证终止。这个过程在算法7.3中有更正式地描述。
+        另一个基于所有数据的策略是保持从第一轮训练中获得的参数，然后继续训练，但现在使用所有数据。在该阶段已经不再有一个何时哪次迭代停止的引导。相反，可以监视验证集上的平均损失函数，并继续训练直到它低于训练集目标函数的值，在该值处执行提前终止（early stopping）。这种策略避免了从头开始重新训练模型的高成本，但是表现并不是很好。例如，无法保证验证集的目标函数值将达到目标值，该策略甚至不能保证终止。这个过程在算法7.3中有更正式地描述。
 
-提前终止（early stopping）也是有用的，因为它减少了训练过程的计算成本。除了由于限制训练迭代次数而明显降低计算成本之外，它还具有提供正则化的好处，而不需要在成本函数或附加项的梯度的计算中添加惩罚项。
+        提前终止（early stopping）也是有用的，因为它减少了训练过程的计算成本。除了由于限制训练迭代次数而明显降低计算成本之外，它还具有提供正则化的好处，而不需要在成本函数或附加项的梯度的计算中添加惩罚项。
 
-<strong>如何让提前终止（early stopping）发挥正则化的作用</strong>：迄今为止，我们已经说过提前终止（early stopping）是一个正则化策略，但支持该说法的只有通过绘制出验证集误差的U型学习曲线。提前终止规范模型的实际机制是什么？ Bishop（1995a）、Sjöberg和Ljung（1995）认为提前终止（early stopping）具有将优化过程限制在初始参数值 $\theta$ 附近相对小范围参数空间的效果，如图7.4所示。具体而言，假设经过 $\tau$ 步优化（训练迭代的次数）和使用学习速率 $\epsilon$ 。我们可以将这二者乘积 $\epsilon \tau$ 作为模型能力（effective capacity）的一种度量。假设梯度值是有范围限制的，那么限制迭代次数和学习速率将会限制从 $\theta_0$ 可达到的参数空间的范围。那么可以说， $\tau$ 起到了权重衰减系数的倒数（reciprocal of the coefficient used for weight decay）的作用。
+        <strong>如何让提前终止（early stopping）发挥正则化的作用</strong>：迄今为止，我们已经说过提前终止（early stopping）是一个正则化策略，但支持该说法的只有通过绘制出验证集误差的U型学习曲线。提前终止规范模型的实际机制是什么？ Bishop（1995a）、Sjöberg和Ljung（1995）认为提前终止（early stopping）具有将优化过程限制在初始参数值 $\theta$ 附近相对小范围参数空间的效果，如图7.4所示。具体而言，假设经过 $\tau$ 步优化（训练迭代的次数）和使用学习速率 $\epsilon$ 。我们可以将这二者乘积 $\epsilon \tau$ 作为模型能力（effective capacity）的一种度量。假设梯度值是有范围限制的，那么限制迭代次数和学习速率将会限制从 $\theta_0$ 可达到的参数空间的范围。那么可以说， $\tau$ 起到了权重衰减系数的倒数（reciprocal of the coefficient used for weight decay）的作用。
 
-<hr />
+        <hr />
 
-<h2>算法7.3</h2>
-元算法在目标函数（即损失函数）值即将过拟合时候使用提前终止（early stopping）策略，直到目标函数值开始过拟合时之后继续训练。
+        <h2>算法7.3</h2>
+        元算法在目标函数（即损失函数）值即将过拟合时候使用提前终止（early stopping）策略，直到目标函数值开始过拟合时之后继续训练。
 
-$X^{(train)}$ 和 $y^{(train)}$ 是训练集。
-将训练集 $X^{(train)}$ 和 $y^{(train)}$ 分别切分成 $(X^{(subtrain)}, X^{(valid)})$ 和 $(y^{(subtrain)}, y^{(valid)})$ 。
-执行提前终止（算法7.1），随机初始化 $\theta$ ，使用训练数据集 $(X^{(subtrain)}, y^{subtrain})$ 以及验证数据集 $X^{(valid)}$ 和 $y^{(valid)}$ 。这将会对 $\theta$ 进行更新。
-$\epsilon \leftarrow J(\theta, X^{(subtrain)}, y^{(subtrain)})$
-当（while） $J(\theta, X^{(valid)}, y^{(valid)}) &gt; \epsilon$ 时，
-$\quad$ 基于 $X^{(train)}, y^{(train)}$ 训练 $n$ 步迭代，
-结束（while）循环。
+        $X^{(train)}$ 和 $y^{(train)}$ 是训练集。
+        将训练集 $X^{(train)}$ 和 $y^{(train)}$ 分别切分成 $(X^{(subtrain)}, X^{(valid)})$ 和 $(y^{(subtrain)}, y^{(valid)})$ 。
+        执行提前终止（算法7.1），随机初始化 $\theta$ ，使用训练数据集 $(X^{(subtrain)}, y^{subtrain})$ 以及验证数据集 $X^{(valid)}$ 和 $y^{(valid)}$ 。这将会对 $\theta$ 进行更新。
+        $\epsilon \leftarrow J(\theta, X^{(subtrain)}, y^{(subtrain)})$
+        当（while） $J(\theta, X^{(valid)}, y^{(valid)}) &gt; \epsilon$ 时，
+        $\quad$ 基于 $X^{(train)}, y^{(train)}$ 训练 $n$ 步迭代，
+        结束（while）循环。
 
-<hr />
+        <hr />
 
-事实上，我们可以展示如何在具有二次的损失函数和梯度下降的线性模型的情况下，提前终止（early stopping）等价于 $L^2$ 正则化。
+        事实上，我们可以展示如何在具有二次的损失函数和梯度下降的线性模型的情况下，提前终止（early stopping）等价于 $L^2$ 正则化。
 
-为了与经典的 $L^2$ 正则化比较，我们做出一个简单的设定，其中只有参数是线性权重（即 $\theta = w$ ）。我们可以使用在权重 $w^*$ 为最佳值的邻域中的二次近似来建模成本函数 $J$：
+        为了与经典的 $L^2$ 正则化比较，我们做出一个简单的设定，其中只有参数是线性权重（即 $\theta = w$ ）。我们可以使用在权重 $w^*$ 为最佳值的邻域中的二次近似来建模成本函数 $J$：
 
-$$
-\hat{J} (\theta) = J(w^*) + \frac{1}{2} (w - w^*)^T H(w - w^*),
-$$
+        $$
+        \hat{J} (\theta) = J(w^*) + \frac{1}{2} (w - w^*)^T H(w - w^*),
+        $$
 
-其中， $H$ 是损失函数 $J$ 在权重参数 $w$ 取值为 $w^*$ 时的海森矩阵。假设 $w^*$ 是损失函数 $J(w)$ 最小值时的取值，我们知道 $H$ 是半正定矩阵。在局部泰勒级数近似（local Taylor series approximation）下，给出如下梯度的计算公式：
+        其中， $H$ 是损失函数 $J$ 在权重参数 $w$ 取值为 $w^*$ 时的海森矩阵。假设 $w^*$ 是损失函数 $J(w)$ 最小值时的取值，我们知道 $H$ 是半正定矩阵。在局部泰勒级数近似（local Taylor series approximation）下，给出如下梯度的计算公式：
 
-$$
-\triangledown_w \hat{J}(w) = H(w - w^*).
-$$
+        $$
+        \triangledown_w \hat{J}(w) = H(w - w^*).
+        $$
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/deeplearning_chapter7_figure7.4.png" alt="" width="766" height="379" />
+        <img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2017/deeplearning_chapter7_figure7.4.png" alt="" width="766" height="379" />
 
-图7.4：提起终止（early stopping）的图像描绘。（左）图中的实线等高线表示负对数似然（negative log-likelihood）的轮廓，短划线则是随机梯度下降从起始点开始的轨迹线。最终算法停止的位置不在损失函数最小值对应权重参数 $w^*$ 的位置处，提前终止（early stopping）会使轨迹线早于损失函数最小值对应的 $w^*$ 处停下。（右）图是用于和 $L^2$ 正则效果比较的图示，虚线圈表示 $L^2$ 正则的等高线， $L^2$ 正则会使总损失函数的最小值比未正则化的损失函数的最小值更靠近原点。
+        图7.4：提起终止（early stopping）的图像描绘。（左）图中的实线等高线表示负对数似然（negative log-likelihood）的轮廓，短划线则是随机梯度下降从起始点开始的轨迹线。最终算法停止的位置不在损失函数最小值对应权重参数 $w^*$ 的位置处，提前终止（early stopping）会使轨迹线早于损失函数最小值对应的 $w^*$ 处停下。（右）图是用于和 $L^2$ 正则效果比较的图示，虚线圈表示 $L^2$ 正则的等高线， $L^2$ 正则会使总损失函数的最小值比未正则化的损失函数的最小值更靠近原点。
 
-我们将在训练期间研究参数向量遵循的轨迹。为简单起见，将初始参数向量设置为原点（对与神经网络而言，为了获得隐含单元间的对称破碎（symmetry breaking），如第6.2小节描述的，不能设定初始时的权重参数都为 $0$ 。但该论点适用于其它任何初始值 $w^{(0)}$ ），即 $w^{(0)}=0$ 。 让我们通过分析 $\hat{J}$ 上的梯度下降来研究与 $J$ 上梯度下降的近似行为：
+        我们将在训练期间研究参数向量遵循的轨迹。为简单起见，将初始参数向量设置为原点（对与神经网络而言，为了获得隐含单元间的对称破碎（symmetry breaking），如第6.2小节描述的，不能设定初始时的权重参数都为 $0$ 。但该论点适用于其它任何初始值 $w^{(0)}$ ），即 $w^{(0)}=0$ 。 让我们通过分析 $\hat{J}$ 上的梯度下降来研究与 $J$ 上梯度下降的近似行为：
 
-$$
-\begin{align}
-w^{(\tau)} &amp; = w^{(\tau - 1)} - \epsilon \bigtriangledown_w \hat{J} (w^{(\tau - 1)}) \\
-&amp; = w^{(\tau - 1)} - \epsilon H (w^{(\tau - 1)} - w^*) \\
-w^{(\tau)} - w^* &amp; = (I - \epsilon H)(w^{(\tau - 1)} - w^*).
-\end{align}
-$$
+        $$
+        \begin{align}
+        w^{(\tau)} &amp; = w^{(\tau - 1)} - \epsilon \bigtriangledown_w \hat{J} (w^{(\tau - 1)}) \\
+        &amp; = w^{(\tau - 1)} - \epsilon H (w^{(\tau - 1)} - w^*) \\
+        w^{(\tau)} - w^* &amp; = (I - \epsilon H)(w^{(\tau - 1)} - w^*).
+        \end{align}
+        $$
 
-让我们现在在 $H$ 的特征向量的空间中重写这个表达式，利用 $H$ 的特征分解： $H = Q \Lambda Q^T$ ，其中 $\Lambda$ 是对角矩阵， $Q$ 是特征向量的正交基。
+        让我们现在在 $H$ 的特征向量的空间中重写这个表达式，利用 $H$ 的特征分解： $H = Q \Lambda Q^T$ ，其中 $\Lambda$ 是对角矩阵， $Q$ 是特征向量的正交基。
 
-$$
-\begin{align}
-w^{(\tau)} - w^* &amp; = (I - \epsilon Q \Lambda Q^T) (w^{(\tau - 1)} - w^*) \\
-Q^T (w^{(\tau)} - w^*) &amp; = (I - \epsilon \Lambda ) Q^T (w^{(\tau - 1)} - w^*)
-\end{align}
-$$
+        $$
+        \begin{align}
+        w^{(\tau)} - w^* &amp; = (I - \epsilon Q \Lambda Q^T) (w^{(\tau - 1)} - w^*) \\
+        Q^T (w^{(\tau)} - w^*) &amp; = (I - \epsilon \Lambda ) Q^T (w^{(\tau - 1)} - w^*)
+        \end{align}
+        $$
 
-假设 $w^{(0)} = 0$ 同时 $\epsilon$ 选择一个足够小的保证 $|1 - \epsilon \lambda_i| &lt; 1$ 成立的值。 $\tau$ 参数更新后训练的参数轨迹如下：
+        假设 $w^{(0)} = 0$ 同时 $\epsilon$ 选择一个足够小的保证 $|1 - \epsilon \lambda_i| &lt; 1$ 成立的值。 $\tau$ 参数更新后训练的参数轨迹如下：
 
-$$
-Q^T w^{(\tau)} = [I - (I - \epsilon \Lambda)^{\tau}] Q^T w^*.
-$$
+        $$
+        Q^T w^{(\tau)} = [I - (I - \epsilon \Lambda)^{\tau}] Q^T w^*.
+        $$
 
-现在，用于 $L^2$ 正则化的等式7.13（即 $\widetilde{w} = Q(\Lambda + \alpha I)^{-1} \Lambda Q^T w^*.$ ）中的 $Q^T \widetilde{w}$ 的表达式可以后推为：
+        现在，用于 $L^2$ 正则化的等式7.13（即 $\widetilde{w} = Q(\Lambda + \alpha I)^{-1} \Lambda Q^T w^*.$ ）中的 $Q^T \widetilde{w}$ 的表达式可以后推为：
 
-$$
-\begin{align}
-Q^T \widetilde{w} &amp; = (\Lambda + \alpha I)^{-1} \Lambda Q^T w^* \\
-Q^T \widetilde{w} &amp; = [I - (\Lambda + \alpha I)^{-1} \alpha] Q^T w^*
-\end{align}
-$$
+        $$
+        \begin{align}
+        Q^T \widetilde{w} &amp; = (\Lambda + \alpha I)^{-1} \Lambda Q^T w^* \\
+        Q^T \widetilde{w} &amp; = [I - (\Lambda + \alpha I)^{-1} \alpha] Q^T w^*
+        \end{align}
+        $$
 
-比较方程7.40（ $Q^T w^{(\tau)} = [I - (I - \epsilon \Lambda)^{\tau}] Q^T w^*$ ）与7.42（ $Q^T \widetilde{w} = [I - (\Lambda + \alpha I)^{-1} \alpha] Q^T w^*$ ），如果选择超参数 $\epsilon, \alpha, \tau$ ，那么有：
+        比较方程7.40（ $Q^T w^{(\tau)} = [I - (I - \epsilon \Lambda)^{\tau}] Q^T w^*$ ）与7.42（ $Q^T \widetilde{w} = [I - (\Lambda + \alpha I)^{-1} \alpha] Q^T w^*$ ），如果选择超参数 $\epsilon, \alpha, \tau$ ，那么有：
 
-$$
-(I - \epsilon \Lambda)^{\tau} = (\Lambda + \alpha I)^{-1} \alpha,
-$$
+        $$
+        (I - \epsilon \Lambda)^{\tau} = (\Lambda + \alpha I)^{-1} \alpha,
+        $$
 
-那么可以看出 $L^2$ 正则化和提前终止（early stopping）是等价的（至少在目标函数的二次近似下）。进一步讲，通过采用对数和使用对数 $\log{(1+x)}$ 的序列展开，可以得出结论：当所有 $\lambda_i$ 都很小时（即 $\epsilon \lambda_i \ll 1\ and\ \lambda_i/\alpha \ll 1$ ），那么
+        那么可以看出 $L^2$ 正则化和提前终止（early stopping）是等价的（至少在目标函数的二次近似下）。进一步讲，通过采用对数和使用对数 $\log{(1+x)}$ 的序列展开，可以得出结论：当所有 $\lambda_i$ 都很小时（即 $\epsilon \lambda_i \ll 1\ and\ \lambda_i/\alpha \ll 1$ ），那么
 
-$$
-\begin{align}
-\tau \approx \frac{1}{\epsilon \alpha}, \\
-\alpha \approx \frac{1}{\tau \epsilon}.
-\end{align}
-$$
+        $$
+        \begin{align}
+        \tau \approx \frac{1}{\epsilon \alpha}, \\
+        \alpha \approx \frac{1}{\tau \epsilon}.
+        \end{align}
+        $$
 
-也就是说，在这些假设下，训练迭代次数 $\tau$ 与 $L^2$ 正则化参数成反比， $\tau \epsilon$ 具有权重衰减系数倒数的作用。
+        也就是说，在这些假设下，训练迭代次数 $\tau$ 与 $L^2$ 正则化参数成反比， $\tau \epsilon$ 具有权重衰减系数倒数的作用。
 
-对应于（目标函数的）曲率显著方向的参数值被正则化为小于较小曲率的方向。当然，在提前终止（early stopping）中，这实际上对应于曲率显著变化方向的参数倾向学习较小曲率方向的参数（this really means that parameters that correspond to directions of signiﬁcant curvature tend to learn early relative to parameters corresponding to directions of less curvature.）。
+        对应于（目标函数的）曲率显著方向的参数值被正则化为小于较小曲率的方向。当然，在提前终止（early stopping）中，这实际上对应于曲率显著变化方向的参数倾向学习较小曲率方向的参数（this really means that parameters that correspond to directions of signiﬁcant curvature tend to learn early relative to parameters corresponding to directions of less curvature.）。
 
-本节中的推导已经表明，长度为 $\tau$ 的轨迹在对应于 $L^2$ 正则化目标的最小值的点处结束。提前终止（early stopping）当然不仅仅是对轨迹长度的限制；相反，提前终止（early stopping）通常涉及监测验证集误差，以便在空间中特别好的点处停止轨迹。因此，提前终止（early stopping）具有的优点要超过权重衰减，即提前终止（early stopping）自动地确定正则化的正确量，然而权重衰减需要做很多不同的超参数取值时的训练实验。
+        本节中的推导已经表明，长度为 $\tau$ 的轨迹在对应于 $L^2$ 正则化目标的最小值的点处结束。提前终止（early stopping）当然不仅仅是对轨迹长度的限制；相反，提前终止（early stopping）通常涉及监测验证集误差，以便在空间中特别好的点处停止轨迹。因此，提前终止（early stopping）具有的优点要超过权重衰减，即提前终止（early stopping）自动地确定正则化的正确量，然而权重衰减需要做很多不同的超参数取值时的训练实验。
