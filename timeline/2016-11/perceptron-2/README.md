@@ -70,7 +70,9 @@ $$</li>
 3 1 1 -1</pre>
 <h2>2.3 Python 代码</h2>
 书中给出的计算步骤，我这里省略，给出感知机原始形式的算法 Python 代码实现：
-<pre class="lang:python decode:true" title="Perception.py"># -*- coding: utf-8 -*-
+
+```python
+# -*- coding: utf-8 -*-
 ################################### PART0 DESCRIPTION #################################
 # Filename: Perceptron.py
 # Description:
@@ -329,10 +331,14 @@ if __name__ == "__main__":
     # 绘制损失函数和错分率随 epoch 变化的图像
     p.plotChart(costList=costList,\
                 misRateList=misRateList,\
-                saveFigPath=saveFigPath)</pre>
+                saveFigPath=saveFigPath)
+```
+		
 <h2>2.4 结果输出</h2>
 结果输出，由于参数初始时是随机的，所以每次运行的结果不同，下面请参考：
-<pre class="lang:python decode:true">/usr/local/lib/anaconda2/bin/python /home/yuens/Projects/PyCharm/statistical-learning-methods-note/chapter_2_perceptron/Perceptron.py
+
+```shell
+/usr/local/lib/anaconda2/bin/python /home/yuens/Projects/PyCharm/statistical-learning-methods-note/chapter_2_perceptron/Perceptron.py
 header:['id', 'x1', 'x2', 'y']
 idList:[1, 2, 3]
 xList:[[3, 3], [4, 3], [1, 1]]
@@ -654,14 +660,15 @@ len(p.wList):49
 len(p.bList):49
 
 Process finished with exit code 130
-</pre>
+```
+
 那么，基于三个实例的输入训练数据的感知机为：
 
 $$
 f(x) = \text{sign} (-0.1214 x_1 + 0.3062 x_2 + -0.298)
 $$
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2016/11/perceptron_cost_and_mis-classification_rate.png" alt="" width="509" height="572" />
+<img class="aligncenter" src="./assets/perceptron_cost_and_mis-classification_rate.png" alt="" width="509" height="572" />
 <p style="text-align: center;"><strong>Python 代码绘制的成本函数及错分率图像</strong></p>
 
 <h1>3. 算法的收敛性</h1>
@@ -710,6 +717,7 @@ $$
 \end{align}
 $$
 即
+
 $$
 \hat{w}_k = \hat{w}_{k-1} + \eta y_i \hat{x}_i
 $$
@@ -718,6 +726,7 @@ $$
 
 <span style="color: #ff0000;">（1）$\hat{w}_k \cdot \hat{w}_{opt} \geq k \eta \gamma$</span>
 该式由 $\hat{w}_k = \hat{w}_{k-1} + \eta y_i \hat{x}_i$ 及 $y_i(\hat{w}_{opt} \cdot \hat{x}_i) = y_i (w_{opt} \cdot x_i + b_{opt}) \geq \gamma$ 得
+
 $$
 \begin{align}
 \hat{w}_k \hat{w}_{opt} &amp; = \hat{w}_{k-1} \cdot \hat{w}_{opt} + \eta y_i \hat{w}_{opt} \cdot \hat{x}_i \\
@@ -805,7 +814,9 @@ $$
 <h1>5. 感知机对偶形式的 Python 代码</h1>
 同样还是上面的问题，输入数据这里就省略了。使用感知机学习算法对偶形式求感知机模型，直接上代码。
 <h2>5.1 Python 代码</h2>
-<pre class="lang:python decode:true" title="Dual-form_Perceptron.py"># -*- coding: utf-8 -*-
+
+```python
+# -*- coding: utf-8 -*-
 ################################### PART0 DESCRIPTION #################################
 # Filename: Dual-form_Perceptron.py
 # Description:
@@ -1106,9 +1117,13 @@ if __name__ == "__main__":
     # 绘制模型的损失函数及错分率性能图像
     dfp.plotChart(costList=costList,\
                   misRateList=misRateList,\
-                  saveFigPath=saveFigPath)</pre>
+                  saveFigPath=saveFigPath)
+```
+
 <h2>5.2 结果输出</h2>
-<pre class="lang:python decode:true">/usr/local/lib/anaconda2/bin/python /home/yuens/Projects/PyCharm/statistical-learning-methods-note/chapter_2_perceptron/Dual-form_Perceptron.py
+
+```shell
+/usr/local/lib/anaconda2/bin/python /home/yuens/Projects/PyCharm/statistical-learning-methods-note/chapter_2_perceptron/Dual-form_Perceptron.py
 header:['id', 'x1', 'x2', 'y']
 idList:[1, 2, 3]
 xList:[[3, 3], [4, 3], [1, 1]]
@@ -1175,7 +1190,8 @@ len(dfp.alphaList):16
 len(dfp.bList):16
 
 Process finished with exit code 0
-</pre>
+```
+
 那么，该对偶形式的感知机模型为：
 
 $$
@@ -1186,7 +1202,7 @@ $$
 
 绘制出的损失函数图像及错分率图像为：
 
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2016/11/DualFormPerceptronPlot.png" alt="" width="515" height="579" />
+<img class="aligncenter" src="./assets/DualFormPerceptronPlot.png" alt="" width="515" height="579" />
 <h1>6. 本章概要</h1>
 <ol>
 	<li>感知机是根据输入实例的特征向量 $x$ 对其进行二分类的线性分类器：
