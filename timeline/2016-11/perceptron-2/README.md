@@ -59,7 +59,7 @@ $$</li>
 该算法是感知机学习算法的基本算法，称为原始形式，对应于后面的对偶形式。感知机学习算法简单且易于实现。
 <h1>2. 感知机原始形式的 Python 代码</h1>
 <h2>2.1 问题描述</h2>
-<img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com/uploads/2016/11/perceptron_demo.png" alt="" width="499" height="447" />
+<img class="aligncenter" src="./assets/perceptron_demo.png" alt="" width="499" height="447" />
 <p style="text-align: center;"><strong>数据实例展示</strong></p>
 例 如图所示的训练数据集，其正实例点是 $x_1 = (3,3)^T, x_2 = (4,3)^T$ ，负实例点是 $x_3 = (1,1)^T$ ，试用感知机学习算法的原始形式求感知机模型 $f(x) = \text{sign}(w \cdot x + b)$ 。这里， $w=(w^{(1)}, w^{(2)}), x=(x^{(1)}, x^{(2)})^T$ 。
 <h2>2.2 输入数据</h2>
