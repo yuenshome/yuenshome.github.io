@@ -93,7 +93,8 @@ $$
 <h1>3. Python代码</h1>
 代码比较有意思的地方在于——用于选择合适的 k 值的函数（chooseK）。基于所有的样本， k 从 1 到所有样本个数依次遍历，计算不同 k 值下的误分类个数，返回误分类个数最小时候的 k 值为 bestK 。
 <h2>3.1 输入数据文件</h2>
-<pre class="lang:python decode:true " title="input1">id x^1 x^2 y
+
+```
 1 1 1 1
 2 5 1 1
 3 4 4 2
@@ -101,9 +102,12 @@ $$
 5 -1 -3 1
 6 -2 -3 1
 7 8 9 2
-8 0 -2 2</pre>
+8 0 -2 2
+```
+
 <h2>3.2 代码</h2>
-<pre class="lang:python decode:true" title="kNN.py"># -*- coding: utf-8 -*-
+
+```python
 ################################### PART0 DESCRIPTION #################################
 # Filename: kNN.py
 # Description:
@@ -423,9 +427,13 @@ if __name__ == "__main__":
     # 绘制散点图
     knn.plotScatter(xList=xList,\
                     yList=yList,\
-                    saveFigPath=saveScatterFigPath)</pre>
+                    saveFigPath=saveScatterFigPath)
+```
+
 <h2>3.3 输出结果与图像绘制</h2>
-<pre class="lang:python decode:true ">/usr/local/lib/anaconda2/bin/python /home/yuens/Projects/PyCharm/statistical-learning-methods-note/chapter_3_kNN/kNN.py
+
+```shell
+/usr/local/lib/anaconda2/bin/python /home/yuens/Projects/PyCharm/statistical-learning-methods-note/chapter_3_kNN/kNN.py
 header:['id', 'x^1', 'x^2', 'y']
 idList:[1, 2, 3, 4, 5, 6, 7, 8]
 xList:[(1, 1), (5, 1), (4, 4), (4, 7), (-1, -3), (-2, -3), (8, 9), (0, -2)]
@@ -435,7 +443,8 @@ bestK:2
 {1: 3, 2: 2, 3: 4, 4: 5, 5: 2, 6: 4, 7: 8}
 
 Process finished with exit code 0
-</pre>
+```
+
 <img class="aligncenter" src="./assets/k-Nearest%20Neighbor%20Scatter%20Plot.png" alt="" width="800" height="600" />
 <p style="text-align: center;"><strong>k近邻散点图</strong></p>
 <p style="text-align: center;"><img class="aligncenter" src="./assets/k-Nearest%20Neighbor%27s%20K%20Chart.png" alt="" width="800" height="600" /></p>
