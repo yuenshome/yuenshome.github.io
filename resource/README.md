@@ -10,4 +10,5 @@
 - [primer-ppt] [[code]](./cpp/primer-ppt/class5_code) [class5_class_and_object_friend_operator_reconstruct.pdf](./cpp/primer-ppt/class5_class_and_object_friend_operator_override.pdf)  
 - [primer-ppt] [[code]](./cpp/primer-ppt/class6_code) [class6_inheritance_and_derivation.pdf](./cpp/primer-ppt/class6_inheritance_and_derivation.pdf)
 - [primer-ppt] [[code]](./cpp/primer-ppt/class7_code) [class7_class_and_object_polymorphic.pdf](./cpp/primer-ppt/class7_class_and_object_polymorphic.pdf)
+- [primer-ppt] [[code]](./cpp/primer-ppt/class8_code) [class8_class_and_object_multi_derive_and_exception.pdf](./cpp/primer-ppt/class8_class_and_object_multi_derive_and_exception.pdf)
 
