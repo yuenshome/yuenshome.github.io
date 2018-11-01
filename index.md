@@ -1,16 +1,23 @@
 [![header](./assets/header01.jpg)](https://yuenshome.github.io)
 
-<center> <a href="./reading/" target="_blank">Reading</a>  |  <a href="./life/" target="_blank">Life</a>   |  <a href="./gallery/" target="_blank">Photo</a>   |   <a href="./study/" target="_blank">Study</a>   |   <a href="./resource/" target="_blank">Resource</a> |  <a href="./about/" target="_blank">About</a>  | <a href="https://github.com/ysh329" target="_blank">GitHub</a> </center>
+<center> <a href="./reading/" target="_blank">阅读 · 电影</a>  |  <a href="./life/" target="_blank">生活感悟</a>   |  <a href="./gallery/" target="_blank">画廊</a>   |   <a href="./study/" target="_blank">学习笔记</a>   |   <a href="./resource/" target="_blank">资源列表</a> |  <a href="./about/" target="_blank">About</a>  | <a href="https://github.com/ysh329" target="_blank">GitHub</a> </center>
 
 ------
 
-老博客地址博文数量400+，目前还未迁移完，点击跳转旧博客：<a href="http://yuenshome.cn" target="_blank">http://yuenshome.cn</a>
+老博客地址日志数量400+，目前还未迁移完，点击跳转旧博客：<a href="http://yuenshome.cn" target="_blank">http://yuenshome.cn</a>
 
 老博客涵盖大量机器学习、深度学习笔记，点击旧博客标签云或者通过搜索查看。
+
+## 深度学习核心拆解系列
+
+- [2017-12] [Very Deep Convolutional Networks for Large-Scale Image Recognition](../timeline/2017-12/vgg/)
+- [2017-11] [ImageNet Classification with Deep Convolutional Neural Networks](../timeline/2017-11/alexnet/) 
 
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
 
 ![header](./assets/header14.jpg)
+
+# 常用链接
 
 ## 找东西  
 - <a href="https://deepcommunity.com" target="_blank">deepcommunity</a>    
