@@ -4,6 +4,10 @@
 
 ------
 
+老博客地址博文数量400+，目前还未迁移完，点击跳转旧博客：<a href="http://yuenshome.cn" target="_blank">http://yuenshome.cn</a>
+
+老博客涵盖大量机器学习、深度学习笔记，点击旧博客标签云或者通过搜索查看。
+
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
 
 ![header](./assets/header14.jpg)
