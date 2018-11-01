@@ -4,6 +4,8 @@
 
 # Reading
 
+从2018-06开始，大量阅读都在<a href="http://weread.qq.com" target="_blank"> 微信读书 </a>，快来微信读书，和我成为书友吧O(∩_∩)O~
+
 - [2018-06] [《公司价值分析》读后感](../timeline/2018-06/company-worth-analysis)  
 - [2018-06] [《乌合之众》读后感](../timeline/2018-06/crowd)  
 - [2018-06] [《小狗钱钱》读后感](../timeline/2018-06/dog-money)    
