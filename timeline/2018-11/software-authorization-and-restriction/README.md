@@ -34,9 +34,8 @@
 bool is_out_of_date(const int deadline_time_stamp) const
 {
     time_t cur_time_t = time(nullptr);
-    const int current_time_stamp = time(&cur_time_t); //时间戳，距离1970.1.1的秒数
-    return (current_time_stamp > deadline_time_stamp) ? true : false;	
-}
+    const int current_time_stamp = time(&cur_time_t); // 时间戳，距离1970.1.1的秒数
+    return (current_time_stamp > deadline_time_stamp) ? true : false;
 }
 ```
 
