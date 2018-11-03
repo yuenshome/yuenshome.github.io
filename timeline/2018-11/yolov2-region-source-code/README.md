@@ -1,10 +1,17 @@
 [![header](../../../assets/header32.jpg)](https://yuenshome.github.io)
 
-# YOLOv2 region层Forward部分源码分析
+# YOLOv2 region层 Forward 部分 DarkNet 源码分析
 
-以`yolov2-tiny`这个小网络为例进行分析，下面先给出其执行流程图和对应的`region`层在网络结构`cfg`文件中的定义，后面会对检测 `region` 层代码一步一步分析。
+- 代码仓库：[pjreddie/darknet](https://github.com/pjreddie/darknet)
+- 代码版本：61c9d02ec461e30d55762ec7669d6a1d3c356fb2
+- 代码日期：2018-09-14
+
+本文以`yolov2-tiny`这个小网络为例进行分析，在此先给出网络执行流程图。
+
 
 ## 1. yolov2-tiny 网络结构与 Region 层参数
+
+下面先给出其执行流程图和对应的`region`层在网络结构`cfg`文件中的定义，后面会对检测 `region` 层代码一步一步分析。
 
 ### 1.1 YOLOV2 网络结构
 
