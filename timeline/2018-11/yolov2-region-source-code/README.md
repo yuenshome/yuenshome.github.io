@@ -1,4 +1,4 @@
-[![header](../../../header32.jpg)](https://yuenshome.github.io)
+[![header](../../../assets/header32.jpg)](https://yuenshome.github.io)
 
 # YOLOv2 region层Forward部分源码分析
 
