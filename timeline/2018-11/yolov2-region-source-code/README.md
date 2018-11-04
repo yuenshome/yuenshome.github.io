@@ -8,6 +8,7 @@
 
 本文以`yolov2-tiny`这个小网络为例进行分析，在此先给出网络执行流程图。
 
+![yolov2-region-layer](./assets/yolov2-region-layer.jpg)
 
 ## 1. yolov2-tiny 网络结构与 Region 层参数
 
@@ -662,10 +663,16 @@ void correct_region_boxes(detection *dets, int n, int w, int h, int netw, int ne
 
 ## 3.2 检测层：非极大值抑制`do_nms_sort`
 
-在第一部分将卷积结果转换为检测框信息后，紧接着便是非极大值抑制过程，该操作流程如下：
+在第一部分将卷积结果转换为检测框信息后，紧接着便是非极大值抑制过程，该过程会对交叠大于某个阈值的两个检测框视为检测到同一个物体，而进行去掉其中一个的操作，该完整操作流程如下：
 
-1. 筛选所有可能有物体的检测框，即保留`dets[i].objectness!=0`的检测框；
-2. 
+1. 筛选所有可能有物体的检测框。即通过交换，让检测框数组中前`total`个的检测框均符合`dets[i].objectness!=0`；
+2. 逐类去掉重复检测框。在锁定某个类别 k 后`sort_class = k`：
+	1. 对`total`个检测框，依据第 k 类进行降序排序；
+	2. 两层循环计算检测框`dets[i]`与检测框`dets[j]`的IOU（intersection of union）：
+		1. 若`box_iou(dets[i], dets[j]) > thresh`，则在第 k 类的检测结果中去掉检测框`dets[j]`（即前面按照第 k 类降序排列，k类概率小的框），将该检测框对应第 k 类概率置为 0 ，即`dets[j].prob[k] = 0`，后面再在第 k 类中遇到该框时直接`continue`跳过；
+		2. 若`box_iou(dets[i], dets[j]) <= thresh`，则说明没有两个检测框重叠，继续下一个检测框；
+	3. 重复1,2直至遍历结束完`total`个检测框；
+3. 重复1,2直至遍历完`classes`个类别。
 
 ```c
         network_predict(net, X);
@@ -712,7 +719,7 @@ void do_nms_sort(detection *dets, int total, int classes, float thresh)
     for(k = 0; k < classes; ++k){
         for(i = 0; i < total; ++i){
             dets[i].sort_class = k;
-        }       
+        }
         qsort(dets, total, sizeof(detection), nms_comparator);                                                   
         for(i = 0; i < total; ++i){
             if(dets[i].prob[k] == 0) continue;
@@ -727,6 +734,7 @@ void do_nms_sort(detection *dets, int total, int classes, float thresh)
     }        
 }
 
+// qsort的比较函数，用来比较第 k 类时候概率大小
 int nms_comparator(const void *pa, const void *pb)                                                               
 {    
     detection a = *(detection *)pa;
@@ -742,7 +750,8 @@ int nms_comparator(const void *pa, const void *pb)
     return 0;
 }
 
- // intersection of union
+ // iou，intersection of union，
+ // 即交集占并集的比例
 float box_iou(box a, box b)
 {
     return box_intersection(a, b)/box_union(a, b);
@@ -784,7 +793,9 @@ float overlap(float x1, float w1, float x2, float w2)
 }
 ```
 
+以上便是 Darknet 对于检测层的前向计算，更具体的见下方的流程图：
 
+![yolov2-region-layer](./assets/yolov2-region-layer.jpg)
 
 
 
