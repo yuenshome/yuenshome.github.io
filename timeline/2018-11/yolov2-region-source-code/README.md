@@ -641,6 +641,132 @@ void correct_region_boxes(detection *dets, int n, int w, int h, int netw, int ne
             int bot   = (b.y+b.h/2.)*im.h;
 ```
 
+以上，便分析完了网络检测部分的`get_network_boxes`。
+
+#### 3.1.3 检测层：region过程总结
+
+
+简单总结下`region`前向过程，这部分不仅申请检测框的空间和初始化工作，同时也根据网络最后一个卷积的输出feature map做了相应的计算，转化为对应检测框结构体中的中心点、检测框长宽信息、每个类别概率、每个检测框置信度等信息。**并在这个过程中对结果进行了两次筛选**：
+
+- 第一次是依据阈值对检测框是否存在物体的if-else筛选；
+- 第二次是依据同一个阈值对检测框中物体概率的if-else筛选。
+
+特别需要注意的是，检测框总数目是anchor数乘以feature map的宽高，检测框数目是由最后一个卷积的维度确定的（这包括两个部分：最后卷积的二维大小，即宽高，以及检测框锚点anchor数），其实仔细想想这反而将网络在检测结果的最大框数进行固定了，虽然整个网络是全卷积对输入大小不关心，但在检测这一项，若图像中目标很多，超过预设的`13 x 13 x 5`，这两个超参数也会对结果造成很大的影响。最后一个卷积的二维维度大小是由`stride = 2`的卷积或者池化的个数决定的，锚点anchors数目是由用户自己设定的。
+
+我也想了如何自适应设置这两个超参数：
+
+1. 卷积，可以跑所有标注图片的数据，看看每张图有多少个框，进而确定总框数设置多少合适，进而设计最后一个卷积层的输出宽高通道数；
+2. 锚点anchor数目的设定，可以跑出所有标注检测框的比例，当然这部分还需要细致考虑，因为每一种类别的检测框比例有多种，可以依据这个思路更精细地设置锚点。
+
+但在做这些前，需要考量一下这些工作对精度结果的提升预估，从而合理花费时间去设计更值得做的工作。
+
+## 3.2 检测层：非极大值抑制`do_nms_sort`
+
+
+```c
+        network_predict(net, X);
+        printf("%s: Predicted in %f seconds.\n", input, what_time_is_it_now()-time);
+        int nboxes = 0;
+        detection *dets = get_network_boxes(net, im.w, im.h, thresh, hier_thresh, 0, 1, &nboxes);
+        if (nms) do_nms_sort(dets, nboxes, l.classes, nms); // nms:.45，nms值前面写死的0.45，非0会执行do_nms_sort
+        draw_detections(im, dets, nboxes, thresh, names, alphabet, l.classes);
+```
+
+接下来是第三部分的分析，第三部分是`do_nms_sort`的计算，先找到并给出该函数的位置和代码`./src/box.c:58`：
+
+```c
+void do_nms_sort(detection *dets, int total, int classes, float thresh)
+{
+    // do_nms_sort(dets, nboxes, l.classes, nms); // nms: .45
+    fprintf(stderr, "==== do_nms_sort ====\n");
+    fprintf(stderr, "total:%d\n", total);     // total:845, nboxes
+    fprintf(stderr, "classes:%d\n", classes); // classes:80
+    fprintf(stderr, "thresh:%f\n", thresh);   // thresh:0.450000
+
+    // 遍历所有total个检测框，之后，得到有意义的 (k+1) 个检测框
+    //     将有意义的检测框（即dets[i].objectness非0的）放到检测框数组的前面，
+    //     交换后面的检测框（不确保是否objectness的值）与无意义的检测框，
+    //     因为--i的缘故，不确保是否有意义的检测框紧接着又会进行判断，从而决定是否交换，
+    //     直到k的值被自减到最后一个有意义的检测框，也即for循环结束（因k从0计，因而总的有意义检测框是(k+1)）。
+    int i, j, k;
+    k = total-1;
+    for(i = 0; i <= k; ++i){
+        if(dets[i].objectness == 0){ 
+            detection swap = dets[i];
+            dets[i] = dets[k];
+            dets[k] = swap;
+            --k;
+            --i;
+        }       
+    }           
+    total = k+1;
+
+    // 
+    for(k = 0; k < classes; ++k){
+        for(i = 0; i < total; ++i){
+            dets[i].sort_class = k;
+        }       
+        qsort(dets, total, sizeof(detection), nms_comparator);                                                   
+        for(i = 0; i < total; ++i){
+            if(dets[i].prob[k] == 0) continue;
+            box a = dets[i].bbox;
+            for(j = i+1; j < total; ++j){
+                box b = dets[j].bbox;
+                if (box_iou(a, b) > thresh){
+                    dets[j].prob[k] = 0;
+                }
+            }
+        }    
+    }        
+}
+
+int nms_comparator(const void *pa, const void *pb)                                                               
+{    
+    detection a = *(detection *)pa;
+    detection b = *(detection *)pb;
+    float diff = 0;
+    if(b.sort_class >= 0){
+        diff = a.prob[b.sort_class] - b.prob[b.sort_class];
+    } else {
+        diff = a.objectness - b.objectness;
+    }
+    if(diff < 0) return 1;
+    else if(diff > 0) return -1;
+    return 0;
+}
+
+float box_iou(box a, box b)
+{
+    return box_intersection(a, b)/box_union(a, b);
+}
+
+float box_intersection(box a, box b)
+{      
+    float w = overlap(a.x, a.w, b.x, b.w);
+    float h = overlap(a.y, a.h, b.y, b.h);
+    if(w < 0 || h < 0) return 0;
+    float area = w*h;
+    return area;
+}      
+       
+float box_union(box a, box b)
+{      
+    float i = box_intersection(a, b);                                                                            
+    float u = a.w*a.h + b.w*b.h - i;
+    return u;
+}
+
+float overlap(float x1, float w1, float x2, float w2)
+{      
+    float l1 = x1 - w1/2;
+    float l2 = x2 - w2/2;
+    float left = l1 > l2 ? l1 : l2;
+    float r1 = x1 + w1/2;
+    float r2 = x2 + w2/2;
+    float right = r1 < r2 ? r1 : r2;
+    return right - left;                                                                                         
+}
+```
 
 
 
@@ -652,7 +778,7 @@ void correct_region_boxes(detection *dets, int n, int w, int h, int netw, int ne
 ## 参考
 
 1. [【YOLO v3】Series: YOLO object detector in PyTorch - Hello Paperspace](https://blog.paperspace.com/tag/series-yolo/)  
-2. [YOLO v3算法笔记 - AI之路 - CSDN博客](https://blog.csdn.net/u014380165/article/details/80202337)  
+2. [【YOLO v3】YOLO v3算法笔记 - AI之路 - CSDN博客](https://blog.csdn.net/u014380165/article/details/80202337)  
 3. [【v1到v3详解】目标检测网络之 YOLOv3 - 康行天下 - 博客园](https://www.cnblogs.com/makefile/p/YOLOv3.html)  
 4. [【v2、v3】YOLOv2与YOLOv3学习笔记基本思路模型训练YOLOv3 - 云+社区 - 腾讯云](https://cloud.tencent.com/developer/article/1156245)  
 5. [darknet/region_layer.c at master · hgpvision/darknet](https://github.com/hgpvision/darknet/blob/master/src/region_layer.c)    
