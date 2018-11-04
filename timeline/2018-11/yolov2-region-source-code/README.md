@@ -313,7 +313,7 @@ int num_detections(network *net, float thresh)
         if(l.type == DETECTION || l.type == REGION){ // yolov2和yolov2-tiny的网络配置cfg文件中，检测层定义均为region
            fprintf(stderr, "layer idx: %d type: DETECTION || REGION\n", i); // layer idx: 15 type: DETECTION || REGION 
            fprintf(stderr, "l.w:%d l.h:%d l.n:%d\n", l.w, l.h, l.n); // l.w:13 l.h:13 l.n:5
-           s += l.w*l.h*l.n;   // 网络输出的通道数是h*w*anchor_num*(coord_num + conf + class_num)，即13*13*5*(5+80)
+           s += l.w*l.h*l.n;   // 这里是检测框的个数对应最终feature map的二维点数乘以anchor数目，即13x13x5，网络输出总个数是h*w*anchor_num*(coord_num + conf + class_num)，即13*13*5*(5+80)
         }
     }
     fprintf(stderr, "s:%d\n", s); // s:845
@@ -325,9 +325,10 @@ int num_detections(network *net, float thresh)
 - 最后卷积层输出数目定义的由来：输出图像为Oi x Oi个栅格，每个栅格预测#anchors种boxes大小，每个box包含4个坐标值（x,y,h,w，即中心点坐标+宽度和高度偏移量）,1个置信度和#classes个条件类别概率，所以输出维度是`Oi x Oi x #anchors x (5 + #classes)`；  
 - tiny-yolov2中，输入大小`416 x 416 x 3`，输出大小`13 x 13 x 425`，其中的输出通道个数425，也即最后卷积层的输出通道个数的计算就是根据：`输出宽度 x 输出高度 x anchors数目 x (坐标信息数目 + 类别数目)`得到的，除去图像二维的乘积，其中要注意坐标信息数目是5（x,y,h,w,conf，conf置信度，其反映是否包含物体以及包含物体情况下位置的准确性，在YOLOv1中的定义为`Pr(Object)×IOU^truth_pred`，其中`Pr(Object)∈{0,1}`。），因而是`425 = 5 x (4+1+80)`。
 
-`detection *dets = make_network_boxes(net, thresh, num);`对检测结果的结构体变量初始化结束后，紧接着是填充初始化的结构体，即`fill_network_boxes(net, w, h, thresh, hier, map, relative, dets);`，该函数实现位于`src/network.c:569`：
 
 #### 3.1.2 检测层：`fill_network_boxes`
+
+`detection *dets = make_network_boxes(net, thresh, num);`对检测框的结构体数组变量初始化结束后，紧接着是填充初始化的结构体，即`fill_network_boxes(net, w, h, thresh, hier, map, relative, dets);`，该函数实现位于`src/network.c:569`：
 
 ```c
 void fill_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, detection *dets)
@@ -355,7 +356,11 @@ void fill_network_boxes(network *net, int w, int h, float thresh, float hier, in
 }
 ```
 
-上面三个if-else分支中，执行tiny-yolov2模型走的是`l.type == REGION`这个分支，那么再看看`get_region_detections`这个函数的实现，位于`src/region_layer.c:364`：
+与`num_detections`一样有对`YOLO`、`REGION`、`DETECTION`层类型的`if-else`分支判断，tiny-yolov2模型走的是`l.type == REGION`这个分支。
+
+#### 3.1.2.1 检测层：卷积结果到检测信息的解析`get_region_detections`
+
+那么再看看该分支的`get_region_detections`这个函数对检测框数组填充过程的实现，换言之，也是对卷积结果向检测框结果的解析过程，该函数位于`src/region_layer.c:364`，在函数开头和结尾部分，我打印出一些变量的值以方便理解代码：
 
 ```c
 void get_region_detections(layer l, int w, int h, int netw, int neth, float thresh, int *map, float tree_thresh, int relative, detection *dets)
@@ -460,7 +465,181 @@ void get_region_detections(layer l, int w, int h, int netw, int neth, float thre
 }
 ```
 
+这个函数非常冗长，我在该函数内加入打印信息，可以看到有些指针是空的，这样将代码中if-else不会走到的地方、没有用到的变量都移除掉，可进一步简化`get_region_detections`为如下流程和代码：
 
+1. 初始化检测框中的所有类别概率；
+2. 根据box索引求解region box检测框，并根据obj索引计算概率判断检测框有效性；
+3. 对有效的检测框，根据class索引判断有效的物体得到类别概率；
+4. 对检测框的长度依据原始图像修正，得到x,y,w,h的new_h/neth, new_w/netw的比值。
+
+```c
+void get_region_detections(layer l, int w, int h, int netw, int neth, float thresh, int *map, float tree_thresh, int relative, detection *dets)
+{
+    fprintf(stderr, "==== get_region_detections ====\n");
+    fprintf(stderr, "l.batch:%d\n", l.batch); // l.batch:1
+    fprintf(stderr, "dets[%d].mask:%p\n", 0, dets[0].mask); // dets[0].mask:(nil)
+    //if(!(dets[0].mask))
+    //    fprintf(stderr, "*(dets[%d].mask):%f\n", 0, *(dets[0].mask));
+    fprintf(stderr, "l.softmax_tree:%p\n", l.softmax_tree); // l.softmax_tree:(nil)
+    fprintf(stderr, "map:%p\n", map); // map:(nil)
+    fprintf(stderr, "l.batch:%d\n", l.batch); // l.batch:1
+    fprintf(stderr, "l.n:%d\n", l.n); // l.n:5
+    fprintf(stderr, "l.h:%d\n", l.h); // l.h:13
+    fprintf(stderr, "l.w:%d\n", l.w); // l.w:13
+    fprintf(stderr, "l.classes:%d\n", l.classes); // l.classes:80
+    fprintf(stderr, "l.coords:%d\n", l.coords); // l.coords:4
+    fprintf(stderr, "l.background:%d\n", l.background); // l.background:0
+    fprintf(stderr, "thresh:%f\n", thresh); // thresh:0.500000,  0.500000 位于example/darknet.c:432-437，if-else在detect部分定义，若用户未定义则该值默认为0.5。后面两次用到（1. 物体存在与否的阈值，2. 类别存在与否的阈值）
+    fprintf(stderr, "tree_thresh:%f\n", tree_thresh); // tree_thresh:0.500000，位于example/darknet.c同上附近的位置，变量hier，if-else在detect部分定义为0.5
+    fprintf(stderr, "l.nbiases:%d\n", l.nbiases); // l.nbiases:0，注意这个biases成员是卷积的，而不是anchor的
+    for(int i=0; i<2*n; i++) {
+        fprintf(stderr, "l.biases[%d]:%f\n", i, l.biases[i]); // 注：这个是anchor的biases，即anchor的值（和卷积的biases无关），其数值与cfg文件的anchors值一致。一般该数组元素个数是2*n，n是anchor个数。anchor是否与原图匹配的定义是cfg文件中的bias_match，bias_match用在region_layer.c 的 forward_region_layer 中推算预测的检测框的w和h前的判断。
+    }
+
+    int i,j,n;
+    float *predictions = l.output;
+   
+    for (i = 0; i < l.w*l.h; ++i){
+        int row = i / l.w; // 行优先存储，计算当前行数与列数
+        int col = i % l.w;
+        /* 1. 初始化检测框中的所有类别概率 */
+        for(n = 0; n < l.n; ++n){
+            int index = n*l.w*l.h + i; // 计算结果feature map的下标index[0,n*l.w*l.h)，也即检测框数组dets中的第index个检测框元素
+            for(j = 0; j < l.classes; ++j){ // 初始化n*l.w*l.h个检测框的l.classes个类别对应的概率值
+                dets[index].prob[j] = 0; // 初始化第 index 个检测框对应类别 j 的概率
+            }  
+
+            /* 2. 根据box索引求解region box检测框，并根据obj索引计算概率判断检测框有效性 */
+            // 拿到第 index 个检测框对应结果feature map的obj下标与box下标
+            int obj_index  = entry_index(l, 0, n*l.w*l.h + i, l.coords); // index  ==  n*l.w*l.h + i，obj包含1个信息: conf
+            int box_index  = entry_index(l, 0, n*l.w*l.h + i, 0); // index  ==  n*l.w*l.h + i，box包含4个信息:x,y,h,w
+
+            // 获取第 index 个检测框的类别 prob 缩放系数
+            float scale = l.background ? 1 : predictions[obj_index]; // l.background:0
+            dets[index].bbox = get_region_box(predictions, l.biases, n, box_index, col, row, l.w, l.h, l.w*l.h);
+            dets[index].objectness = scale > thresh ? scale : 0; // 判断第 index 个框内是否有物体，根据是否大于预设的默认的0.5，决定第 index 个检测框的结果featuremap的值是否有意义（若有意义则取出如下的prob信息）
+
+                /* 3. 对有效的检测框，根据class索引判断有效的物体得到类别概率 */
+                // 若第 index 个检测框有意义，则取出所有类的概率
+                // 逐一取出对应类别概率在输出的feature map的值并判断与阈值的大小关系
+                if(dets[index].objectness){
+                    for(j = 0; j < l.classes; ++j){
+                        int class_index = entry_index(l, 0, n*l.w*l.h + i, l.coords + 1 + j);
+                        float prob = scale*predictions[class_index];
+                        dets[index].prob[j] = (prob > thresh) ? prob : 0;
+                    }
+                }
+
+        }
+    }
+    fprintf(stderr, "l.w:%d\n", l.w); // l.w:13
+    fprintf(stderr, "l.h:%d\n", l.h); // l.h:13
+    fprintf(stderr, "l.n:%d\n", l.n); // l.n:5
+    fprintf(stderr, "w:%d\n", w); // w:768
+    fprintf(stderr, "h:%d\n", h); // h:576
+    fprintf(stderr, "netw:%d\n", netw); // netw:416
+    fprintf(stderr, "neth:%d\n", neth); // neth:416
+    fprintf(stderr, "relative:%d\n", relative); // relative:1
+
+    /* 4. 对检测框的长度依据原始图像修正，得到x,y,w,h的new_h/neth, new_w/netw的比值 */
+    correct_region_boxes(dets, l.w*l.h*l.n, w, h, netw, neth, relative);
+}
+
+int entry_index(layer l, int batch, int location, int entry)
+{
+    // obj_index  = entry_index(l, 0, n*l.w*l.h + i, l.coords); // l.coords: 4, i: [0, l.w*l.h)
+    // box_index  = entry_index(l, 0, n*l.w*l.h + i, 0); // i: [0, l.w*l.h)
+    // class_index = entry_index(l, 0, n*l.w*l.h + i, l.coords + 1 + j); // j: [0, l.classes)
+    int n =  location / (l.w*l.h); // 第 n 个anchor, n: [0, max_anchors_num), 
+    int loc = location % (l.w*l.h); // 第 n 个 anchor 中的第 loc 个框, loc: [0, l.w*l.h)
+    // 第batch个（本例为0），batch=1时总的输出feature map元素数目：5*13*13*(80+4+1)，
+    // 第 n 个anchor，因而是 n * l.w * l.h * (l.coords+l.classes+1)，多+1是conf置信度（其反映是否包含物体以及包含物体情况下位置的准确性，具体见上文）
+    return batch*l.outputs + n*l.w*l.h*(l.coords+l.classes+1) + entry*l.w*l.h + loc;
+}
+
+box get_region_box(float *x, float *biases, int n, int index, int i, int j, int w, int h, int stride)
+{    
+    // get_region_box(predictions, l.biases, n, box_index, col, row, l.w, l.h, l.w*l.h);
+    // row: [0, l.h),  col: [0, l.w)
+    box b;                                                                                                       
+    b.x = (i + x[index + 0*stride]) / w;
+    b.y = (j + x[index + 1*stride]) / h;
+    b.w = exp(x[index + 2*stride]) * biases[2*n]   / w; // 这里biases是anchors的值，biases[2*n]和[2*n+1]分别对应w与h的放缩比例
+    b.h = exp(x[index + 3*stride]) * biases[2*n+1] / h;
+    return b;
+}
+```
+
+下面是第4部分`correct_region_boxes`：修正region boxes，对检测框的长度依据原始图像修正，得到x,y,w,h的new_h/neth, new_w/netw的比值，用于后续`draw_detections`的调用。
+
+```c
+void correct_region_boxes(detection *dets, int n, int w, int h, int netw, int neth, int relative)
+{
+    fprintf(stderr, "==== correct_region_boxes ====\n");
+    fprintf(stderr, "n:%d\n", n); // n:845
+    fprintf(stderr, "w:%d\n", w); // w:768
+    fprintf(stderr, "h:%d\n", h); // h:576
+    fprintf(stderr, "netw:%d\n", netw); // netw:416
+    fprintf(stderr, "neth:%d\n", neth); // neth:416
+    fprintf(stderr, "relative:%d\n", relative); // relative:1
+
+    /* 根据网络输入大小，重新调整检测框的位置信息。
+        将原图等比例缩放，确保缩放后的图不会超出网络输入大小
+      （等比例缩放过程中将宽高中的较大值，
+          网络输入对应的宽或高，进行等比例缩放）。
+    */
+    int i;
+    int new_w=0;
+    int new_h=0;
+    if (((float)netw/w) < ((float)neth/h)) {
+        new_w = netw;
+        new_h = (h * netw)/w;
+    } else {
+        new_h = neth;
+        new_w = (w * neth)/h;
+    }
+    fprintf(stderr, "new_h:%d\n", new_h); // new_h:312
+    fprintf(stderr, "new_w:%d\n", new_w); // new_w:416
+
+    /* 遍历所有检测框，根据比例调整x,y,h,w */
+    for (i = 0; i < n; ++i){
+        box b = dets[i].bbox;
+        fprintf(stderr, "1 b.x:%f b.y:%f b.h:%f b.w:%f\n", b.x, b.y, b.h, b.w);
+        // 1 b.x:0.034133 b.y:0.038086 b.h:0.018859 b.w:0.022933
+
+        // b.x/和b.y原本的计算，是先对原图resize等比例到网络输入大小，计算所在比例值
+        // b.h, b.w应该同上
+        // x,y,w,h都乘以新的比率更新，再乘以该比例系数: (netw/new_w) 或 (neth/new_h)
+        // x, y的除，等同于乘系数
+        b.x =  (b.x - (netw - new_w)/2./netw) / ((float)new_w/netw); // 先减new_w带来的偏移量的原有占比，再除系数的倒数(=乘系数)
+        b.y =  (b.y - (neth - new_h)/2./neth) / ((float)new_h/neth);
+        b.w *= (float)netw/new_w;
+        b.h *= (float)neth/new_h;
+        if(!relative){ // relative:1
+            b.x *= w;
+            b.w *= w;
+            b.y *= h;
+            b.h *= h;
+        }
+        fprintf(stderr, "2 b.x:%f b.y:%f b.h:%f b.w:%f\n", b.x, b.y, b.h, b.w);
+        // 2 b.x:0.034133 b.y:-0.115885 b.h:0.025146 b.w:0.022933
+        dets[i].bbox = b;
+    }
+}
+```
+
+为了更清楚阐明几个检测信息，查了`draw_detections`时调用`box`里的`x,y,w,h`处的代码，计算得到检测框的上下左右四个值： 
+
+- `im.w`和`im.h`分别为原图的列数与行数；
+- `x`、`y`： 分别对应检测框中心点的横、纵坐标（的比例值）；
+- `h`、`w`：分别对应检测框高度和宽度（的比例值）。
+
+```c
+            int left  = (b.x-b.w/2.)*im.w; 
+            int right = (b.x+b.w/2.)*im.w;
+            int top   = (b.y-b.h/2.)*im.h;
+            int bot   = (b.y+b.h/2.)*im.h;
+```
 
 
 
