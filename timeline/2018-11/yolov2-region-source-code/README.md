@@ -570,7 +570,7 @@ box get_region_box(float *x, float *biases, int n, int index, int i, int j, int 
 }
 ```
 
-下面是第4部分`correct_region_boxes`：修正region boxes，对检测框的长度依据原始图像修正，得到x,y,w,h的new_h/neth, new_w/netw的比值，用于后续`draw_detections`的调用。
+下面是第4部分`correct_region_boxes`：修正region boxes，对检测框的长度依据原始图像修正，得到`x,y,w,h`的`new_h/neth, new_w/netw`的比值，用于后续`draw_detections`的调用。
 
 ```c
 void correct_region_boxes(detection *dets, int n, int w, int h, int netw, int neth, int relative)
@@ -662,6 +662,10 @@ void correct_region_boxes(detection *dets, int n, int w, int h, int netw, int ne
 
 ## 3.2 检测层：非极大值抑制`do_nms_sort`
 
+在第一部分将卷积结果转换为检测框信息后，紧接着便是非极大值抑制过程，该操作流程如下：
+
+1. 筛选所有可能有物体的检测框，即保留`dets[i].objectness!=0`的检测框；
+2. 
 
 ```c
         network_predict(net, X);
@@ -701,7 +705,10 @@ void do_nms_sort(detection *dets, int total, int classes, float thresh)
     }           
     total = k+1;
 
-    // 
+    // 逐类别，对所有检测框去重
+    // 遍历 classes 个类别，
+    //     先选中该类别，即设定sort_class的值，再对所有有意义的检测框按照类别 k 的概率降序排序
+    //     比较两个检测框 i, j 的重叠是否大于阈值，大于该阈值说明可能是同一个物体，去掉概率低的（框j），同时设置框 j 第 k 类的概率为 0（后面遇到则continue跳过），即执行了检测框的去重操作
     for(k = 0; k < classes; ++k){
         for(i = 0; i < total; ++i){
             dets[i].sort_class = k;
@@ -725,9 +732,9 @@ int nms_comparator(const void *pa, const void *pb)
     detection a = *(detection *)pa;
     detection b = *(detection *)pb;
     float diff = 0;
-    if(b.sort_class >= 0){
+    if(b.sort_class >= 0){ // 多类时，sort_class在do_nms_sort中定义就是在这里按照第sort_class类进行排序
         diff = a.prob[b.sort_class] - b.prob[b.sort_class];
-    } else {
+    } else { // 这里，我猜想是只有1类的情形
         diff = a.objectness - b.objectness;
     }
     if(diff < 0) return 1;
@@ -735,11 +742,15 @@ int nms_comparator(const void *pa, const void *pb)
     return 0;
 }
 
+ // intersection of union
 float box_iou(box a, box b)
 {
     return box_intersection(a, b)/box_union(a, b);
 }
 
+// 由overlap得到横纵方向上的重叠长度，
+// 若两个重叠长度其一小于0则说明两个框没有交叠的地方，即没有交集直接返回0，
+// 否则有重叠，重叠面积为两个方向重叠长度的乘积
 float box_intersection(box a, box b)
 {      
     float w = overlap(a.x, a.w, b.x, b.w);
@@ -748,7 +759,9 @@ float box_intersection(box a, box b)
     float area = w*h;
     return area;
 }      
-       
+
+// 由a,b检测框各自的面积减去二者交集的面积，
+// 即为并集的面积
 float box_union(box a, box b)
 {      
     float i = box_intersection(a, b);                                                                            
@@ -756,6 +769,9 @@ float box_union(box a, box b)
     return u;
 }
 
+// 看懂这个函数需要画两个重叠的框，
+// 设置中心点的横纵坐标分别为(x1,y1)、(x2,y2)，
+// 就会清楚最后得到的结果是一个方向上重叠的长度
 float overlap(float x1, float w1, float x2, float w2)
 {      
     float l1 = x1 - w1/2;
