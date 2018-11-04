@@ -45,14 +45,6 @@ bicycle: 59%
 
 这里列出最后一个卷积层和 Region 检测层，列出 Region 层的上一层（卷积）的原因是因为输出个数，与检测结果直接相关。
 
-最后卷积层的输出维度为`13 x  13 x 425 = 71825`，输出元素个数与检测层一样，检测层的维度需要这么看：`13 x 13 x 5 x (4 + 1 + 80)`：
-
-1. 对应将 resize 过后宽高为`416 x 416`的原图，在经过 5 个`stride = 2`的`max-pooling`后为`13 x 13`，即将原图最后切分为`13 x 13`个区域；
-2. 5 个 anchors ，对应每个区域有 5 种比例，那么会得到`13 x 13 x 5`个检测框；
-3. 4 个坐标参数（检测框的二维中心点坐标x、y、该检测框的高与宽h、w），1 个框的置信度 confidence 分数，以及 80 个概率值对应当前检测框 80 类物体中的存在概率。
-
-所以，检测层对最后一个卷积的结果没有做变换，只是以最初训练预设的方式将最后一层卷积的结果解析出来。
-
 ```
 [convolutional]
 size=1
@@ -80,6 +72,149 @@ absolute=1
 thresh = .6
 random=1
 ```
+
+最后卷积层的输出维度为`13 x  13 x 425 = 71825`，输出元素个数与检测层一样，检测层的维度需要这么看：`13 x 13 x 5 x (4 + 1 + 80)`：
+
+1. 对应将 resize 过后宽高为`416 x 416`的原图，在经过 5 个`stride = 2`的`max-pooling`后为`13 x 13`，即将原图最后切分为`13 x 13`个区域；
+2. 5 个 anchors ，对应每个区域有 5 种比例，那么会得到`13 x 13 x 5`个检测框；
+3. 4 个坐标参数（检测框的二维中心点坐标x、y、该检测框的高与宽h、w），1 个框的置信度 confidence 分数，以及 80 个概率值对应当前检测框 80 类物体中的存在概率。
+
+所以，检测层对最后一个卷积的结果没有做变换，只是以训练预设的方式将最后一层卷积的结果解析出来。
+
+## 2.锁定网络主干
+
+先看网络主干部分，按我们的理解，整个网络的计算应该会有循环来逐层计算，经过在代码里加入打印信息，可以定位在`src/network.c`中的`forward_network`函数，计算了每层的结果（找到这一层可以看命令的调用，所出发的代码，一步步加入打印信息，在这之前可以先看看`darknet.h`这一头文件，该头文件定义了`darknet`对层、网络的定义，看完后会对框架有一个大概的了解），也是在这里可以每一层的的结果打印出来。其`forward_network`函数内容如下：
+
+```c
+void forward_network(network *netp)
+{
+#ifdef GPU
+    if(netp->gpu_index >= 0){
+        forward_network_gpu(netp);
+        return;
+    }
+#endif
+    network net = *netp;
+    int i;
+    for(i = 0; i < net.n; ++i){
+        net.index = i;
+        layer l = net.layers[i];
+        if(l.delta){
+            fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
+        }
+        l.forward(l, net);
+        net.input = l.output;
+
+        // print input here
+
+        if(l.truth) {
+            net.truth = l.output;
+        }
+    }
+    calc_network_cost(netp);
+}
+```
+
+需要注意的是，打印的第 i 层的结果其实都是第 i+1 层的输入。因而打印最后卷积的结果，即检测的输入，即第15层的input，所以在上面代码打印处，需要判断`i == 15`。实际上面最后一层`detection`的计算并不在这个循环里，是一个后处理的过程。
+
+取到最后一层卷积的结果，根据前面的网络执行结构图的输入输出信息，我们也可以最后一个卷积结果的元素个数是否是`echo "13*13*425" | bc`，从而确认是否执行到了最后一个卷积层。下一步就是看看检测这一后处理的计算过程。
+
+仍旧在`src/network.c`中查找调用了`forward_network`的函数，发现是`network_predict`，仍旧是在该文件，发现调用`network_predict`的函数有多个：`network_predict_image`，`network_predict_data_multi`，`network_predict_data`，感觉这样找反而越来越多，那么反着麻烦，看正向的代码执行过程。
+
+由于调用的命令是`./darknet detect cfg/yolov2-tiny.cfg yolov2-tiny.weights data/dog.jpg`，那么看看`example/darknet.c`中`main`函数的`detect`这部分代码（别急，再看一眼if-else结束，发现是`return 0`，那就可以放心了）：
+
+```c
+else if (0 == strcmp(argv[1], "detect")){
+        float thresh = find_float_arg(argc, argv, "-thresh", .5);
+        char *filename = (argc > 4) ? argv[4]: 0;
+        char *outfile = find_char_arg(argc, argv, "-out", 0); 
+        int fullscreen = find_arg(argc, argv, "-fullscreen");
+        test_detector("cfg/coco.data", argv[2], argv[3], filename, thresh, .5, outfile, fullscreen);
+    }
+```
+
+深入`test_detector`探究，找到该函数位于`examples/detector.c:562`：
+
+```c
+void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filename, float thresh, float hier_thresh, char *outfile, int fullscreen)
+{
+    list *options = read_data_cfg(datacfg);
+    char *name_list = option_find_str(options, "names", "data/names.list");
+    char **names = get_labels(name_list);
+
+    image **alphabet = load_alphabet();
+    network *net = load_network(cfgfile, weightfile, 0);
+    set_batch_network(net, 1);
+    srand(2222222);
+    double time;
+    char buff[256];
+    char *input = buff;
+    float nms=.45;
+    while(1){
+        if(filename){
+            strncpy(input, filename, 256);
+        } else {
+            printf("Enter Image Path: ");
+            fflush(stdout);
+            input = fgets(input, 256, stdin);
+            if(!input) return;
+            strtok(input, "\n");
+        }
+        image im = load_image_color(input,0,0);
+        image sized = letterbox_image(im, net->w, net->h);
+        //image sized = resize_image(im, net->w, net->h);
+        //image sized2 = resize_max(im, net->w);
+        //image sized = crop_image(sized2, -((net->w - sized2.w)/2), -((net->h - sized2.h)/2), net->w, net->h);
+        //resize_network(net, sized.w, sized.h);
+        layer l = net->layers[net->n-1];
+
+
+        float *X = sized.data;
+        time=what_time_is_it_now();
+        network_predict(net, X);
+        printf("%s: Predicted in %f seconds.\n", input, what_time_is_it_now()-time);
+        int nboxes = 0;
+        detection *dets = get_network_boxes(net, im.w, im.h, thresh, hier_thresh, 0, 1, &nboxes);
+        //printf("%d\n", nboxes);
+        //if (nms) do_nms_obj(boxes, probs, l.w*l.h*l.n, l.classes, nms);
+        if (nms) do_nms_sort(dets, nboxes, l.classes, nms);
+        draw_detections(im, dets, nboxes, thresh, names, alphabet, l.classes);
+        free_detections(dets, nboxes);
+        if(outfile){
+            save_image(im, outfile);
+        }
+        else{
+            save_image(im, "predictions");
+#ifdef OPENCV
+            make_window("predictions", 512, 512, 0);
+            show_image(im, "predictions", 0);
+#endif
+        }
+        free_image(im);
+        free_image(sized);
+        if (filename) break;
+    }
+}
+```
+
+该函数显示了整个网络执行的轮廓，其中部分行代码被作者注释掉了，其实刚刚我们将代码跟到了`network_predict`函数，可以在上面这个函数里找到`network_predict`，其实现是将`network_forward`的结果直接返回，从这里我们开始，忽略掉网络初始化和后面处理的无关代码，简化后，我们只需要`test_detector`函数中以下代码的实现：
+
+```c
+        network_predict(net, X);
+        printf("%s: Predicted in %f seconds.\n", input, what_time_is_it_now()-time);
+        int nboxes = 0;
+        detection *dets = get_network_boxes(net, im.w, im.h, thresh, hier_thresh, 0, 1, &nboxes);
+        if (nms) do_nms_sort(dets, nboxes, l.classes, nms); // nms:.45，nms值前面写死的0.45，非0会执行do_nms_sort
+        draw_detections(im, dets, nboxes, thresh, names, alphabet, l.classes);
+```
+
+- 看了这部分代码，可以看出darknet给出的网络预测时间，实际上是不算后处理（nms，detect等）的网络执行时间；  
+- 从这个轮廓来看，后处理部分大致有：`get_network_boxes`、`do_nms_sort`两部分；
+- 执行结束`network_predict`时，`net`这个结构体变量已经挂载了最后卷积的结果（具体说来是`network_forward`函数中有一句`net.input = l.output;`）。
+
+接下来，将`net`传给`get_network_boxes`得到`det`结构体，需要仔细看看`get_network_boxes`是怎么做的。
+
+
 
 
 
