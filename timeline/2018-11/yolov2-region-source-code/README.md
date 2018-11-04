@@ -8,7 +8,7 @@
 
 本文以`yolov2-tiny`这个小网络为例进行分析，在此先给出网络执行流程图。
 
-![yolov2-region-layer](./assets/yolov2-region-layer.jpg)
+![yolov2-region-layer](./assets/tiny-yolov2-region-layer.png)
 
 ## 1. yolov2-tiny 网络结构与 Region 层参数
 
@@ -795,11 +795,7 @@ float overlap(float x1, float w1, float x2, float w2)
 
 以上便是 Darknet 对于检测层的前向计算，更具体的见下方的流程图：
 
-![yolov2-region-layer](./assets/yolov2-region-layer.jpg)
-
-
-
-
+![yolov2-region-layer](./assets/tiny-yolov2-region-layer.png)
 
 
 ## 参考
