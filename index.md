@@ -10,6 +10,8 @@
 
 ## 深度学习核心拆解系列
 
+- [2018-11] [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift](../timeline/2018-11/batchnorm/)
+- [2018-11] [YOLOv2 Region层Forward计算分析](../timeline/2018-11/yolov2-region-source-code/)
 - [2017-12] [Very Deep Convolutional Networks for Large-Scale Image Recognition](../timeline/2017-12/vgg/)
 - [2017-11] [ImageNet Classification with Deep Convolutional Neural Networks](../timeline/2017-11/alexnet/) 
 
