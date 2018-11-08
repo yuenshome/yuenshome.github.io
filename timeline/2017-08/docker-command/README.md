@@ -4,20 +4,7 @@
 
 先前在内部做过一次关于Docker构建深度学习环境的分享，讲的比较浅，铺开的比较大。主要是一些常用的基本命令。这里做一下记录。[toc]
 
-<!--more-->
-<h1>Docker常用命令汇总</h1>
-<h2>让同一个Docker容器接受多个用户的外部访问</h2>
-发现创建容器后，我想对同一个容器开启两个shell，但是发现在已经attach一个容器后，再attach进入同一个容器，得到的shell是上一个的镜像（新的docker自动被同步成了旧的容器模样。
-如：我原本是在vim nginx.conf下编辑内容，新打开的docker容器自动也被同步到vim 编辑页面下，并且连光标位置都一样）。
-
-使用attach命令不行，所以搜了下有人在segmenetfault上问了一样的问题，
-<ul>
-	<li>attach方式进入容器是进入相同的bash环境，</li>
-	<li>如果需要进入独立的环境，可以用另一种方式进入容器：<span style="color: #ff0000;"><code>docker exec -it &lt;id&gt; bash</code></span></li>
-</ul>
-参考：php - 为什么docker容器一次只能接受一个用户的外部访问？ - SegmentFault
-https://segmentfault.com/q/1010000008236129
-<h2>1. 基本命令</h2>
+# 1. 基本命令
 <ul>
 	<li>启动命令
 nvidia-docker run -v /home/rentingting:/home/rentingting -tdi bvlc/caffe:gpu</li>
@@ -33,6 +20,10 @@ nvidia-docker start CONTAINER_ID</li>
 	<li>将容器打包为镜像：docker commit &lt;container_id&gt; &lt;new_owner/new_image:tag&gt;</li>
 	<li>提交镜像到DockerHub（前提先登陆docker login）：docker push &lt;image_owner/repo&gt;</li>
 </ul>
+
+- 让同一个Docker容器接受多个用户的外部访问：发现创建容器后，我想对同一个容器开启两个shell，但是发现在已经attach一个容器后，再attach进入同一个容器，得到的shell是上一个的镜像（新的docker自动被同步成了旧的容器模样。如：我原本是在vim nginx.conf下编辑内容，新打开的docker容器自动也被同步到vim 编辑页面下，并且连光标位置都一样）。`docker exec -it <CONTAINER_ID> bash`。
+参考：为什么docker容器一次只能接受一个用户的外部访问？ - SegmentFault
+https://segmentfault.com/q/1010000008236129
 
 ```shell
 docker build -t friendlyname .  # Create image using this directory's Dockerfile
