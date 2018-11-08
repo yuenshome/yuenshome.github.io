@@ -33,7 +33,25 @@ nvidia-docker start CONTAINER_ID</li>
 	<li>将容器打包为镜像：docker commit &lt;container_id&gt; &lt;new_owner/new_image:tag&gt;</li>
 	<li>提交镜像到DockerHub（前提先登陆docker login）：docker push &lt;image_owner/repo&gt;</li>
 </ul>
-<h2>2. 管理命令</h2>
+
+## 2. 提交与打包
+
+1. 下载perfxlab用户公共仓库（如我事先创建好的，名为public仓库）镜像:
+docker pull perfxlab/public:镜像tag，
+docker pull perfxlab/public:ubuntu-16.04
+2. 下载perfxlab用户私有仓库（如我事先创建好的，名为private仓库）的镜像:
+docker login，输入用户名密码，
+docker pull perfxlab/private:镜像tag
+3. 上传镜像到perfxlab用户的私有仓库（如private）:
+需要先登陆:docker login，
+另存本地镜像的名字为perfxlab:docker tag OLD_USER/OLD_REPO:OLD_TAG perfxlab/private:NEW_TAG，
+将本地镜像推到DockerHub:docker push perfxlab/private:NEW_TAG
+4. 上传镜像到perfxlab用户的公共仓库（如public）:
+需要先登陆:docker login，
+另存本地镜像的名字为perfxlab:docker tag OLD_USER/OLD_REPO:OLD_TAG perfxlab/public:NEW_TAG，
+将本地镜像推到DockerHub:docker push perfxlab/private:NEW_TAG
+
+<h2>3. 管理命令</h2>
 <ul>
 	<li>查看所有容器的资源使用情况：docker container stats</li>
 </ul>
