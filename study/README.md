@@ -17,6 +17,8 @@
 
 ## 深度学习核心拆解系列
 
+- [2018-11] [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift](../timeline/2018-11/batchnorm/)
+- [2018-11] [YOLOv2 region层Forward部分源码分析](../timeline/2018-11/yolov2-region-source-code/)
 - [2017-12] [Very Deep Convolutional Networks for Large-Scale Image Recognition](../timeline/2017-12/vgg/)
 - [2017-11] [ImageNet Classification with Deep Convolutional Neural Networks](../timeline/2017-11/alexnet/) 
 
@@ -24,7 +26,6 @@
 
 ## 学习笔记 · 杂
 
-- [2018-11] [YOLOv2 region层Forward部分源码分析](../timeline/2018-11/yolov2-region-source-code/)
 - [2018-11] [软件加密与授权思路和原理简析](../timeline/2018-11/software-authorization-and-restriction/)
 - [2018-10] [gtest编译错误typeinfo error: undefined reference to 'typeinfo for testing::Test'](../timeline/2018-10/gtest-bug-when-compile/)
 - [2018-10] [CMake使用set定义变量](../timeline/2018-10/cmake-set/)
