@@ -73,3 +73,14 @@ Failed to load libGL.so error libGL.so: cannot open shared object file: No such 
 
 因此，个nvidia-docker设置别名很重要，在当前用户~/.bashrc或者所有用户/etc/profile里给nvidia-docker设置别名，添加如下命令到配置文件中： alias docker='nvidia-docker'。
 
+## 参考
+
+- [Docker容器学习梳理--基础知识（1） - 散尽浮华 - 博客园](http://www.cnblogs.com/kevingrace/p/5252929.html)
+- [Docker容器学习梳理--基础知识（2） - 散尽浮华 - 博客园(http://www.cnblogs.com/kevingrace/p/6547616.html)
+- [Docker run 命令参数及使用 - 龙哥的博客 - 博客频道 - CSDN.NET](http://blog.csdn.net/alen_xiaoxin/article/details/54694051)
+- [Get Started, Part 2: Containers | Docker Documentation](https://docs.docker.com/get-started/part2/)
+- [什么是Docker? - Docker入门教程 - docker中文社区](http://www.docker.org.cn/book/docker/what-is-docker-16.html)
+- [Docker入门实战DockOne_Docker入门实战全文阅读_百度阅读](https://yuedu.baidu.com/ebook/d817967416fc700abb68fca1?fr=aladdin&key=docker)
+- [Docker 学习笔记 — » Kumu's Blog[(http://blog.opskumu.com/docker.html)
+- [Home · NVIDIA/nvidia-docker Wiki](https://github.com/NVIDIA/nvidia-docker/wiki#quick-start)
+
