@@ -4,9 +4,9 @@
 
 ------
 
-老博客地址日志数量400+，目前还未迁移完，点击跳转旧博客：<a href="http://yuenshome.cn" target="_blank">http://yuenshome.cn</a>
-
-老博客涵盖大量机器学习、深度学习笔记，点击旧博客标签云或者通过搜索查看。
+- 老博客地址日志数量400+，目前还未迁移完，点击跳转旧博客：<a href="http://yuenshome.cn" target="_blank">http://yuenshome.cn</a>
+- 老博客涵盖大量机器学习、深度学习笔记，点击旧博客标签云或者通过搜索查看。
+- **转载请注明署名（[GitHub ID：ysh329](https://github.com/ysh329)）与出处（[https:pyuenshome.github.io](https:pyuenshome.github.io)）**
 
 ## 深度学习核心拆解系列
 
