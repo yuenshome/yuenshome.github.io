@@ -391,8 +391,8 @@ end</pre>
 <ul>
 <li>test：所有神经元参与计算，但是每个元素值乘以(1-`dropOutFraction`，作为没有被dropout的比率被留下的值。</li>
         
-> 原理上，我同样不太明白：为什么所有单元都参与运算的同时还需要乘以`droputFraction`？我觉得所有单元参与本身训练的时候就是不完整的，test的时候再来一次，岂不被阉割两次？
-> 后来也想通了，dropout每次forward的mask都是不同的，相当于从一个大模型中sample出一个小模型，那么forward和test阶段要保证一致，forward是让`dropOutFraction`的神经元失活，那么test阶段全用（集成的大模型，不要看做认为是被阉割过的），就通过结果再乘以(1-`dropOputFraction`)来和forward阶段保持一致。
+>原理上，我同样不太明白：为什么所有单元都参与运算的同时还需要乘以`droputFraction`？我觉得所有单元参与本身训练的时候就是不完整的，test的时候再来一次，岂不被阉割两次？  
+后来也想通了，dropout每次forward的mask都是不同的，相当于从一个大模型中sample出一个小模型，那么forward和test阶段要保证一致，forward是让`dropOutFraction`的神经元失活，那么test阶段全用（集成的大模型，不要看做认为是被阉割过的），就通过结果再乘以(1-`dropOputFraction`)来和forward阶段保持一致。
         
         
         <h1>4. Details of learning</h1>
