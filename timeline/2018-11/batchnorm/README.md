@@ -14,6 +14,26 @@
 2. z-score规范化：当属性`x`的实际最大和最小值未知，或异常点左右了最小－最大规范化时，该方法是有用的，该方法也称为标准差标准化，**经过处理的数据符合标准正态分布，即均值为0，标准差为1，因标准差为1，此时新特征的值就介于[-1,1]之间**，其转化函数为`x_new = (x - E(x)) / std_var(x)`。这里联想到PCA白化，其白化过程的计算就是在PCA的结果上除以标准差。（补：主成分分析，即PCA其作用是考察多个变量间相关性一种多元统计方法，研究如何通过少数几个主成分来揭示多个变量间的内部结构，即从原始变量中导出少数几个主成分，使它们尽可能多地保留原始变量的信息，且彼此间互不相关。通常数学上的处理就是将原来P个指标作线性组合，作为新的综合指标。其实在PCA操作前也有z-score规范化的过程，计算出标准化的输入再作后续处理）；
 3. 小数定标规范化：小数定标规范化通过移动属性A 的小数点位置进行规范化。
 
+**这篇文章很长，给出目录：**
+
+1. Caffe中的BatchNorm与Scale
+    1. Caffe实现分析
+    2. DarkNet实现分析
+    3. Caffe中的BatchNorm为何拆分成两部分
+        1. Caffe中Conv层的Bias项计算
+        2. Caffe中Scale层的Bias项计算
+    4. Caffe中Conv层与Scale层Bias项计算的总结
+    5. Caffe将BatchNorm拆分为BN层与Scale层的原因
+    6. 简明BatchNorm与Scale层推理代码实现
+2. BatchNorm/Scale/ReLU合并到Conv中
+3. 论文中的BatchNorm
+    1. BatchNorm的计算过程
+    2. BatchNorm的训练与反向传播
+    3. BatchNorm的要点注意
+    4. BatchNorm优缺点
+ 
+每个小节后面都有各自的参考。
+
 ## 0. 作者动机
 
 通常来说，对数据做归一化标准化这些操作，都会加快算法的收敛和计算速度。
@@ -656,7 +676,7 @@ void scale_impl(int *shape, int shape_size, float *input, float *output, float *
 - [farmingyard/ShuffleNet: This is a fast caffe implementation of ShuffleNet.](https://github.com/farmingyard/ShuffleNet)
 - [shicai/DenseNet-Caffe: DenseNet Caffe Models, converted from https://github.com/liuzhuang13/DenseNet](https://github.com/shicai/DenseNet-Caffe)
 
-## 3. BatchNorm/Scale/ReLU合并到Conv中
+## 2. BatchNorm/Scale/ReLU合并到Conv中
 
 这部分将会讲到如何做kernel fusion，也就是这些层的合并。我们已知如下：
 
