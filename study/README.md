@@ -24,6 +24,10 @@
 
 ![header](../assets/header19.jpg)
 
+## 图像
+
+- [2018-11] [基于头部姿态角变换的活体检测核心分析](../timeline/2018-11/face-pose-estimation/)
+
 ## 学习笔记 · 杂
 
 - [2018-11] [软件加密与授权思路和原理简析](../timeline/2018-11/software-authorization-and-restriction/)
