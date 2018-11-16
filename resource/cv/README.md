@@ -11,3 +11,7 @@ This browser does not support PDFs. Please download the PDF to view it:
 <a href="./assets/cv.pdf" target="_blank">Download PDF</a>
 </iframe>
 </object>
+
+----
+
+[PDFObject: A JavaScript utility for embedding PDFs](https://pdfobject.com/)
