@@ -1,6 +1,6 @@
 [![header](../../../assets/header21.jpg)](https://yuenshome.github.io)
 
-# 基于人脸姿态角变换的活体检测
+# 基于头部姿态角变换的活体检测
 
 **注：未完待续，具体见issue**
 
