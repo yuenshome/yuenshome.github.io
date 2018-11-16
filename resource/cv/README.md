@@ -1,5 +1,6 @@
 [![header](../../../assets/header09.jpg)](https://yuenshome.github.io)
 
+- <a href="./assets/cv.pdf" target="_blank"><b>查看PDF</b></a>
 - <a href="./assets/cv.pdf" target="_blank">下载PDF</a>
 - <a href="https://yuenshome.github.io" target="_blank">博客</a>
 - <a href="https://yuenshome.github.io" target="_blank">Github</a>
