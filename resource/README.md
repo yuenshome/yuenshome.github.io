@@ -12,6 +12,7 @@
 - [primer-ppt] [[summ]](./cpp/primer-ppt/summ7.jpg) [[code]](./cpp/primer-ppt/class7_code) [class7_class_and_object_polymorphic.pdf](./cpp/primer-ppt/class7_class_and_object_polymorphic.pdf)
 - [primer-ppt] [[summ]](./cpp/primer-ppt/summ8.jpg) [[code]](./cpp/primer-ppt/class8_code) [class8_class_and_object_multi_derive_and_exception.pdf](./cpp/primer-ppt/class8_class_and_object_multi_derive_and_exception.pdf)
 - [primer-ppt] [summ] [[code]](./cpp/primer-ppt/class9_code) [class9_template_and_stl.pdf](./cpp/primer-ppt/class9_template_and_stl.pdf)
+- [primer-ppt] [summ] [[code]](./cpp/primer-ppt/class10_code) [class10_stl_and_io.pdf](./cpp/primer-ppt/class10_stl_and_io.pdf)
 
 荐书：
 - [C++Templates中文版 (豆瓣)](https://book.douban.com/subject/2378124/)
