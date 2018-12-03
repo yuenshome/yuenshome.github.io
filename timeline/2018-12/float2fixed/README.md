@@ -180,3 +180,5 @@ tensor_t* quant_tensor(tensor_t *t, const int quant_data_bit_len)
 - [整数的存储](http://blog.sina.com.cn/s/blog_3be6742c0102x5am.html)
 - [C语言浮点数存储方式](https://www.cnblogs.com/fengliu-/p/7455246.html)
 - [大小端模式](https://baike.baidu.com/item/大小端模式/6750542?fr=aladdin)
+- [ysh329/teapot](https://github.com/ysh329/teapot)
+
