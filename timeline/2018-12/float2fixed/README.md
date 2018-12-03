@@ -174,6 +174,10 @@ tensor_t* quant_tensor(tensor_t *t, const int quant_data_bit_len)
 }
 ```
 
+看了上述代码，不难分析出我们表示16位的数，也是将其表示成三部分：首先检查是否有符号位，若有则剩下的15位用来表示指数位和尾数位，又因为上述代码中的指数位完全是根据该数值的指数位来定的，因此再去除指数位的个数后，剩下的全部用来表示尾数位。这种方式只是我们的一种模拟，实际硬件支持的方式还需看IEEE的定义。
+
+gcc在16位浮点上，既有软件层面也有硬件层面的支持，具体见：[Half-Precision Floating Point](http://gcc.gnu.org/onlinedocs/gcc/Half-Precision.html)。
+
 ## 参考
 
 - [浮点数在计算机中的表示](https://blog.csdn.net/jvandc/article/details/81176294)
