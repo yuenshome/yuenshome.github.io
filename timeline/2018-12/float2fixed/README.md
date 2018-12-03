@@ -1,3 +1,5 @@
+[![header](../../../assets/header13.jpg)](https://yuenshome.github.io)
+
 # 计算机的浮点表示与浮点数转定点操作
 
 浮点数，如`float`、`double`在计算机中的表示为二进制，其分别占32位、64位（float为4字节，double为8字节，1字节=8位）。计算机来表示该数时，首先会将其表示为二进制形式的科学计数法。
