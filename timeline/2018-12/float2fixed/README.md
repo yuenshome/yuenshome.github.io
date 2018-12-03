@@ -105,7 +105,58 @@
     2. 再通过`int`强制转换，强制截断去掉小数部分得到`integer_faction`；
     3. 对`integer_fraction`右移回来，右移**量化保留的尾数个数**，恢复浮点表示（此时也完成了指定位数`quant_data_bit_len`的量化操作）；
 
+
+下面是该过程实现，入口函数是`quant_tensor`：
+
 ```cpp
+int has_sign_bit(const DTYPE v)
+{
+    DTYPE eps = 1e-5; // consider more high precision for DTYPE, such as double
+    int with_sign = -1;
+    if(v > eps)
+        with_sign = 0;
+    else
+        with_sign = (v <= -eps) ? 1 : -1;
+    return with_sign;
+}
+
+void set_tensor_quant_scheme(tensor_t *t, const int bit_len)
+{
+    assert(t && bit_len);
+    DTYPE *data = t->data;
+    int with_sign = 0;
+    // judge whether sign bit exists
+    for(int eidx = 0; eidx < t->len; ++eidx)
+    {
+        DTYPE e = data[eidx];
+        if(has_sign_bit(e) == 1)
+            break;
+    }
+    t->with_sign          = with_sign;
+    t->quant_data_bit_len = bit_len;
+    return;
+}
+
+int calc_exponent_high_bit(tensor_t *t)
+{
+    assert(t && t->len > 0);
+    DTYPE *data = t->data;
+    DTYPE abs_max = fabs(*data);
+
+    for(int eidx = 1; eidx < t->len; ++eidx)
+        abs_max = (fabs(data[eidx]) > abs_max) ? fabs(data[eidx]) : abs_max;
+
+    int exponent_high_bit = (abs_max == 0) ? 0 : floor(log(abs_max) / log(2));
+    return exponent_high_bit;
+}
+
+tensor_t* quant_tensor(tensor_t *t, const int quant_data_bit_len)
+{
+    assert(t && t->data_bit_len >= quant_data_bit_len);
+    set_tensor_quant_scheme(t, quant_data_bit_len);
+    // elem_bit_len_without_sign: 32(elem_bit_len=32, with_sign=0), 31(elem_bit_len=32, with_sign=1),
+    //                            16(elem_bit_len=16, with_sign=0), 15(elem_bit_len=16, with_sign=1),
+    //                             8(elem_bit_len= 8, with_sign=0),  7(elem_bit_len= 8, with_sign=1),
     int    elem_bit_len_without_sign   = t->with_sign ? t->quant_data_bit_len-1 : t->quant_data_bit_len;
     int    exponent_high_bit           = calc_exponent_high_bit(t);
     int    quant_keep_fraction_bit_len = exponent_high_bit - elem_bit_len_without_sign + 1;
@@ -118,6 +169,9 @@
         int integer_fraction = (int)(e * pow(2, -quant_keep_fraction_bit_len));        // float2fixed: cutoff part of fraction by left move
         qdata[eidx]          = integer_fraction * pow(2, quant_keep_fraction_bit_len); // fixed2float: resume float by right move
     }
+    
+    return t;
+}
 ```
 
 ## 参考
