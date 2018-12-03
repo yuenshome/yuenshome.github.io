@@ -106,7 +106,7 @@
     3. 对`integer_fraction`右移回来，右移**量化保留的尾数个数**，恢复浮点表示（此时也完成了指定位数`quant_data_bit_len`的量化操作）；
 
 
-下面是该过程实现，入口函数是`quant_tensor`：
+下面是该过程实现，入口函数是`quant_tensor`（具体项目见[ysh329/teapot](https://github.com/ysh329/teapot)）：
 
 ```cpp
 int has_sign_bit(const DTYPE v)
