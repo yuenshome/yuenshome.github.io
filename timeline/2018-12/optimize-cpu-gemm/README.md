@@ -92,7 +92,7 @@ http://blog.csdn.net/shenck1992/article/details/50041777</li>
 ## 2. 第一次优化
 
 
-```cc
+```c
 /* Create macros so that the matrices are stored in column-major order */
 
 #define A(i,j) a[ (j)*lda + (i) ]
@@ -145,7 +145,7 @@ void AddDot( int k, double *x, int incx,  double *y, double *gamma )
 
 ## 3. 第二次优化
 
-```cc
+```c
 /* Create macros so that the matrices are stored in column-major order */
 #define A(i,j) a[ (j)*lda + (i) ]
 #define B(i,j) b[ (j)*ldb + (i) ]
@@ -212,7 +212,7 @@ void AddDot( int k, double *x, int incx,  double *y, double *gamma )
 
 ### 1.1 naive 1x1
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -231,7 +231,7 @@ for(int i = 0; i < m; ++i)
 
 ### 1.2 1x1
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -256,7 +256,7 @@ AddDot(float *a_row, float *b_col, float *c, int k, int n)
 
 ### 1.3 1x4
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -284,7 +284,7 @@ AddDot(float *a_row, float *b_col, float *c, int k, int n)
 
 ## 1.4 1x4
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -317,7 +317,7 @@ AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
 1. 索引`p`每8个浮点操作（4个乘法+加法）只需要更新一次；
 2. 元素`A( 0, p )`只需从内存中取出1次（不像前面取出4次），之后都在L2 cache中，直到后面的数填满了L2 cache。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -346,7 +346,7 @@ AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
 
 规模`m = n = k < 500`时会有2倍的提升，因为把C的一行四列的1x4的计算临时结果以及`A(p, 0)`放到了寄存器中，减少了cache与register之间的数据传输。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -390,7 +390,7 @@ AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
 
 规模`m = n = k < 500`时会有1.5~2倍的提升，用指针访问B，`bp0_pntr, bp1_pntr, bp2_pntr, and bp3_pntr` 访问 `B( p, 0 ), B( p, 1 ), B( p, 2 ), B( p, 3 )`，**减少数据索引找B中元素的开销**。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -442,7 +442,7 @@ AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
 
 unroll这个for循环，从原本的`+=1`改为`+=4`混淆了编译器（unroll多少并非固定，可以根据不同的平台调节），反而有性能下降。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -511,7 +511,7 @@ AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
 
 间接寻址操作如下：
 
-```cc
+```c
 c_00_reg += a_0p_reg * *(bp0_pntr+1);
 ```
 
@@ -519,7 +519,7 @@ c_00_reg += a_0p_reg * *(bp0_pntr+1);
 
 **注：没有性能提升，因为编译器已经做了这样的优化，我们只是显式地写了出来。**
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -603,7 +603,7 @@ AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
 
 扩展AddDot，每次取A的4行，B的4列，在`AddDot4x4`中计算16个C元素。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -672,7 +672,7 @@ void AddDot(float *a_row, float *b_col, float *c, int k, int n)
 
 无性能提升。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -735,7 +735,7 @@ void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
 
 **矩阵变更大，不少数据在寄存器中可被复用地更多。**
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -786,7 +786,7 @@ void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
 
 得益于将A的4行1列和C的4行4列放到寄存器中。当使用超过寄存器容量的寄存器变量时， 性能提升就固定了（即`m=n=k>500`，性能有1.5倍提升）。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -873,7 +873,7 @@ void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
 
 **轻微性能提升，用指针代替访问B，减少索引开销**。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -958,7 +958,7 @@ void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
 
 将从B的第`j`行的指针中，取出的变量放到寄存器中。这样做性能些许下降，但是为了后面能作进一步的优化。
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -1063,7 +1063,7 @@ void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
 
 我实现的是第二种，即对A中的元素进行重复，如下是实现代码：
 
-```cc
+```c
 #define A(i, j) a[k*(i) + (j)]
 #define B(i, j) a[n*(i) + (j)]
 #define C(i, j) a[n*(i) + (j)]
@@ -1218,8 +1218,7 @@ MXCSR 的 0-5 位显示设置“粘滞”位后 SIMD 浮点异常，除非使用
 
 对于参考代码的分析，参考代码更新后，规模在`m=n=k>500`有2倍率性能提升，对矩阵C做blocking（每次内层循环`InnerKernel`计算一块规模为`mc x n`大小的矩阵C，但并没有完全算完，只算了`pb/k * ib/m`，其中`pb = min( k-p, kc ),  ib = min( m-i, mc )`）。对矩阵的分块充分利用L2 Cache。
 
-```cc
-
+```c
 /* Block sizes */
 #define mc 256
 #define kc 128
@@ -1252,7 +1251,7 @@ MXCSR 的 0-5 位显示设置“粘滞”位后 SIMD 浮点异常，除非使用
 
 考虑到参考代码是列优先，我们是行优先，那么需要对矩阵C做blocking时，做以下变化，同时修改变量名，如`inc_p，inc_j`，更清晰：
 
-```cc
+```c
 /* Block sizes */
 #define inc_j 256  // inc_j along n
 #define inc_p 128  // inc_p along k
@@ -1270,7 +1269,7 @@ for ( p=0; p<k; p+=inc_p )
 }
 ```
 
-```cc
+```c
 #define A(i, j) a[lda*(i) + (j)]
 #define B(i, j) b[ldb*(i) + (j)]
 #define C(i, j) c[ldc*(i) + (j)]
