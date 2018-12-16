@@ -56,10 +56,13 @@ http://www.cnblogs.com/lijiankou/archive/2013/07/11/3183728.html</li>
 </ul>
 <p style="text-align: center;"><img class="aligncenter" src="http://yuenshome-wordpress.stor.sinaapp.com//uploads/2017/05/gemm_01.png" alt="" width="362" height="148" />矩阵A和矩阵C相乘</p>
 该方法是操作的是一维数组，通过行列索引i、j、p（分别遍历m、n、p）以及lda、ldb、ldc（本身这三个就是与m、n、k是等价，相当于矩阵A、B、C的每行元素的个数）来实现对二维矩阵下标的控制。
-<pre class="lang:c decode:true">#define A(i,j) a[ (j)*lda + (i) ]
+
+```cc
+#define A(i,j) a[ (j)*lda + (i) ]
 #define B(i,j) b[ (j)*ldb + (i) ]
 #define C(i,j) c[ (j)*ldc + (i) ]
-</pre>
+```
+
 这里使用了带参数的宏定义，带参宏定义的一般形式为：#define 宏名(形参列表) 字符串。对带参数的宏，在调用中，不仅要宏展开，而且要用实参去代换形参。三点说明：
 <ul>
 	<li>1. 带参宏定义中，形参之间可以出现空格，但是宏名和形参列表之间不能有空格出现；</li>
