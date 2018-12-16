@@ -89,7 +89,7 @@ http://blog.csdn.net/shenck1992/article/details/50041777</li>
 </ul>
 
 
-<h1>2. 第一次优化</h1>
+## 2. 第一次优化
 
 
 ```cc
@@ -206,3 +206,947 @@ void AddDot( int k, double *x, int incx,  double *y, double *gamma )
 ```
 
 最明显改变就是4次AddDot函数（取出矩阵A的一行，矩阵B的一列，做先点乘后加和），即每次计算得到矩阵C的四个元素的值。这样相比之前，应该有不到4倍的性能提升
+
+
+## 1. 1x1到1x4
+
+### 1.1 naive 1x1
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; ++j)
+    {
+        for(int p = 0; p < k; ++p)
+        {
+            C(i, j) += A(i, p) * B(p, j);
+        }
+    }
+}
+```
+
+### 1.2 1x1
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; ++j)
+    {
+        AddDot(&A(i, 0), &B(0, j), &C(i, j), k, n);
+    }
+}
+
+#define B_COL(p) b_col[p*n]
+AddDot(float *a_row, float *b_col, float *c, int k, int n)
+{
+    for(int p = 0; p < k; ++p)
+    {
+        *c += a_row[p] * B_COL(p);
+    }
+}
+```
+
+### 1.3 1x4
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot(&A(i, 0), &B(0, j+0), &C(i, j+0), k, n);
+        AddDot(&A(i, 0), &B(0, j+1), &C(i, j+1), k, n);
+        AddDot(&A(i, 0), &B(0, j+2), &C(i, j+2), k, n);
+        AddDot(&A(i, 0), &B(0, j+3), &C(i, j+3), k, n);
+    }
+}
+
+#define B_COL(p) b_col[p*n]
+AddDot(float *a_row, float *b_col, float *c, int k, int n)
+{
+    for(int p = 0; p < k; ++p)
+    {
+        *c += a_row[p] * B_COL(p);
+    }
+}
+```
+
+## 1.4 1x4
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot1x4(&A(i, 0), &B(0, j), &C(i, j), k, n);
+    }
+}
+
+AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
+{
+    for(int p = 0; p < k; ++p)
+        C(0, 0) += a_row[p] * B(p, 0);
+    for(int p = 0; p < k; ++p)
+        C(0, 1) += a_row[p] * B(p, 1);
+    for(int p = 0; p < k; ++p)
+        C(0, 2) += a_row[p] * B(p, 2);
+    for(int p = 0; p < k; ++p)
+        C(0, 3) += a_row[p] * B(p, 3);
+}
+```
+
+### 1.5 1x4的提升 L2 Cache
+
+规模`m = n = k > 500`左右时会有2倍的提升，因为原本的4个for循环合并为一个，**一次for循环同时算4个**`C(i, j)`：
+
+1. 索引`p`每8个浮点操作（4个乘法+加法）只需要更新一次；
+2. 元素`A( 0, p )`只需从内存中取出1次（不像前面取出4次），之后都在L2 cache中，直到后面的数填满了L2 cache。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot1x4(&A(i, 0), &B(0, j), &C(i, j), k, n);
+    }
+}
+
+AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
+{
+    for(int p = 0; p < k; ++p)
+    {
+        C(0, 0) += A(0, p) * B(p, 0);
+        C(0, 1) += A(0, p) * B(p, 1);
+        C(0, 2) += A(0, p) * B(p, 2);
+        C(0, 3) += A(0, p) * B(p, 3);
+    }
+}
+```
+
+### 1.6 1x4的提升 C和A放到Register
+
+规模`m = n = k < 500`时会有2倍的提升，因为把C的一行四列的1x4的计算临时结果以及`A(p, 0)`放到了寄存器中，减少了cache与register之间的数据传输。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot1x4(&A(i, 0), &B(0, j), &C(i, j), k, n);
+    }
+}
+
+AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
+{
+    register float
+       c_00_reg,   c_01_reg,   c_02_reg,   c_03_reg,  
+       a_0p_reg;
+
+    c_00_reg = 0.0; 
+    c_01_reg = 0.0; 
+    c_02_reg = 0.0; 
+    c_03_reg = 0.0;
+
+    for(int p = 0; p < k; ++p)
+    {
+        a_0p_reg = A(0, p);
+
+        c_00_reg += a_0p_reg * B(p, 0);
+        c_01_reg += a_0p_reg  * B(p, 1);
+        c_02_reg += a_0p_reg  * B(p, 2);
+        c_03_reg += a_0p_reg  * B(p, 3);
+    }
+    C(0, 0) = c_00_reg;
+    C(0, 1) = c_01_reg;
+    C(0, 2) = c_02_reg;
+    C(0, 3) = c_03_reg;
+}
+```
+
+### 1.7 1x4的提升 用指针访问B
+
+规模`m = n = k < 500`时会有1.5~2倍的提升，用指针访问B，`bp0_pntr, bp1_pntr, bp2_pntr, and bp3_pntr` 访问 `B( p, 0 ), B( p, 1 ), B( p, 2 ), B( p, 3 )`，**减少数据索引找B中元素的开销**。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot1x4(&A(i, 0), &B(0, j), &C(i, j), k, n);
+    }
+}
+
+AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
+{
+    register float
+       c_00_reg,   c_01_reg,   c_02_reg,   c_03_reg,  
+       a_0p_reg;
+
+    c_00_reg = 0.0; 
+    c_01_reg = 0.0; 
+    c_02_reg = 0.0; 
+    c_03_reg = 0.0;
+
+    float
+    *bp0_pntr, *bp1_pntr, *bp2_pntr, *bp3_pntr; 
+    
+    bp0_pntr = &B( 0, 0 );
+    bp1_pntr = &B( 0, 1 );
+    bp2_pntr = &B( 0, 2 );
+    bp3_pntr = &B( 0, 3 );
+
+    for(int p = 0; p < k; ++p)
+    {
+        a_0p_reg = A(0, p);
+
+        c_00_reg += a_0p_reg * *bp0_pntr++;
+        c_01_reg += a_0p_reg * *bp1_pntr++;
+        c_02_reg += a_0p_reg * *bp2_pntr++;
+        c_03_reg += a_0p_reg * *bp3_pntr++;
+    }
+    C(0, 0) = c_00_reg;
+    C(0, 1) = c_01_reg;
+    C(0, 2) = c_02_reg;
+    C(0, 3) = c_03_reg;
+}
+```
+
+### 1.8 1x4的轻微下降 对k方向展开p+=4，这个累加的数也可以自定
+
+unroll这个for循环，从原本的`+=1`改为`+=4`混淆了编译器（unroll多少并非固定，可以根据不同的平台调节），反而有性能下降。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot1x4(&A(i, 0), &B(0, j), &C(i, j), k, n);
+    }
+}
+
+AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
+{
+    register float
+       c_00_reg,   c_01_reg,   c_02_reg,   c_03_reg,  
+       a_0p_reg;
+
+    c_00_reg = 0.0; 
+    c_01_reg = 0.0; 
+    c_02_reg = 0.0; 
+    c_03_reg = 0.0;
+
+    float
+    *bp0_pntr, *bp1_pntr, *bp2_pntr, *bp3_pntr; 
+    
+    bp0_pntr = &B( 0, 0 );
+    bp1_pntr = &B( 0, 1 );
+    bp2_pntr = &B( 0, 2 );
+    bp3_pntr = &B( 0, 3 );
+
+    for(int p = 0; p < k; p+=4)
+    {
+        a_0p_reg = A(0, p);
+        c_00_reg += a_0p_reg * *bp0_pntr++;
+        c_01_reg += a_0p_reg * *bp1_pntr++;
+        c_02_reg += a_0p_reg * *bp2_pntr++;
+        c_03_reg += a_0p_reg * *bp3_pntr++;
+
+        a_0p_reg = A(0, p+1);
+        c_00_reg += a_0p_reg * *bp0_pntr++;
+        c_01_reg += a_0p_reg * *bp1_pntr++;
+        c_02_reg += a_0p_reg * *bp2_pntr++;
+        c_03_reg += a_0p_reg * *bp3_pntr++;
+
+        a_0p_reg = A(0, p+2);
+        c_00_reg += a_0p_reg * *bp0_pntr++;
+        c_01_reg += a_0p_reg * *bp1_pntr++;
+        c_02_reg += a_0p_reg * *bp2_pntr++;
+        c_03_reg += a_0p_reg * *bp3_pntr++;
+
+        a_0p_reg = A(0, p+3);
+        c_00_reg += a_0p_reg * *bp0_pntr++;
+        c_01_reg += a_0p_reg * *bp1_pntr++;
+        c_02_reg += a_0p_reg * *bp2_pntr++;
+        c_03_reg += a_0p_reg * *bp3_pntr++;
+    }
+    C(0, 0) = c_00_reg;
+    C(0, 1) = c_01_reg;
+    C(0, 2) = c_02_reg;
+    C(0, 3) = c_03_reg;
+}
+```
+
+### 1.9 1x4 间接寻址（indirect addressing）
+
+间接寻址操作如下：
+
+```cc
+c_00_reg += a_0p_reg * *(bp0_pntr+1);
+```
+
+`bp0_pntr`指向元素`B( p, 0 )`。因此`bp0_pntr+1`指向元素`B( p+1, 0 )`，**间接访问这种方法不需要更新指针的地址，而是直接通过`+1`访问下一个元素**。这样，每算4次，b指针才会被更新，通过间接寻址减少了指针变量的更新次数。
+
+**注：没有性能提升，因为编译器已经做了这样的优化，我们只是显式地写了出来。**
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; ++i)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot1x4(&A(i, 0), &B(0, j), &C(i, j), k, n);
+    }
+}
+
+AddDot1x4(float *a_row, float *b_col, float *c, int k, int n)
+{
+    register float
+       c_00_reg,   c_01_reg,   c_02_reg,   c_03_reg,  
+       a_0p_reg;
+
+    c_00_reg = 0.0; 
+    c_01_reg = 0.0; 
+    c_02_reg = 0.0; 
+    c_03_reg = 0.0;
+
+    float
+    *bp0_pntr, *bp1_pntr, *bp2_pntr, *bp3_pntr; 
+    
+    bp0_pntr = &B( 0, 0 );
+    bp1_pntr = &B( 0, 1 );
+    bp2_pntr = &B( 0, 2 );
+    bp3_pntr = &B( 0, 3 );
+
+    for(int p = 0; p < k; p+=4)
+    {
+        a_0p_reg = A(0, p);
+        c_00_reg += a_0p_reg * *bp0_pntr;
+        c_01_reg += a_0p_reg * *bp1_pntr;
+        c_02_reg += a_0p_reg * *bp2_pntr;
+        c_03_reg += a_0p_reg * *bp3_pntr;
+
+        a_0p_reg = A(0, p+1);
+        c_00_reg += a_0p_reg * *(bp0_pntr+1);
+        c_01_reg += a_0p_reg * *(bp1_pntr+1);
+        c_02_reg += a_0p_reg * *(bp2_pntr+1);
+        c_03_reg += a_0p_reg * *(bp3_pntr+1);
+
+        a_0p_reg = A(0, p+2);
+        c_00_reg += a_0p_reg * *(bp0_pntr+2);
+        c_01_reg += a_0p_reg * *(bp1_pntr+2);
+        c_02_reg += a_0p_reg * *(bp2_pntr+2);
+        c_03_reg += a_0p_reg * *(bp3_pntr+2);
+
+        a_0p_reg = A(0, p+3);
+        c_00_reg += a_0p_reg * *(bp0_pntr+3);
+        c_01_reg += a_0p_reg * *(bp1_pntr+3);
+        c_02_reg += a_0p_reg * *(bp2_pntr+3);
+        c_03_reg += a_0p_reg * *(bp3_pntr+3);
+
+        bp0_pntr+=4;
+        bp1_pntr+=4;
+        bp2_pntr+=4;
+        bp3_pntr+=4;
+    }
+    C(0, 0) = c_00_reg;
+    C(0, 1) = c_01_reg;
+    C(0, 2) = c_02_reg;
+    C(0, 3) = c_03_reg;
+}
+```
+
+## 2. 1x4到4x4
+
+后面使用到向量指令以及向量寄存器，做到一次算4x4个结果。
+
+1. 有一部分特殊指令集如SSE3，一个周期内可执行两个乘加操作（两个乘法和两个加法操作），也就是每个周期可对4个浮点操作；
+2. 要把数据放到向量寄存器（vector register）才能实现如此操作；
+
+因为有16个向量寄存器，每个都可以存放两个双精度double或四个单精度的浮点数。因而可以将32个双精度浮数点或64个单精度浮点数放到这16个向量寄存器中，若是双精度即我们4x4大小的矩阵C的元素，若是单精度即可以放8x8规模大小的矩阵C的元素。
+
+
+### 2.1 4x4 A的行 B的列 每次取4
+
+扩展AddDot，每次取A的4行，B的4列，在`AddDot4x4`中计算16个C元素。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; i+=4)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot4x4(&A(i, 0), &B(0, j), &C(i, j), n, k);
+    }
+}
+
+void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
+{
+  /* So, this routine computes a 4x4 block of matrix A
+           C( 0, 0 ), C( 0, 1 ), C( 0, 2 ), C( 0, 3 ).  
+           C( 1, 0 ), C( 1, 1 ), C( 1, 2 ), C( 1, 3 ).  
+           C( 2, 0 ), C( 2, 1 ), C( 2, 2 ), C( 2, 3 ).  
+           C( 3, 0 ), C( 3, 1 ), C( 3, 2 ), C( 3, 3 ).  
+     Notice that this routine is called with c = C( i, j ) in the
+     previous routine, so these are actually the elements 
+           C( i  , j ), C( i  , j+1 ), C( i  , j+2 ), C( i  , j+3 ) 
+           C( i+1, j ), C( i+1, j+1 ), C( i+1, j+2 ), C( i+1, j+3 ) 
+           C( i+2, j ), C( i+2, j+1 ), C( i+2, j+2 ), C( i+2, j+3 ) 
+           C( i+3, j ), C( i+3, j+1 ), C( i+3, j+2 ), C( i+3, j+3 ) 
+	  
+     in the original matrix C 
+     In this version, we "inline" AddDot */ 
+
+    // 1st row of C
+    AddDot(&A(0, 0), &B(0, 0), &C(0, 0), k, n);
+    AddDot(&A(0, 0), &B(0, 1), &C(0, 1), k, n);
+    AddDot(&A(0, 0), &B(0, 2), &C(0, 2), k, n);
+    AddDot(&A(0, 0), &B(0, 3), &C(0, 3), k, n);
+
+    // 2rd row of C
+    AddDot(&A(1, 0), &B(0, 0), &C(1, 0), k, n);
+    AddDot(&A(1, 0), &B(0, 1), &C(1, 1), k, n);
+    AddDot(&A(1, 0), &B(0, 2), &C(1, 2), k, n);
+    AddDot(&A(1, 0), &B(0, 3), &C(1, 3), k, n);
+
+    // 3nd row of C
+    AddDot(&A(2, 0), &B(0, 0), &C(2, 0), k, n);
+    AddDot(&A(2, 0), &B(0, 1), &C(2, 1), k, n);
+    AddDot(&A(2, 0), &B(0, 2), &C(2, 2), k, n);
+    AddDot(&A(2, 0), &B(0, 3), &C(2, 3), k, n);
+
+    // 4th row of C
+    AddDot(&A(3, 0), &B(0, 0), &C(3, 0), k, n);
+    AddDot(&A(3, 0), &B(0, 1), &C(3, 1), k, n);
+    AddDot(&A(3, 0), &B(0, 2), &C(3, 2), k, n);
+    AddDot(&A(3, 0), &B(0, 3), &C(3, 3), k, n);
+}
+
+#define B_COL(p) b_col[p*n]
+void AddDot(float *a_row, float *b_col, float *c, int k, int n)
+{
+    for(int p = 0; p < k; ++p)
+    {
+        *c += a_row[p] * B_COL(p);
+    }
+}
+```
+
+### 2.2  4x4 拆分AddDot到AddDot4x4中
+
+无性能提升。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; i+=4)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot4x4(&A(i, 0), &B(0, j), &C(i, j), n, k);
+    }
+}
+
+void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
+{
+    // 1st row of C
+    for(int p = 0; p < k; ++p)
+        C(0, 0) += A(0, p) * B(p, 0);
+    for(int p = 0; p < k; ++p)
+        C(0, 1) += A(0, p) * B(p, 1);
+    for(int p = 0; p < k; ++p)
+        C(0, 2) += A(0, p) * B(p, 2);
+    for(int p = 0; p < k; ++p)
+        C(0, 3) += A(0, p) * B(p, 3);
+
+    // 2rd row of C
+    for(int p = 0; p < k; ++p)
+        C(1, 0) += A(1, p) * B(p, 0);
+    for(int p = 0; p < k; ++p)
+        C(1, 1) += A(1, p) * B(p, 1);
+    for(int p = 0; p < k; ++p)
+        C(1, 2) += A(1, p) * B(p, 2);
+    for(int p = 0; p < k; ++p)
+        C(1, 3) += A(1, p) * B(p, 3);
+
+    // 3nd row of C
+    for(int p = 0; p < k; ++p)
+        C(2, 0) += A(2, p) * B(p, 0);
+    for(int p = 0; p < k; ++p)
+        C(2, 1) += A(2, p) * B(p, 1);
+    for(int p = 0; p < k; ++p)
+        C(2, 2) += A(2, p) * B(p, 2);
+    for(int p = 0; p < k; ++p)
+        C(2, 3) += A(2, p) * B(p, 3);
+
+    // 4th row of C
+    for(int p = 0; p < k; ++p)
+        C(3, 0) += A(3, p) * B(p, 0);
+    for(int p = 0; p < k; ++p)
+        C(3, 1) += A(3, p) * B(p, 1);
+    for(int p = 0; p < k; ++p)
+        C(3, 2) += A(3, p) * B(p, 2);
+    for(int p = 0; p < k; ++p)
+        C(3, 3) += A(3, p) * B(p, 3);
+}
+```
+
+### 2.3  4x4 提升 合并AddDot4x4中的For循环
+
+在`m=n=k>500`时，4~5倍的性能提升，合并16个For循环为1个。
+
+**矩阵变更大，不少数据在寄存器中可被复用地更多。**
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; i+=4)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot4x4(&A(i, 0), &B(0, j), &C(i, j), n, k);
+    }
+}
+
+void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
+{
+    for(int p = 0; p < k; ++p)
+    {
+        // 1st row of C
+        C(0, 0) += A(0, p) * B(p, 0);
+        C(0, 1) += A(0, p) * B(p, 1);
+        C(0, 2) += A(0, p) * B(p, 2);
+        C(0, 3) += A(0, p) * B(p, 3);
+
+        // 2rd row of C
+        C(1, 0) += A(1, p) * B(p, 0);
+        C(1, 1) += A(1, p) * B(p, 1);
+        C(1, 2) += A(1, p) * B(p, 2);
+        C(1, 3) += A(1, p) * B(p, 3);
+
+        // 3nd row of C
+        C(2, 0) += A(2, p) * B(p, 0);
+        C(2, 1) += A(2, p) * B(p, 1);
+        C(2, 2) += A(2, p) * B(p, 2);
+        C(2, 3) += A(2, p) * B(p, 3);
+
+        // 4th row of C
+        C(3, 0) += A(3, p) * B(p, 0);
+        C(3, 1) += A(3, p) * B(p, 1);
+        C(3, 2) += A(3, p) * B(p, 2);
+        C(3, 3) += A(3, p) * B(p, 3);
+    }
+}
+```
+
+### 2.4  4x4 提升 C和A放到Register中
+
+- `m=n=k<500`，性能有2倍提升；
+- `m=n=k>500`，性能有1.5倍提升。
+
+得益于将A的4行1列和C的4行4列放到寄存器中。当使用超过寄存器容量的寄存器变量时， 性能提升就固定了（即`m=n=k>500`，性能有1.5倍提升）。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; i+=4)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot4x4(&A(i, 0), &B(0, j), &C(i, j), n, k);
+    }
+}
+
+void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
+{
+  register float
+    /* hold contributions to
+       C( 0, 0 ), C( 0, 1 ), C( 0, 2 ), C( 0, 3 ) 
+       C( 1, 0 ), C( 1, 1 ), C( 1, 2 ), C( 1, 3 ) 
+       C( 2, 0 ), C( 2, 1 ), C( 2, 2 ), C( 2, 3 ) 
+       C( 3, 0 ), C( 3, 1 ), C( 3, 2 ), C( 3, 3 )   */
+
+       c_00_reg,   c_01_reg,   c_02_reg,   c_03_reg,  
+       c_10_reg,   c_11_reg,   c_12_reg,   c_13_reg,  
+       c_20_reg,   c_21_reg,   c_22_reg,   c_23_reg,  
+       c_30_reg,   c_31_reg,   c_32_reg,   c_33_reg,
+
+    /* hold 
+       A( 0, p ) 
+       A( 1, p ) 
+       A( 2, p ) 
+       A( 3, p ) */
+
+       a_0p_reg,
+       a_1p_reg,
+       a_2p_reg,
+       a_3p_reg;
+
+    c_00_reg = 0.0;   c_01_reg = 0.0;   c_02_reg = 0.0;   c_03_reg = 0.0;
+    c_10_reg = 0.0;   c_11_reg = 0.0;   c_12_reg = 0.0;   c_13_reg = 0.0;
+    c_20_reg = 0.0;   c_21_reg = 0.0;   c_22_reg = 0.0;   c_23_reg = 0.0;
+    c_30_reg = 0.0;   c_31_reg = 0.0;   c_32_reg = 0.0;   c_33_reg = 0.0;
+
+    for(int p = 0; p < k; ++p)
+    {
+        a_0p_reg = A(0, p);
+        a_1p_reg = A(1, p);
+        a_2p_reg = A(2, p);
+        a_3p_reg = A(3, p);
+
+        // 1st row of C
+        c_00_reg += a_0p_reg * B( p, 0 );
+        c_01_reg += a_0p_reg * B( p, 1 );
+        c_02_reg += a_0p_reg * B( p, 2 );
+        c_03_reg += a_0p_reg * B( p, 3 );
+
+        // 2rd row of C
+        c_10_reg += a_1p_reg * B( p, 0 );
+        c_11_reg += a_1p_reg * B( p, 1 );
+        c_12_reg += a_1p_reg * B( p, 2 );
+        c_13_reg += a_1p_reg * B( p, 3 );
+
+        // 3nd row of C
+        c_20_reg += a_2p_reg * B( p, 0 );
+        c_21_reg += a_2p_reg * B( p, 1 );
+        c_22_reg += a_2p_reg * B( p, 2 );
+        c_23_reg += a_2p_reg * B( p, 3 );
+
+        // 4th row of C
+        c_30_reg += a_3p_reg * B( p, 0 );
+        c_31_reg += a_3p_reg * B( p, 1 );
+        c_32_reg += a_3p_reg * B( p, 2 );
+        c_33_reg += a_3p_reg * B( p, 3 );
+    }
+    C( 0, 0 ) += c_00_reg;   C( 0, 1 ) += c_01_reg;   C( 0, 2 ) += c_02_reg;   C( 0, 3 ) += c_03_reg;
+    C( 1, 0 ) += c_10_reg;   C( 1, 1 ) += c_11_reg;   C( 1, 2 ) += c_12_reg;   C( 1, 3 ) += c_13_reg;
+    C( 2, 0 ) += c_20_reg;   C( 2, 1 ) += c_21_reg;   C( 2, 2 ) += c_22_reg;   C( 2, 3 ) += c_23_reg;
+    C( 3, 0 ) += c_30_reg;   C( 3, 1 ) += c_31_reg;   C( 3, 2 ) += c_32_reg;   C( 3, 3 ) += c_33_reg;
+}
+```
+
+
+
+### 2.5  4x4 提升 用指针代替循环中的B
+
+**轻微性能提升，用指针代替访问B，减少索引开销**。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; i+=4)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot4x4(&A(i, 0), &B(0, j), &C(i, j), n, k);
+    }
+}
+
+void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
+{
+    register float 
+    c_00_reg,   c_01_reg,   c_02_reg,   c_03_reg,  
+    c_10_reg,   c_11_reg,   c_12_reg,   c_13_reg,  
+    c_20_reg,   c_21_reg,   c_22_reg,   c_23_reg,  
+    c_30_reg,   c_31_reg,   c_32_reg,   c_33_reg,
+
+    a_0p_reg,
+    a_1p_reg,
+    a_2p_reg,
+    a_3p_reg;
+
+    float
+    *b_p0_pntr, *b_p1_pntr, *b_p2_pntr, *b_p3_pntr; 
+
+    c_00_reg = 0.0;   c_01_reg = 0.0;   c_02_reg = 0.0;   c_03_reg = 0.0;
+    c_10_reg = 0.0;   c_11_reg = 0.0;   c_12_reg = 0.0;   c_13_reg = 0.0;
+    c_20_reg = 0.0;   c_21_reg = 0.0;   c_22_reg = 0.0;   c_23_reg = 0.0;
+    c_30_reg = 0.0;   c_31_reg = 0.0;   c_32_reg = 0.0;   c_33_reg = 0.0;
+
+    for(int p = 0; p < k; ++p)
+    {
+        a_0p_reg = A(0, p);
+        a_1p_reg = A(1, p);
+        a_2p_reg = A(2, p);
+        a_3p_reg = A(3, p);
+
+        b_p0_pntr = &B( p, 0 );
+        b_p1_pntr = &B( p, 1 );
+        b_p2_pntr = &B( p, 2 );
+        b_p3_pntr = &B( p, 3 );
+
+        // 1st row of C
+        c_00_reg += a_0p_reg * *b_p0_pntr;
+        c_01_reg += a_0p_reg * *b_p1_pntr;
+        c_02_reg += a_0p_reg * *b_p2_pntr;
+        c_03_reg += a_0p_reg * *b_p3_pntr;
+
+        // 2rd row of C
+        c_10_reg += a_1p_reg * *b_p0_pntr;
+        c_11_reg += a_1p_reg * *b_p1_pntr;
+        c_12_reg += a_1p_reg * *b_p2_pntr;
+        c_13_reg += a_1p_reg * *b_p3_pntr;
+
+        // 3nd row of C
+        c_20_reg += a_2p_reg * *b_p0_pntr;
+        c_21_reg += a_2p_reg * *b_p1_pntr;
+        c_22_reg += a_2p_reg * *b_p2_pntr;
+        c_23_reg += a_2p_reg * *b_p3_pntr;
+
+        // 4th row of C
+        c_30_reg += a_3p_reg * *b_p0_pntr++;
+        c_31_reg += a_3p_reg * *b_p1_pntr++;
+        c_32_reg += a_3p_reg * *b_p2_pntr++;
+        c_33_reg += a_3p_reg * *b_p3_pntr++;
+    }
+
+    C( 0, 0 ) += c_00_reg;   C( 0, 1 ) += c_01_reg;   C( 0, 2 ) += c_02_reg;   C( 0, 3 ) += c_03_reg;
+    C( 1, 0 ) += c_10_reg;   C( 1, 1 ) += c_11_reg;   C( 1, 2 ) += c_12_reg;   C( 1, 3 ) += c_13_reg;
+    C( 2, 0 ) += c_20_reg;   C( 2, 1 ) += c_21_reg;   C( 2, 2 ) += c_22_reg;   C( 2, 3 ) += c_23_reg;
+    C( 3, 0 ) += c_30_reg;   C( 3, 1 ) += c_31_reg;   C( 3, 2 ) += c_32_reg;   C( 3, 3 ) += c_33_reg;
+}
+```
+
+
+## 3. 进一步优化4x4（Further optimizing）
+
+### 3.1  4x4 下降 将循环中的B用指针索引后，放到寄存器
+
+将从B的第`j`行的指针中，取出的变量放到寄存器中。这样做性能些许下降，但是为了后面能作进一步的优化。
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; i+=4)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot4x4(&A(i, 0), &B(0, j), &C(i, j), n, k);
+    }
+}
+
+void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
+{
+    register float
+    c_00_reg,   c_01_reg,   c_02_reg,   c_03_reg,  
+    c_10_reg,   c_11_reg,   c_12_reg,   c_13_reg,  
+    c_20_reg,   c_21_reg,   c_22_reg,   c_23_reg,  
+    c_30_reg,   c_31_reg,   c_32_reg,   c_33_reg,
+
+    a_0p_reg,
+    a_1p_reg,
+    a_2p_reg,
+    a_3p_reg,
+
+    b_p0_reg,
+    b_p1_reg,
+    b_p2_reg,
+    b_p3_reg;
+
+    float
+    *b_p0_pntr, *b_p1_pntr, *b_p2_pntr, *b_p3_pntr; 
+    b_p0_pntr = &B( 0, 0 );
+    b_p1_pntr = &B( 0, 1 );
+    b_p2_pntr = &B( 0, 2 );
+    b_p3_pntr = &B( 0, 3 );
+
+    c_00_reg = 0.0;   c_01_reg = 0.0;   c_02_reg = 0.0;   c_03_reg = 0.0;
+    c_10_reg = 0.0;   c_11_reg = 0.0;   c_12_reg = 0.0;   c_13_reg = 0.0;
+    c_20_reg = 0.0;   c_21_reg = 0.0;   c_22_reg = 0.0;   c_23_reg = 0.0;
+    c_30_reg = 0.0;   c_31_reg = 0.0;   c_32_reg = 0.0;   c_33_reg = 0.0;
+
+    for(int p = 0; p < k; ++p)
+    {
+        a_0p_reg = A(0, p);
+        a_1p_reg = A(1, p);
+        a_2p_reg = A(2, p);
+        a_3p_reg = A(3, p);
+
+        b_p0_reg = *b_p0_pntr++;
+        b_p1_reg = *b_p1_pntr++;
+        b_p2_reg = *b_p2_pntr++;
+        b_p3_reg = *b_p3_pntr++;
+
+        // 1st row of C
+        c_00_reg += a_0p_reg * b_p0_reg;
+        c_01_reg += a_0p_reg * b_p1_reg;
+        c_02_reg += a_0p_reg * b_p2_reg;
+        c_03_reg += a_0p_reg * b_p3_reg;
+
+        // 2nd row of C
+        c_10_reg += a_1p_reg * b_p0_reg;
+        c_11_reg += a_1p_reg * b_p1_reg;
+        c_12_reg += a_1p_reg * b_p2_reg;
+        c_13_reg += a_1p_reg * b_p3_reg;
+
+        // 3rd row of C
+        c_20_reg += a_2p_reg * b_p0_reg;
+        c_21_reg += a_2p_reg * b_p1_reg;
+        c_22_reg += a_2p_reg * b_p2_reg;
+        c_23_reg += a_2p_reg * b_p3_reg;
+
+        // 4th row of C
+        c_30_reg += a_3p_reg * b_p0_reg;
+        c_31_reg += a_3p_reg * b_p1_reg;
+        c_32_reg += a_3p_reg * b_p2_reg;
+        c_33_reg += a_3p_reg * b_p3_reg;
+    }
+
+    C( 0, 0 ) += c_00_reg;   C( 0, 1 ) += c_01_reg;   C( 0, 2 ) += c_02_reg;   C( 0, 3 ) += c_03_reg;
+    C( 1, 0 ) += c_10_reg;   C( 1, 1 ) += c_11_reg;   C( 1, 2 ) += c_12_reg;   C( 1, 3 ) += c_13_reg;
+    C( 2, 0 ) += c_20_reg;   C( 2, 1 ) += c_21_reg;   C( 2, 2 ) += c_22_reg;   C( 2, 3 ) += c_23_reg;
+    C( 3, 0 ) += c_30_reg;   C( 3, 1 ) += c_31_reg;   C( 3, 2 ) += c_32_reg;   C( 3, 3 ) += c_33_reg;
+}
+```
+
+### 3.2 4x4 提升 变为vector operation进一步转为intrinsic
+
+规模`m=n=k<500`下，基本都有**2~3倍的性能提升（但规模在`m=n=k>500`下，则几乎没有提升，后面将讲到如何优化使用L2 Cache来做更大规模的提升）**，提升的原因是用上了**向量寄存器和向量操作（或者说是SIMD）**。这个实现过程，先考虑后续intrinsic的写法，即先写成对应的不用intrinsic的代码，然后再转成intrinsic函数。
+
+实现过程中参考这个double的4x4的做法：[Optimization_4x4_9 · flame/how-to-optimize-gemm Wiki](https://github.com/flame/how-to-optimize-gemm/wiki/Optimization_4x4_9)，但是这种情况与我们的不同：1. 咱们是float；2. 咱们是行优先。
+
+因此，对B按行取4个的前提下，对于矩阵A在取数时有如下三个思路：
+
+![image](https://user-images.githubusercontent.com/7320657/49698923-5f609000-fc05-11e8-99e5-d21a025e4cab.png)
+
+对B按行取4个的前提下，有三个对A处理的思路：
+
+1. 每次取A的第1列的4个，与B的第1行的4个，即两个float4。因行优先，对B来说是连续的，对A则需要逐个元素竖着排布拼成float4；
+2. 取A行的第1个元素，重复4次，即float4，这样取A的四行，得到4个float4；
+3. 对B转置为B_trans，与A操作一样，按照行取4行（实际为B的4列）；或相反，对A转置为A_trans，则与B操作一样。
+
+我实现的是第二种，即对A中的元素进行重复，如下是实现代码：
+
+```cc
+#define A(i, j) a[k*(i) + (j)]
+#define B(i, j) a[n*(i) + (j)]
+#define C(i, j) a[n*(i) + (j)]
+
+for(int i = 0; i < m; i+=4)
+{
+    for(int j = 0; j < n; j+=4)
+    {
+        AddDot4x4(&A(i, 0), &B(0, j), &C(i, j), n, k);
+    }
+}
+
+#include <mmintrin.h>
+#include <xmmintrin.h>  // SSE
+#include <pmmintrin.h>  // SSE2
+#include <emmintrin.h>  // SSE3
+
+typedef union v4f
+{
+  __m128 v;
+  float s[4];
+} v4f_t;
+
+void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
+{   
+    v4f_t
+      c_00_01_02_03_vreg,
+      c_10_11_12_13_vreg,
+      c_20_21_22_23_vreg,
+      c_30_31_32_33_vreg,
+      
+      b_p0_p1_p2_p3_vreg,
+      
+      a_0p_x4_vreg,
+      a_1p_x4_vreg,
+      a_2p_x4_vreg,
+      a_3p_x4_vreg;
+
+    float 
+      *b_p0_pntr = &B( 0, 0 );
+
+    c_00_01_02_03_vreg.v = _mm_setzero_ps();
+    c_10_11_12_13_vreg.v = _mm_setzero_ps();
+    c_20_21_22_23_vreg.v = _mm_setzero_ps();
+    c_30_31_32_33_vreg.v = _mm_setzero_ps();
+
+    for(int p = 0; p < k; ++p)
+    {
+        // duplicate each element in A as float4
+        a_0p_x4_vreg.v = __mm_loaddup_ps( (float *) &A( 0, p ) );
+        a_1p_x4_vreg.v = __mm_loaddup_ps( (float *) &A( 1, p ) );
+        a_2p_x4_vreg.v = __mm_loaddup_ps( (float *) &A( 2, p ) );
+        a_3p_x4_vreg.v = __mm_loaddup_ps( (float *) &A( 3, p ) );
+        
+        b_p0_pntr += p * n;
+        b_p0_p1_p2_p3_vreg.v = __mm_load_ps( (float *) b_p0_pntr );
+
+        c_00_01_02_03_vreg.v += a_0p_x4_vreg.v * b_p0_p1_p2_p3_vreg.v;
+        c_10_11_12_13_vreg.v += a_1p_x4_vreg.v * b_p0_p1_p2_p3_vreg.v;
+        c_20_21_22_23_vreg.v += a_2p_x4_vreg.v * b_p0_p1_p2_p3_vreg.v;
+        c_30_31_32_33_vreg.v += a_3p_x4_vreg.v * b_p0_p1_p2_p3_vreg.v;
+    }
+
+    // 1st row of C
+    C( 0, 0 ) += c_00_01_02_03_vreg.s[0];
+    C( 0, 1 ) += c_00_01_02_03_vreg.s[1];
+    C( 0, 2 ) += c_00_01_02_03_vreg.s[2];
+    C( 0, 3 ) += c_00_01_02_03_vreg.s[3];
+    // 2nd row of C
+    C( 1, 0 ) += c_10_11_12_13_vreg.s[0];
+    C( 1, 1 ) += c_10_11_12_13_vreg.s[1];
+    C( 1, 2 ) += c_10_11_12_13_vreg.s[2];
+    C( 1, 3 ) += c_10_11_12_13_vreg.s[3];
+    // 3rd row of C
+    C( 2, 0 ) += c_20_11_12_13_vreg.s[0];
+    C( 2, 1 ) += c_20_11_12_13_vreg.s[1];
+    C( 2, 2 ) += c_20_11_12_13_vreg.s[2];
+    C( 2, 3 ) += c_20_11_12_13_vreg.s[3];
+    // 4th row of C
+    C( 3, 0 ) += c_30_31_32_33_vreg.s[0];
+    C( 3, 1 ) += c_30_31_32_33_vreg.s[1];
+    C( 3, 2 ) += c_30_31_32_33_vreg.s[2];
+    C( 3, 3 ) += c_30_31_32_33_vreg.s[3];
+}
+```
+
