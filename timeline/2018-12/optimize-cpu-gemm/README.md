@@ -1150,3 +1150,234 @@ void AddDot4x4(float *a, float *b, float *c, const int n, const int k)
 }
 ```
 
+## 英特尔® 高级矢量扩展指令集简介
+
+- [英特尔® 高级矢量扩展指令集简介 | 英特尔® 软件](https://software.intel.com/zh-cn/articles/introduction-to-intel-advanced-vector-extensions)
+- [Intel Intrinsics Guide](https://software.intel.com/sites/landingpage/IntrinsicsGuide/)
+- [Technologies | NEON Intrinsics Reference – Arm Developer](https://developer.arm.com/technologies/neon/intrinsics)
+
+> ## **Optimization Notice**
+> 虽然针对非英特尔处理器也有优化，但不保证有效，具体参考_用户和参考指南_，其中包括了本注意事项涵盖的特定指令集的更多相关信息。
+
+
+**英特尔® 高级矢量扩展指令集（英特尔® AVX）是在英特尔® 架构 CPU 上执行单指令多数据 (SIMD) 运算的指令集**。这些指令添加了以下特性，对之前的 SIMD 产品——MMX™ 指令和英特尔® 数据流单指令多数据扩展指令集（英特尔® SSE）进行了扩展：
+
+- 将 128 位 SIMD 寄存器扩展至 256 位。英特尔® AVX 的目标是在未来可以支持 512 或 1024 位。
+- 添加了 3 操作数非破坏性运算。之前在 A = A + B 类运算中执行的是 2 操作数指令，它将覆盖源操作数，而新的操作数可以执行 A = B + C 类运算，且保持原始源操作数不变。.
+- 少数几个指令采用 4 寄存器操作数，通过移除不必要的指令，支持更小、更快的代码。
+- **对于操作数的内存对齐要求有所放宽**。
+- 新的扩展编码方案 (VEX) 旨在使得以后添加更加容易以及所执行的指令编码更小、速度更快。
+
+与这些改进密切相关的是新的**融合乘加 (FMA) 指令，它可以更快、更精确地执行专门运算，例如单指令 A = A * B + C**。第二代英特尔® 酷睿™ CPU 中将可提供 FMA 指令。其他特性还包括处理高级加密标准 (AES) 加密和解密的指令、用于某些加密基元的紧缩 carry-less 乘法运算 (PCLMULQDQ) 以及某些用于未来指令的预留槽，如硬件随机数生成器。
+
+### 指令集概述
+
+新指令使用英特尔的 VEX prefix 进行编码，VEX prefix 是一个 2个或 3 个字节的前缀，旨在降低当前和未来 x86/x64 指令编码的复杂性。两个新的 VEX prefix 形成于两个过时的 32 位指令——使用 DS 的 Load Pointer（LDS-0xC4，3 字节形式）和使用 ES 的 Load Pointer（LES-0xC5， 2 字节形式），它们以 32 位模式加载 DS 和 ES 段寄存器。在 64 位模式中，操作码 LDS 和 LES 生成一个无效操作码异常，但是在英特尔® AVX 下，这些操作码可另外用作编码新指令前缀。最终，VEX 指令只能在 64 位模式中运行时使用。前缀可比之前的 x86 指令编码更多的寄存器，可用于访问新的 256 位 SIMD 寄存器或者使用 3 和 4 操作数语法。**作为用户，您无需担心这个问题（除非您正在编写汇编器或反汇编器）**。
+
+注：下文假定运算都是在 64 位模式中进行。
+
+**SIMD 指令可以在一个单一步骤中处理多个片段的数据，加速许多任务的吞吐量，包括视频编解码、图像处理、数据分析和物理模拟**。在 32 位长度（称之为单精度）和64 位长度（称之为双精度）中，英特尔® AVX 指令在IEEE-754浮点值上运行。IEEE-754 是一个标准定义的、可复制的强大浮点运算，是大多数主流数字计算的标准。
+
+较早的相关英特尔® SSE 指令还支持各种带符号和无符号整数大小，包括带符号和无符号字节（B，8 位）、字（W，16 位）、双字（DW，32 位）、四字（QW，64 位）和双四字（DQ，128 位）长度。并非所有指令都适用于所有大小组合，更多详细信息，敬请参阅“更多信息”中提供的链接。请参阅本文后文中的图 2，了解数据类型的图形表示法。
+
+**支持英特尔® AVX（和 FMA）的硬件包括 16 个 256 位 YMM 寄存器 YMM0-YMM15 和一个名为 MXCSR的 32 位控制/状态寄存器**。YMM 寄存器替代了英特尔® SSE 使用的较早的 128 位 XMM 寄存器，它将 XMM 寄存器视作相应 YMM 寄存器的下层部分，如图 1 所示。
+
+![image](https://user-images.githubusercontent.com/7320657/49693123-550ea980-fba5-11e8-862e-cc46b03c1169.png)
+
+图 1. XMM 寄存器覆盖 YMM 寄存器。
+
+MXCSR 的 0-5 位显示设置“粘滞”位后 SIMD 浮点异常，除非使用位LDMXCSR 或 FXRSTOR清除，否则它们将一直保持设置。设置时 7-12 位屏蔽个体异常，可通过启动进行初始设置或重置。0-5 位分别显示为无效运算、非法、被零除、溢出和精度。如欲获取详细信息，请参阅“更多信息”部分提供的链接。
+
+图 2 显示了英特尔® SSE 和英特尔® AVX 指令中使用的数据类型。对于英特尔® AVX，允许使用增加至 128 或 256 位的 32 位或 64 位浮点类型的倍数以及增加至 128 位的任意整数类型的倍数。
+
+![image](https://user-images.githubusercontent.com/7320657/49693125-6657b600-fba5-11e8-8fff-91e2f36100ea.png)
+
+图 2.英特尔® AVX 和英特尔® SSE 数据类型
+ 
+**指令通常分为标量版本和矢量版本**，如图 3 所示。**矢量版本通过将数据以并行“SIMD”模式在寄存器中处理进行运算；而标量版本则只在每个寄存器的一个条目中进行运算。这一区别减少了某些算法中的数据移动，提供了更加出色的整体吞吐量。**
+
+![image](https://user-images.githubusercontent.com/7320657/49693133-91420a00-fba5-11e8-9680-3808e9da1a05.png)
+
+图 3. SIMD 与标量运算
+
+### 内存对齐
+
+**当数据以 n 字节内存界限上存储的 n 字节块进行运算时，数据为内存对齐数据。例如，将 256 位数据加载至 YMM 寄存器中时，如果数据源为 256 位对齐，则数据被称为“对齐”.**
+
+对于英特尔® **SSE 运算，除非明确规定，否则都需要内存对齐**。例如，在英特尔® SSE 下，有针对内存对齐和内存未对齐运算的特定指令，如MOVAPD（移动对齐的紧缩双精度值）和 MOVUPD（移动非对齐的紧缩双精度值）指令。没有像这样分为两个的指令需要执行对齐访问。
+
+英特尔® **AVX 已经放宽了某些内存对齐要求，因此默认情况下，英特尔® AVX 允许未对齐的访问；但是，这样的访问将导致性能下降**，因此旨在要求数据保持内存对齐的原规则仍然是不错的选择（面向 128 位访问的 16 位对齐和面向 256 位访问的 32 位对齐）。主要例外是明确指出需要内存对齐数据的 SSE 指令的VEX 扩展版本：这些指令仍然要求使用对齐的数据。其他要求对齐访问的特定指令请参阅英特尔® 高级矢量扩展指令集编程指南中的表2.4（请参阅“更多信息”中提供的链接）。
+
+除了未对齐数据问题外，另外一个性能问题是**混合使用旧的仅 XMM 的指令和较新的英特尔® AVX 指令会导致延迟**，因此需要最大限度地控制 VEX 编码指令和旧的英特尔® SSE 代码之间的转换。也就是说，**不要将 VEX 前缀的指令和非 VEX 前缀的指令混合使用**，以实现最佳吞吐量。如果您非要这么做，请对同一 VEX/非 VEX 级别的指令进行分组，最大限度地控制二者之间的转换。此外，如果上层 YMM 位通过 VZEROUPPER 或 VZEROALL 设置为零（编译器应自动插入），则无转换损失。该插入要求另外一个指令，因此推荐使用分析 (profiling)。
+
+## 4. 4x4 提升 利用L2 Cache对矩阵blocking
+
+### 4.1 参考代码分析
+
+参考：[Optimization_4x4_11 · flame/how-to-optimize-gemm Wiki](https://github.com/flame/how-to-optimize-gemm/wiki/Optimization_4x4_11)
+
+对于参考代码的分析，参考代码更新后，规模在`m=n=k>500`有2倍率性能提升，对矩阵C做blocking（每次内层循环`InnerKernel`计算一块规模为`mc x n`大小的矩阵C，但并没有完全算完，只算了`pb/k * ib/m`，其中`pb = min( k-p, kc ),  ib = min( m-i, mc )`）。对矩阵的分块充分利用L2 Cache。
+
+```cc
+
+/* Block sizes */
+#define mc 256
+#define kc 128
+
+  /* This time, we compute a mc x n block of C by a call to the InnerKernel */
+  for ( p=0; p<k; p+=kc ){
+    pb = min( k-p, kc );
+    for ( i=0; i<m; i+=mc ){
+      ib = min( m-i, mc );
+      InnerKernel( ib, n, pb, &A( i,p ), lda, &B(p, 0 ), ldb, &C( i,0 ), ldc );
+    }
+  }
+```
+
+外层的两个循环改为对k（矩阵A的列、B的行）和m（矩阵A的行）的遍历，同时分别设定这两个遍历的自增值`kc`、`mc`，每次调用完一个`InnerKernel`，即得到一块大小为`mc x n`的C矩阵元素。**但该过程并没有将这一块大小为`mc x n`的C矩阵元素的结果算完（因为对`k`遍历的for循环在最外层）**。
+
+----
+
+**对由于分块带来的变化的分析**（kc和mc）：
+
+
+- 把原本的`AddDot4x4`作为`micro kernel`放到`InnerKernel`中，`InnerKernel`作为`kernel`；
+- 每次内层循环`InnerKernel`计算一块规模为`mc x n`大小的矩阵C，但并没有完全算完，只算了`pb/k`，其中`pb = min( k-p, kc )`。`pb`作为最内层新的`k`；
+- `pb = min( k-p, kc )`和`ib = min( m-i, mc )`是用来处理最后剩下的边界问题；
+- 外层两个`for`循环遍历的是`k`和`m`，每次自增大小分别为`kc`和`mc`（这也是矩阵分块blocking的大小），进一步有`pb = min( k-p, kc )`和`ib = min( m-i, mc )`；
+- `InnerKernel`中两个`for`循环遍历的是`m`和`n`，每次自增均为4（前文中提到，这个值自己可以调）；
+- `AddDot4x4`中的循环，每次自增1，和上一次的代码没有变化，但需要注意传进来的`k`值不是矩阵A的列数（B的行数），而是`pb`，即一个`AddDot4x4`，对矩阵C中的元素只算了`pb/k`，其中`pb = min( k-p, kc )`，此外`AddDot4x4`本身被`InnerKernel`（行列自增值都为4）调用，每次算C矩阵具体到每个元素的完成度只有：`4x4xpb`，即A的4行的前pb列，B的4列的前pb行，其中`pb = min( k-p, kc )`。
+
+### 4.2 对现有代码加入blocking
+
+考虑到参考代码是列优先，我们是行优先，那么需要对矩阵C做blocking时，做以下变化，同时修改变量名，如`inc_p，inc_j`，更清晰：
+
+```cc
+/* Block sizes */
+#define inc_j 256  // inc_j along n
+#define inc_p 128  // inc_p along k
+#define min( i, j ) ( (i)<(j) ? (i): (j) )
+
+/* This time, we compute a m x block_n block of C by a call to the InnerKernel */
+for ( p=0; p<k; p+=inc_p )
+{
+    block_k = min( k-p, inc_p );
+    for ( j=0; j<n; j+=inc_j )
+    {
+        block_n = min( n-j, inc_j );
+        InnerKernel( m, block_n, block_k, &A( i,p ), lda, &B(p, 0 ), ldb, &C( i,0 ), ldc );
+    }
+}
+```
+
+```cc
+#define A(i, j) a[lda*(i) + (j)]
+#define B(i, j) b[ldb*(i) + (j)]
+#define C(i, j) c[ldc*(i) + (j)]
+
+/* Block sizes */
+#define inc_j 256  // inc_j along n
+#define inc_p 128  // inc_p along k
+#define min( i, j ) ( (i)<(j) ? (i): (j) )
+
+/* This time, we compute a m x block_n block of C by a call to the InnerKernel */
+for ( p=0; p<k; p+=inc_p )
+{
+    block_k = min( k-p, inc_p );
+    for ( j=0; j<n; j+=inc_j )
+    {
+        block_n = min( n-j, inc_j );
+        InnerKernel( m, block_n, block_k, &A( i,p ), lda, &B(p, 0 ), ldb, &C( i,0 ), ldc );
+    }
+}
+
+void InnerKernel( const int m, const int n, const int k,
+                  float *a, const int lda, 
+                  float *b, const int ldb,
+                  float *c, const int ldc )
+{
+    for( int i=0; i<m; i+=4 )
+    {
+        for( int j=0; j<n; j+=4 )
+        {
+            AddDot4x4( k, &A( i,0 ), lda, &B( 0,j ), ldb, &C( i,j ), ldc );
+        }
+    }
+}
+
+#include <mmintrin.h>
+#include <xmmintrin.h>  // SSE
+#include <pmmintrin.h>  // SSE2
+#include <emmintrin.h>  // SSE3
+
+typedef union v4f
+{
+  __m128 v;
+  float s[4];
+} v4f_t;
+
+void AddDot4x4( const int k, 
+                float *a, const int lda,
+                float *b, const int ldb,
+                float *c, const int ldc)
+{
+    v4f_t
+      c_00_01_02_03_vreg,
+      c_10_11_12_13_vreg,
+      c_20_21_22_23_vreg,
+      c_30_31_32_33_vreg,
+      
+      b_p0_p1_p2_p3_vreg,
+      
+      a_0p_x4_vreg,
+      a_1p_x4_vreg,
+      a_2p_x4_vreg,
+      a_3p_x4_vreg;
+
+    float 
+      *b_p0_pntr = &B( 0, 0 );
+
+    c_00_01_02_03_vreg.v = _mm_setzero_ps();
+    c_10_11_12_13_vreg.v = _mm_setzero_ps();
+    c_20_21_22_23_vreg.v = _mm_setzero_ps();
+    c_30_31_32_33_vreg.v = _mm_setzero_ps();
+
+    for(int p = 0; p < k; ++p)
+    {
+        // duplicate each element in A as float4
+        a_0p_x4_vreg.v = __mm_loaddup_ps( (float *) &A( 0, p ) );
+        a_1p_x4_vreg.v = __mm_loaddup_ps( (float *) &A( 1, p ) );
+        a_2p_x4_vreg.v = __mm_loaddup_ps( (float *) &A( 2, p ) );
+        a_3p_x4_vreg.v = __mm_loaddup_ps( (float *) &A( 3, p ) );
+        
+        b_p0_pntr += p * n;
+        b_p0_p1_p2_p3_vreg.v = __mm_load_ps( (float *) b_p0_pntr );
+
+        c_00_01_02_03_vreg.v += a_0p_x4_vreg.v * b_p0_p1_p2_p3_vreg.v;
+        c_10_11_12_13_vreg.v += a_1p_x4_vreg.v * b_p0_p1_p2_p3_vreg.v;
+        c_20_21_22_23_vreg.v += a_2p_x4_vreg.v * b_p0_p1_p2_p3_vreg.v;
+        c_30_31_32_33_vreg.v += a_3p_x4_vreg.v * b_p0_p1_p2_p3_vreg.v;
+    }
+
+    // 1st row of C
+    C( 0, 0 ) += c_00_01_02_03_vreg.s[0];
+    C( 0, 1 ) += c_00_01_02_03_vreg.s[1];
+    C( 0, 2 ) += c_00_01_02_03_vreg.s[2];
+    C( 0, 3 ) += c_00_01_02_03_vreg.s[3];
+    // 2nd row of C
+    C( 1, 0 ) += c_10_11_12_13_vreg.s[0];
+    C( 1, 1 ) += c_10_11_12_13_vreg.s[1];
+    C( 1, 2 ) += c_10_11_12_13_vreg.s[2];
+    C( 1, 3 ) += c_10_11_12_13_vreg.s[3];
+    // 3rd row of C
+    C( 2, 0 ) += c_20_11_12_13_vreg.s[0];
+    C( 2, 1 ) += c_20_11_12_13_vreg.s[1];
+    C( 2, 2 ) += c_20_11_12_13_vreg.s[2];
+    C( 2, 3 ) += c_20_11_12_13_vreg.s[3];
+    // 4th row of C
+    C( 3, 0 ) += c_30_31_32_33_vreg.s[0];
+    C( 3, 1 ) += c_30_31_32_33_vreg.s[1];
+    C( 3, 2 ) += c_30_31_32_33_vreg.s[2];
+    C( 3, 3 ) += c_30_31_32_33_vreg.s[3];
+}
+```
