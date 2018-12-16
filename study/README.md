@@ -42,6 +42,10 @@
 
 ![header](../assets/header17.jpg)
 
+## CPU/GPU优化
+
+- [2017-05] [优化CPU矩阵乘法](../timeline/2018-12/optimize-cpu-gemm/)
+
 ## C/C++
 
 - [2018-09] [C语言指针字节数](../timeline/2018-09/pointer-size-of-lang-c/)
