@@ -37,9 +37,9 @@ void REF_MMult( int m, int n, int k, double *a, int lda,
 {
   int i, j, p;
 
-  for ( i=0; i&lt;m; i++ ){        /* Loop over the rows of C */
-    for ( j=0; j&lt;n; j++ ){      /* Loop over the columns of C */
-      for ( p=0; p&lt;k; p++ ){    /* Update C( i,j ) with the inner
+  for ( i=0; i<m; i++ ){        /* Loop over the rows of C */
+    for ( j=0; j<n; j++ ){      /* Loop over the columns of C */
+      for ( p=0; p<k; p++ ){    /* Update C( i,j ) with the inner
                                    product of the i-th row of A and
                                    the j-th of B */
         C( i,j ) = C( i,j ) +  A( i,p ) * B( p,j );
@@ -109,12 +109,12 @@ void MY_MMult( int m, int n, int k, double *a, int lda,
 {
   int i, j;
 
-  for ( j=0; j&lt;n; j+=1 ){        /* Loop over the columns of C */
-    for ( i=0; i&lt;m; i+=1 ){        /* Loop over the rows of C */
+  for ( j=0; j<n; j+=1 ){        /* Loop over the columns of C */
+    for ( i=0; i<m; i+=1 ){        /* Loop over the rows of C */
       /* Update the C( i,j ) with the inner product of the ith row of A
 	 and the jth column of B */
 
-      AddDot( k, &amp;A( i,0 ), lda, &amp;B( 0,j ), &amp;C( i,j ) );
+      AddDot( k, &A( i,0 ), lda, &B( 0,j ), &C( i,j ) );
     }
   }
 }
@@ -132,7 +132,7 @@ void AddDot( int k, double *x, int incx,  double *y, double *gamma )
  
   int p;
 
-  for ( p=0; p&lt;k; p++ ){
+  for ( p=0; p<k; p++ ){
     *gamma += X( p ) * y[ p ];     
   }
 }
@@ -161,27 +161,27 @@ void MY_MMult( int m, int n, int k, double *a, int lda,
 {
   int i, j;
 
-  for ( j=0; j&lt;n; j+=4 ){        /* Loop over the columns of C, unrolled by 4 */
-    for ( i=0; i&lt;m; i+=1 ){        /* Loop over the rows of C */
+  for ( j=0; j<n; j+=4 ){        /* Loop over the columns of C, unrolled by 4 */
+    for ( i=0; i<m; i+=1 ){        /* Loop over the rows of C */
       /* Update the C( i,j ) with the inner product of the ith row of A
 	 and the jth column of B */
 
-      AddDot( k, &amp;A( i,0 ), lda, &amp;B( 0,j ), &amp;C( i,j ) );
+      AddDot( k, &A( i,0 ), lda, &B( 0,j ), &C( i,j ) );
 
       /* Update the C( i,j+1 ) with the inner product of the ith row of A
 	 and the (j+1)th column of B */
 
-      AddDot( k, &amp;A( i,0 ), lda, &amp;B( 0,j+1 ), &amp;C( i,j+1 ) );
+      AddDot( k, &A( i,0 ), lda, &B( 0,j+1 ), &C( i,j+1 ) );
 
       /* Update the C( i,j+2 ) with the inner product of the ith row of A
 	 and the (j+2)th column of B */
 
-      AddDot( k, &amp;A( i,0 ), lda, &amp;B( 0,j+2 ), &amp;C( i,j+2 ) );
+      AddDot( k, &A( i,0 ), lda, &B( 0,j+2 ), &C( i,j+2 ) );
 
       /* Update the C( i,j+3 ) with the inner product of the ith row of A
 	 and the (j+1)th column of B */
 
-      AddDot( k, &amp;A( i,0 ), lda, &amp;B( 0,j+3 ), &amp;C( i,j+3 ) );
+      AddDot( k, &A( i,0 ), lda, &B( 0,j+3 ), &C( i,j+3 ) );
     }
   }
 }
@@ -199,14 +199,15 @@ void AddDot( int k, double *x, int incx,  double *y, double *gamma )
  
   int p;
 
-  for ( p=0; p&lt;k; p++ ){
+  for ( p=0; p<k; p++ ){
     *gamma += X( p ) * y[ p ];     
   }
 }
 ```
 
-最明显改变就是4次AddDot函数（取出矩阵A的一行，矩阵B的一列，做先点乘后加和），即每次计算得到矩阵C的四个元素的值。这样相比之前，应该有不到4倍的性能提升
+最明显改变就是4次AddDot函数（取出矩阵A的一行，矩阵B的一列，做先点乘后加和），即每次计算得到矩阵C的四个元素的值。这样相比之前，应该有不到4倍的性能提升。
 
+----
 
 ## 1. 1x1到1x4
 
