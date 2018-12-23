@@ -37,6 +37,13 @@
 - <a href="http://deeplearning.net/" target="_blank">DeepLearning.net</a>  
 - <a href="http://neuralnetworksanddeeplearning.com/index.html" target="_blank">Neural networks and deep learning </a>  
 - <a href="http://www.deeplearningbook.org/" target="_blank">Deep Learning Book</a>  
+- <a href="http://ethereon.github.io/netscope/#/editor" target="_blank">caffe netscope</a>  
+- <a href="http://fabrik.cloudcv.org" target="_blank">caffe fabrik</a>  
+- <a href="http://ethereon.github.io/netscope/quickstart.html" target="_blank">caffe netscope quickstart</a>  
+- <a href="https://cwlacewe.github.io/netscope/quickstart.html" target="_blank">增强版netscope</a>  
+- <a href="http://fomoro.com/tools/receptive-fields/" target="_blank">Receptive Field Calculator</a>  
+- <a href="http://ufoym.com/" target="_blank">SIFT cheat sheet</a>  
+- <a href="https://amazonaws-china.com/cn/blogs/ai/exploiting-the-unique-features-of-the-apache-mxnet-deep-learning-framework-with-a-cheat-sheet/" target="_blank">MXNet cheat sheet</a>  
 
 ![header](./assets/header36.jpg)
 
@@ -49,14 +56,7 @@
 - <a href="http://www.codecogs.com/latex/eqneditor.php" target="_blank">Tex Online Editor</a>  
 - <a href="naotu.baidu.com" target="_blank">百度脑图</a>  
 - <a href="https://visualgo.net/zh" target="_blank">visualgo</a>  
-- <a href="http://ethereon.github.io/netscope/#/editor" target="_blank">caffe netscope</a>  
-- <a href="http://fabrik.cloudcv.org" target="_blank">caffe fabrik</a>  
-- <a href="http://ethereon.github.io/netscope/quickstart.html" target="_blank">caffe netscope quickstart</a>  
-- <a href="https://cwlacewe.github.io/netscope/quickstart.html" target="_blank">增强版netscope</a>  
 - <a href="http://www.tablesgenerator.com/markdown_tables" target="_blank">Markdown Tables generator</a>  
-- <a href="http://fomoro.com/tools/receptive-fields/" target="_blank">Receptive Field Calculator</a>  
-- <a href="http://ufoym.com/" target="_blank">SIFT cheat sheet</a>  
-- <a href="https://amazonaws-china.com/cn/blogs/ai/exploiting-the-unique-features-of-the-apache-mxnet-deep-learning-framework-with-a-cheat-sheet/" target="_blank">MXNet cheat sheet</a>  
 
 ![header](./assets/header31.jpg)
 
