@@ -38,6 +38,8 @@
 - <a href="http://neuralnetworksanddeeplearning.com/index.html" target="_blank">Neural networks and deep learning </a>  
 - <a href="http://www.deeplearningbook.org/" target="_blank">Deep Learning Book</a>  
 - <a href="http://ethereon.github.io/netscope/#/editor" target="_blank">caffe netscope</a>  
+- <a href="https://dgschwend.github.io/netscope/#/editor" target="_blank">caffe netscope++</a>  Netscope CNN Analyzer
+
 - <a href="http://fabrik.cloudcv.org" target="_blank">caffe fabrik</a>  
 - <a href="http://ethereon.github.io/netscope/quickstart.html" target="_blank">caffe netscope quickstart</a>  
 - <a href="https://cwlacewe.github.io/netscope/quickstart.html" target="_blank">增强版netscope</a>  
