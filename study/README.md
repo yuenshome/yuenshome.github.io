@@ -18,6 +18,7 @@
 
 ## 深度学习核心拆解系列
 
+- [2019-04] [高通神经网络处理引擎SNPE分析与评测](../timeline/2019-04/snpe/)
 - [2018-11] [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift](../timeline/2018-11/batchnorm/)
 - [2018-11] [YOLOv2 region层Forward部分源码分析](../timeline/2018-11/yolov2-region-source-code/)
 - [2017-12] [Very Deep Convolutional Networks for Large-Scale Image Recognition](../timeline/2017-12/vgg/)
