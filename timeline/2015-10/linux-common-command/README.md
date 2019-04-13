@@ -322,6 +322,7 @@ sudo apt install -y qt-default qtcreator qtdeclarative5-dev
 </ul>
 <h1>查找与定位</h1>
 <ul>
+	<li>查找某命令安装位置如ls命令：which ls</li>
 	<li>统计某文档行数：wc -l /etc/httpd/conf/httpd.conf</li>
 	<li>查找当前路径下的所有<strong>文件内容中</strong>包含XXX名字的文件：<b>grep -rn "XXX"或<b>grep -rn XXX（不需要前后加上*）</b></b></li>
 	<li>查找当前路径下的所有<strong>文件名</strong>包含XXX的文件：<b>find . -name "*XXX*"</b></li>
