@@ -1,3 +1,9 @@
+[![header](../../../assets/header30.jpg)](https://yuenshome.github.io)
+
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+
+# 高通神经网络处理引擎SNPE分析与评测
+
 [骁龙（SnapDragon）神经处理引擎（SNPE）](https://developer.qualcomm.com/software/qualcomm-neural-processing-sdk)是一个针对高通骁龙加速深层神经网络的运行时软件，[高通在CSDN和其官网都提供了下载](https://bss.csdn.net/m/zone/qualcomm2016/resource_detail?id=1586)。
 
 本文以SNPE 1.23为基准，将结合[高通官方的SDK说明文档](https://developer.qualcomm.com/docs/snpe/index.html)（高通在CSDN也提供了[开发者社区](https://qualcomm.csdn.net/m/zone/qualcomm2016/index)，[中文社区论坛](https://bss.csdn.net/m/zone/qualcomm2016/bbs)，以及[SNPE部分文档](https://bss.csdn.net/m/zone/qualcomm2016/resource_detail?id=1592)），介绍SNPE这一高通官方的神经网络处理引擎开发包。
