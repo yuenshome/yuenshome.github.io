@@ -357,7 +357,7 @@ http://www.jb51.net/LINUXjishu/43534.html
 	<li>Linux端点续传后台下载命令wget -c http://123.com/abc.deb</li>
 	<li>彻底卸载某软件softname1（见后文）</li>
 	<li>从根目录查找包含cuda的文件夹或文件：find / | grep cuda</li>
-	<li>查看本机ip地址：ifconfig -a</li>
+	<li>查看本机ip地址(apt install -y net-tools)：ifconfig -a</li>
 </ul>
 <!--more-->
 <h2>Linux端点续传后台下载命令wget</h2>
