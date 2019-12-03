@@ -64,7 +64,8 @@
 - <a href="https://awwapp.com/" target="_blank">AWW App | Online Whiteboard for Realtime Visual Collaboration</a>  
 - <a href="https://godbolt.org/" target="_blank">Compiler Explorer</a>  
 - <a href="https://dreampuf.github.io/GraphvizOnline" target="_blank">DotGraphVizOnline</a>  
-
+- <a href="https://lab.lyric.im/wxformat/" target="_blank">微信公众号格式化编辑器</a>  
+- <a href="http://md.barretlee.com/" target="_blank">WXMarkdown-微信公众号格式化工具</a>  
 
 
 ![header](./assets/header31.jpg)
