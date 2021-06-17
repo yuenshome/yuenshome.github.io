@@ -139,3 +139,13 @@ https://stackoverflow.com/questions/10168449/git-update-submodule-recursive
 或者你也可能需要对未初始化的子模块（uninitialized submodules）在命令加上--init选项来初始化子模块：
 <pre class="lang:sh decode:true ">git submodule update --init --recursive</pre>
 &nbsp;
+
+## 8. Your branch is ahead of 'origin/master' by 3 commits
+
+ref: https://stackoverflow.com/questions/16288176/your-branch-is-ahead-of-origin-master-by-3-commits
+
+You get that message because you made changes in your local master and you didn't push them to remote. You have several ways to "solve" it and it normally depends on how your workflow looks like:
+
+- In a good workflow your remote copy of master should be the good one while your local copy of master is just a copy of the one in remote. Using this workflow you'll never get this message again.
+- If you work in another way and your local changes should be pushed then just git push origin assuming origin is your remote
+- If your local changes are bad then just remove them or reset your local master to the state on remote git reset --hard origin/master
