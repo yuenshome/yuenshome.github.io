@@ -106,5 +106,6 @@
 - <a href="http://www.wildml.com/" target="_blank">WildML – Artificial Intelligence, Deep Learning, and NLP</a>  
 - <a href="https://pjreddie.com/" target="_blank">Joseph Redmon - Survival Strategies for the Robot Rebellion</a>  
 - <a href="http://wepon.me/" target="_blank">wepon</a>  
+- <a href="https://www.agner.org/optimize/">https://www.agner.org/optimize/</a>
 
 ![header](./assets/header24.jpg)
