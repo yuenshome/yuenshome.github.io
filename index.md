@@ -66,6 +66,7 @@
 - <a href="https://dreampuf.github.io/GraphvizOnline" target="_blank">DotGraphVizOnline</a>  
 - <a href="https://lab.lyric.im/wxformat/" target="_blank">微信公众号格式化编辑器</a>  
 - <a href="http://md.barretlee.com/" target="_blank">WXMarkdown-微信公众号格式化工具</a>  
+- <a href="https://stackedit.io/app#" target="_blank">https://stackedit.io/app#</a>  
 - <a href="https://carbon.now.sh/" target="_blank">Carbon | Create and share beautiful images of your source code</a>  
 - <a href="https://app.diagrams.net/" target="_blank">draw.io</a>  
 - <a href="http://math.ecnu.edu.cn/~jypan/Latex/docs/MathSymb.pdf">MathSymbol TeX</a>
