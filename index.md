@@ -52,26 +52,40 @@
 ![header](./assets/header36.jpg)
 
 ## 小工具  
-- <a href="http://codezen.rishimohan.me" target="_blank">codeZen</a>  
+- <a href="https://github.com/" target="_blank">GitHub</a>  
+
+### Tex  
 - <a href="http://octave-online.net/" target="_blank">octave-online</a>  
 - <a href="https://www.overleaf.com" target="_blank">OverLeaf</a>  
-- <a href="http://www.matrixcalculus.org" target="_blank">Matrix Calculus</a>  
-- <a href="https://github.com/" target="_blank">GitHub</a>  
-- <a href="http://www.codecogs.com/latex/eqneditor.php" target="_blank">Tex Online Editor</a>  
+- <a href="http://math.ecnu.edu.cn/~jypan/Latex/docs/MathSymb.pdf">MathSymbol TeX</a>  
+- <a href="http://www.codecogs.com/latex/eqneditor.php" target="_blank">Tex Online Editor</a>
+
+### 绘画
 - <a href="naotu.baidu.com" target="_blank">百度脑图</a>  
 - <a href="https://visualgo.net/zh" target="_blank">visualgo</a>  
 - <a href="http://www.tablesgenerator.com/markdown_tables" target="_blank">Markdown Tables generator</a>  
-- <a href="https://awwapp.com/" target="_blank">AWW App | Online Whiteboard for Realtime Visual Collaboration</a>  
+- <a href="https://awwapp.com/" target="_blank">AWW App | Online Whiteboard for Realtime Visual Collaboration</a>
+- <a href="https://app.diagrams.net/" target="_blank">draw.io</a>
+
+### 编译器
 - <a href="https://godbolt.org/" target="_blank">Compiler Explorer</a>  
-- <a href="https://dreampuf.github.io/GraphvizOnline" target="_blank">DotGraphVizOnline</a>  
-- <a href="https://lab.lyric.im/wxformat/" target="_blank">微信公众号格式化编辑器</a>  
-- <a href="http://md.barretlee.com/" target="_blank">WXMarkdown-微信公众号格式化工具</a>  
+- <a href="https://dreampuf.github.io/GraphvizOnline" target="_blank">DotGraphVizOnline</a>
+
+### 在线编辑
 - <a href="https://stackedit.io/app#" target="_blank">https://stackedit.io/app#</a>  
-- <a href="https://markdown.lovejade.cn/" target="_blank">https://markdown.lovejade.cn/</a>  
+- <a href="https://markdown.lovejade.cn/" target="_blank">https://markdown.lovejade.cn/</a> 
+
+### 公众号排版
+- <a href="https://lab.lyric.im/wxformat/" target="_blank">微信公众号格式化编辑器</a>  
+- <a href="http://md.barretlee.com/" target="_blank">WXMarkdown-微信公众号格式化工具</a>   
 - <a href="https://carbon.now.sh/" target="_blank">Carbon | Create and share beautiful images of your source code</a>  
-- <a href="https://app.diagrams.net/" target="_blank">draw.io</a>  
-- <a href="http://math.ecnu.edu.cn/~jypan/Latex/docs/MathSymb.pdf">MathSymbol TeX</a>
-- <a href="https://app.spline.design/">3D animation design</a>
+- <a href="http://codezen.rishimohan.me" target="_blank">Code Image Generator</a>
+- <a href="https://app.spline.design/">3D animation design</a>  
+
+### 数值
+- <a href="http://www.matrixcalculus.org" target="_blank">Matrix Calculus</a>  
+- <a href="https://evanw.github.io/float-toy/">IEEE floating-point format</a>  
+- <a href="https://tooltt.com/ieee/">在线IEEE浮点二进制计算器工具</a>  
 
 ![header](./assets/header31.jpg)
 
