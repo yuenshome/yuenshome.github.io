@@ -79,8 +79,9 @@
 - <a href="https://lab.lyric.im/wxformat/" target="_blank">微信公众号格式化编辑器</a>  
 - <a href="http://md.barretlee.com/" target="_blank">WXMarkdown-微信公众号格式化工具</a>   
 - <a href="https://carbon.now.sh/" target="_blank">Carbon | Create and share beautiful images of your source code</a>  
-- <a href="http://codezen.rishimohan.me" target="_blank">Code Image Generator</a>
-- <a href="https://app.spline.design/">3D animation design</a>  
+- <a href="http://codezen.rishimohan.me" target="_blank">Code Image Generator</a>  
+- <a href="https://app.spline.design/">3D animation design</a>
+- <a href="https://www.sojson.com/image2base64.html">image2base64</a>  
 
 ### 数值
 - <a href="http://www.matrixcalculus.org" target="_blank">Matrix Calculus</a>  
