@@ -32,6 +32,7 @@
 
 ## 学习笔记 · 杂
 
+- [2024-03] [IEEE 754 Floating NaN调研](../timeline/2024-03/ieee-754-floating-nan)
 - [2018-12] [计算机的浮点表示与浮点数转定点操作](../timeline/2018-12/float2fixed/)
 - [2018-11] [软件加密与授权思路和原理简析](../timeline/2018-11/software-authorization-and-restriction/)
 - [2018-10] [gtest编译错误typeinfo error: undefined reference to 'typeinfo for testing::Test'](../timeline/2018-10/gtest-bug-when-compile/)
@@ -40,7 +41,7 @@
 - [2018-07] [通过ADB工具让电脑连接手机](../timeline/2018-07/android-adb-tool/)
 - [2018-07] [系统升级导致MySQL数据库崩溃](../timeline/2018-07/blog-crash-due-to-mysql-fault/)
 - [2018-05] [再次安装Caffe:cpu的经历](../timeline/2018-05/install-caffe-again/)
-- [2017-10] [CPU超频模式简介](../timeline/2017-10/cpu-freq-mode/)
+- [2017-10] [CPU超频模式简介](..//2017-10/cpu-freq-mode/)
 
 ![header](../assets/header17.jpg)
 
