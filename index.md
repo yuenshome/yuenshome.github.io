@@ -36,7 +36,8 @@
 ## 深度学习  
 - <a href="https://deeplearn.org" target="_blank">deeplearn monitor</a>    
 - <a href="http://josephpcohen.com/w/visualizing-cnn-architectures-side-by-side-with-mxnet/" target="_blank">Visualizing CNN architectures side by side with mxnet</a>    
-- <a href="http://deeplearning.net/" target="_blank">DeepLearning.net</a>  
+- <a href="http://deeplearning.net/" target="_blank">DeepLearning.net</a>
+- <a href="https://dw-dengwei.github.io/daily-arXiv-ai-enhanced/" target="_blank">daily-arXiv-ai-enhanced</a>
 - <a href="http://neuralnetworksanddeeplearning.com/index.html" target="_blank">Neural networks and deep learning </a>  
 - <a href="http://www.deeplearningbook.org/" target="_blank">Deep Learning Book</a>  
 - <a href="http://ethereon.github.io/netscope/#/editor" target="_blank">caffe netscope</a>  
